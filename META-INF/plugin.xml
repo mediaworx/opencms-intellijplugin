@@ -1,0 +1,40 @@
+<idea-plugin version="2">
+    <name>OpenCmsModuleDeveloper</name>
+    <description>Sync of OpenCms modules from local FS to VFS</description>
+    <version>0.1</version>
+    <vendor>mediaworx Berlin AG</vendor>
+
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="107.105"/>
+
+    <application-components>
+    <!-- Add your application components here -->
+    </application-components>
+
+    <project-components>
+        <component>
+            <implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginConfigurationComponent</implementation-class>
+        </component>
+        <component>
+            <implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginComponent</implementation-class>
+        </component>
+        <component>
+            <implementation-class>com.mediaworx.intellij.opencmsplugin.components.OnFileChangeComponent</implementation-class>
+        </component>
+    </project-components>
+
+    <module-components>
+    </module-components>
+
+	<actions>
+		<action id="OpenCmsSync" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="OpenCms: Sync File/Folder/Module"
+				description="OpenCms: Sync file, folder or module with OpenCms" icon="/icons/opencms_menu.png">
+			<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl D"/>
+			<add-to-group group-id="ToolsMenu" anchor="last"/>
+		</action>
+	</actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+</idea-plugin>

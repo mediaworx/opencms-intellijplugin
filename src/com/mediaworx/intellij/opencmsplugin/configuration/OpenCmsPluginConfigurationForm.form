@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationForm">
+  <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="640" height="456"/>
+    </constraints>
+    <properties/>
+    <border type="none" title=""/>
+    <children>
+      <vspacer id="959fe">
+        <constraints>
+          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="163" height="14"/>
+          </grid>
+        </constraints>
+      </vspacer>
+      <component id="aface" class="javax.swing.JTextField" binding="repository">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="http://localhost:8080/opencms/cmisatom/cmis-offline/"/>
+        </properties>
+      </component>
+      <component id="82a68" class="javax.swing.JTextField" binding="username">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="Admin"/>
+        </properties>
+      </component>
+      <component id="fa6d5" class="javax.swing.JTextField" binding="password">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="61a28" class="javax.swing.JLabel" binding="repositoryLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="163" height="16"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="&amp;CMIS Repository"/>
+        </properties>
+      </component>
+      <component id="3beee" class="javax.swing.JLabel" binding="usernameLabel">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="163" height="16"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="&amp;Username"/>
+        </properties>
+      </component>
+      <component id="cfc9d" class="javax.swing.JLabel" binding="passwordLabel">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="163" height="16"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="&amp;Password"/>
+        </properties>
+      </component>
+      <component id="d230c" class="javax.swing.JLabel" binding="webappRootLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="163" height="16"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="OpenCms &amp;Webapp Root"/>
+        </properties>
+      </component>
+      <component id="89d49" class="javax.swing.JTextField" binding="webappRoot">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="/your/tomcat/root/webapps/opencms"/>
+          <toolTipText value="The vfsPath to your OpenCms webapp, usually [Tomcat root]/webapps/opencms"/>
+        </properties>
+      </component>
+      <component id="61b6b" class="javax.swing.JTextArea" binding="localModuleVfsRoots">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="1" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="150"/>
+            <preferred-size width="0" height="150"/>
+            <maximum-size width="-1" height="150"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="e46bb" class="javax.swing.JLabel" binding="moduleConfigurationLabel">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="9" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="163" height="118"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="Local Sync Roots"/>
+        </properties>
+      </component>
+      <component id="a59de" class="javax.swing.JLabel" binding="activeCheckBoxLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Activate Plugin for this Project"/>
+        </properties>
+      </component>
+      <component id="2fdbf" class="javax.swing.JCheckBox" binding="activeCheckBox" default-binding="true">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Active"/>
+        </properties>
+      </component>
+      <component id="6b074" class="javax.swing.JLabel" binding="moduleConfigurationHint">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="430" height="66"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="Syntax: [module name]=[local VFS root path], separate multiple modules with line breaks"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>
