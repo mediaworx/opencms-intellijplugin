@@ -67,6 +67,7 @@ public class VfsAdapter {
 		    // create session with the first (and only) repository
 		    Repository repository = repositories.get(0);
 		    this.sessionParams.put(SessionParameter.REPOSITORY_ID, repository.getId());
+		    this.sessionParams.put(SessionParameter.CONNECT_TIMEOUT, "500");
 
 		    System.out.println("Starting CMIS session using repository " + config.getRepository());
 		    this.session = sessionFactory.createSession(sessionParams);

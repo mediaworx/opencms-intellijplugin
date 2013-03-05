@@ -77,6 +77,9 @@ public class OpenCmsSyncAction extends AnAction {
 
 		        try {
 			        executeFileAnalysis(selectedFiles, message);
+			        if (syncJob == null) {
+				        return;
+			        }
 			        numSyncEntities = syncJob.numSyncEntities();
 		        }
 		        catch (CmsPermissionDeniedException e) {
@@ -136,12 +139,20 @@ public class OpenCmsSyncAction extends AnAction {
 						indicator.setIndeterminate(true);
 						indicator.setText("Please wait");
 					}
+
+					public boolean isCanceled() {
+						return indicator.isCanceled();
+					}
 				};
 
 				progressIndicatorManager.init();
 
 				try {
-					handleSelectedFiles(selectedFiles, message);
+					handleSelectedFiles(selectedFiles, message, progressIndicatorManager);
+					if (progressIndicatorManager.isCanceled()) {
+						syncJob = null;
+						return;
+					}
 				}
 				catch (CmsPermissionDeniedException e) {
 					message.append(e.getMessage());
@@ -152,7 +163,7 @@ public class OpenCmsSyncAction extends AnAction {
 		ProgressManager.getInstance().runProcessWithProgressSynchronously(deployRunner, "Analyzing local and VFS files and folders ...", true, project);
 	}
 
-	private void handleSelectedFiles(final VirtualFile[] selectedFiles, StringBuilder message) throws CmsPermissionDeniedException {
+	private void handleSelectedFiles(final VirtualFile[] selectedFiles, StringBuilder message, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
 		for (VirtualFile selectedFile : selectedFiles) {
 			final String pathLC = selectedFile.getPath().toLowerCase();
 			if (pathLC.contains(".git")
@@ -171,26 +182,32 @@ public class OpenCmsSyncAction extends AnAction {
 			}
 			else {
 				System.out.println("Handling a module or a file in a module");
-				handleFile(selectedFile, SyncMode.AUTO);
+				handleFile(selectedFile, SyncMode.AUTO, progressIndicatorManager);
 			}
 		}
 	}
 
-	private void handleFile(final VirtualFile file, SyncMode syncMode) throws CmsPermissionDeniedException {
+	private void handleFile(final VirtualFile file, SyncMode syncMode, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
 
+		if (progressIndicatorManager.isCanceled()) {
+			return;
+		}
 		System.out.println("Handle file/folder " + file.getPath());
 
 		String module = PathTools.getModuleName(config, file);
 		System.out.println("Module: "+module);
         syncJob.initModuleExportPoints(module);
 
-		walkFileTree(module, file, syncMode);
+		walkFileTree(module, file, syncMode, progressIndicatorManager);
 	}
 
 	// TODO: Datum nicht aus IntelliJ-VFS, sondern Real-File
 	// TODO: handle cases where a folder on the vfs has the same name as a file on the rfs or vice versa
-	private void walkFileTree(String module, VirtualFile file, SyncMode syncMode) throws CmsPermissionDeniedException {
+	private void walkFileTree(String module, VirtualFile file, SyncMode syncMode, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
 
+		if (progressIndicatorManager.isCanceled()) {
+			return;
+		}
 		if (module == null) {
 			System.out.println("No modules configured");
 			return;
@@ -220,7 +237,7 @@ public class OpenCmsSyncAction extends AnAction {
             // The folder is not there, so push it with all child contents
             if (!vfsObjectExists) {
                 System.out.println("It's a folder that does not exist on the VFS, PUSH recursively");
-                addPushFolderTreeToSyncJob(module, vfsPath, file, false);
+                addPushFolderTreeToSyncJob(module, vfsPath, file, false, progressIndicatorManager);
             }
             // The Folder is there, compare contents of VFS and RFS
             else {
@@ -241,17 +258,20 @@ public class OpenCmsSyncAction extends AnAction {
                 VirtualFile[] rfsChildren = file.getChildren();
 
                 for (VirtualFile rfsChild : rfsChildren) {
-                    String filename = rfsChild.getName();
+	                if (progressIndicatorManager.isCanceled()) {
+		                return;
+	                }
+	                String filename = rfsChild.getName();
 
                     // The file/folder does not exist on the VFS, recurse in PUSH mode
                     if (!vfsChildMap.containsKey(filename)) {
                         System.out.println("RFS child " + rfsChild.getName() + " is not on the VFS, handle it in PUSH mode");
-                        walkFileTree(module, rfsChild, SyncMode.PUSH);
+                        walkFileTree(module, rfsChild, SyncMode.PUSH, progressIndicatorManager);
                     }
                     // The file/folder does exist on the VFS, recurse in AUTO mode
                     else {
                         System.out.println("RFS child " + rfsChild.getName() + " exists on the VFS, handle it in AUTO mode");
-                        walkFileTree(module, rfsChild, SyncMode.AUTO);
+                        walkFileTree(module, rfsChild, SyncMode.AUTO, progressIndicatorManager);
 
                         // remove the file from the vfsChildren map, so that only files that exist only on the vfs will be left
                         vfsChildMap.remove(filename);
@@ -261,7 +281,10 @@ public class OpenCmsSyncAction extends AnAction {
                 System.out.println("Handle files/folders that exist only on the vfs");
                 // Handle files/folders that exist only on the vfs
                 for (CmisObject vfsChild : vfsChildMap.values()) {
-                    String childVfsPath = vfsPath + "/" + vfsChild.getName();
+	                if (progressIndicatorManager.isCanceled()) {
+		                return;
+	                }
+	                String childVfsPath = vfsPath + "/" + vfsChild.getName();
                     String childRfsPath = rfsPath + File.separator + vfsChild.getName();
 
                     // files
@@ -329,7 +352,7 @@ public class OpenCmsSyncAction extends AnAction {
 		syncJob.addSyncEntity(module, syncFile);
 	}
 
-	private void addPushFolderTreeToSyncJob(String module, String vfsPath, VirtualFile file, boolean replaceExistingEntity) {
+	private void addPushFolderTreeToSyncJob(String module, String vfsPath, VirtualFile file, boolean replaceExistingEntity, ProgressIndicatorManager progressIndicatorManager) {
 		System.out.println("Adding PUSH folder " + vfsPath);
 		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntityType.FOLDER, vfsPath, file.getPath(), file, null, SyncMode.PUSH, replaceExistingEntity);
 		syncJob.addSyncEntity(module, syncFile);
@@ -339,7 +362,7 @@ public class OpenCmsSyncAction extends AnAction {
 		for (VirtualFile child : children) {
 			System.out.println("Handle PUSH child " + child.getPath());
 			try {
-				walkFileTree(module, child, SyncMode.PUSH);
+				walkFileTree(module, child, SyncMode.PUSH, progressIndicatorManager);
 			}
 			catch (CmsPermissionDeniedException e) {
 				System.out.println("Exception walking the file tree: "+e.getMessage());
@@ -378,6 +401,8 @@ public class OpenCmsSyncAction extends AnAction {
 
 	public interface ProgressIndicatorManager {
 		void init();
+
+		boolean isCanceled();
 	}
 
 }
