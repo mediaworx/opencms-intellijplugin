@@ -6,6 +6,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
@@ -115,7 +116,21 @@ public class OpenCmsSyncAction extends AnAction {
 
 	            if (proceed) {
 	                syncJob.execute();
-	                VirtualFileManager.getInstance().refresh(false);
+		            if (syncJob.hasPullEntities()) {
+			            List<SyncEntity> pullEntityList = syncJob.getPullEntityList();
+			            List<File> refreshFiles = new ArrayList<File>(pullEntityList.size());
+
+			            for (SyncEntity entity : pullEntityList) {
+				            refreshFiles.add(entity.getRealFile());
+			            }
+
+			            try {
+				            LocalFileSystem.getInstance().refreshIoFiles(refreshFiles);
+			            }
+			            catch (Exception e) {
+				            // if there's an exception then the file was not found.
+			            }
+		            }
 	            }
 	        }
 		}

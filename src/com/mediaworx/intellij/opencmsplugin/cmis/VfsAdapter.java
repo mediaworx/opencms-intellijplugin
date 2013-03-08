@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.cmis;
 
+import a.j.se;
 import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
@@ -221,35 +222,28 @@ public class VfsAdapter {
         System.out.println("Pulling "+syncEntity.getVfsPath()+" to "+syncEntity.getRfsPath());
 
         InputStream is = document.getContentStream().getStream();
-        try {
-            File rfsFile = new File(syncEntity.getRfsPath());
-            rfsFile.createNewFile();
-            OutputStream os = new FileOutputStream(rfsFile);
-            try {
-                byte[] buffer = new byte[4096];
-                for (int n; (n = is.read(buffer)) != -1; ) {
-                    os.write(buffer, 0, n);
-                }
-            }
-            catch (IOException e) {
-                System.out.println("There was an Exception writing to the local file "+syncEntity.getRfsPath()+": "+e+"\n"+e.getMessage());
-                rfsFile.delete();
-            }
-            finally {
-                os.close();
-                rfsFile.setLastModified(document.getLastModificationDate().getTimeInMillis());
+        File rfsFile = syncEntity.createRealFile();
+	    OutputStream os = null;
+	    try {
+	        os = new FileOutputStream(rfsFile);
+	        byte[] buffer = new byte[4096];
+            for (int n; (n = is.read(buffer)) != -1; ) {
+                os.write(buffer, 0, n);
             }
         }
         catch (IOException e) {
-            System.out.println("There was an Exception creating a local file: "+e+"\n"+e.getMessage());
+            System.out.println("There was an Exception writing to the local file "+syncEntity.getRfsPath()+": "+e+"\n"+e.getMessage());
+            rfsFile.delete();
         }
         finally {
             try {
-                is.close();
+	            is.close();
+	            os.close();
             }
             catch (IOException e) {
-                // Do nothing
+	            // Do nothing
             }
+            rfsFile.setLastModified(document.getLastModificationDate().getTimeInMillis());
         }
     }
 

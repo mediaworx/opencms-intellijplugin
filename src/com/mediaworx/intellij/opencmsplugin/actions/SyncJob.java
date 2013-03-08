@@ -43,6 +43,7 @@ public class SyncJob {
     private OpenCmsPluginConfigurationData config;
 	private VfsAdapter adapter;
 	private List<SyncEntity> syncList;
+	private List<SyncEntity> pullEntityList;
 	private List<ExportEntity> exportList;
 
 	public SyncJob(Project project, OpenCmsPluginConfigurationData config, VfsAdapter adapter) {
@@ -50,6 +51,7 @@ public class SyncJob {
         this.config = config;
 		this.adapter = adapter;
 		this.syncList = new ArrayList<SyncEntity>();
+		this.pullEntityList = new ArrayList<SyncEntity>();
 		this.exportList = new ArrayList<ExportEntity>();
 	}
 
@@ -224,7 +226,8 @@ public class SyncJob {
 
         if (entity.isFolder()) {
             try {
-                FileUtils.forceMkdir(new File(entity.getRfsPath()));
+	            File folder = entity.createRealFile();
+                FileUtils.forceMkdir(folder);
             } catch (IOException e) {
                 System.out.println("There was an Exception creating a local directory: " + e + "\n" + e.getMessage());
            }
@@ -283,8 +286,8 @@ public class SyncJob {
 		return syncList;
 	}
 
-	public void setSyncList(List<SyncEntity> syncList) {
-		this.syncList = syncList;
+	public List<SyncEntity> getPullEntityList() {
+		return pullEntityList;
 	}
 
 	public List<ExportEntity> getExportList() {
@@ -297,6 +300,9 @@ public class SyncJob {
 
 	public void addSyncEntity(String module, SyncEntity entity) {
 		if (!syncList.contains(entity)) {
+			if (entity.getSyncMode() == SyncMode.PULL) {
+				this.pullEntityList.add(entity);
+			}
             addSyncEntityToExportListIfNecessary(module, entity);
             syncList.add(entity);
 		}
@@ -328,6 +334,14 @@ public class SyncJob {
 
 	public boolean hasSyncEntities() {
 		return numSyncEntities() > 0;
+	}
+
+	public int getNumPullEntities() {
+		return pullEntityList.size();
+	}
+
+	public boolean hasPullEntities() {
+		return getNumPullEntities() > 0;
 	}
 
 	public int numExportEntities() {

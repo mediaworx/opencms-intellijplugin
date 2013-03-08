@@ -4,6 +4,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 
 import java.io.File;
+import java.io.IOException;
 
 public class SyncEntity {
     private String vfsPath;
@@ -55,7 +56,19 @@ public class SyncEntity {
         }
     }
 
-    public CmisObject getVfsObject() {
+	public File createRealFile() {
+		File realFile = new File(getRfsPath());
+		try {
+			realFile.createNewFile();
+		}
+		catch (IOException e) {
+			System.out.println("There was an Exception creating the local file" + getRfsPath() + ": " + e + "\n" + e.getMessage());
+		}
+		this.realFile = realFile;
+		return realFile;
+	}
+
+	public CmisObject getVfsObject() {
         return vfsObject;
     }
 
