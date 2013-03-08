@@ -200,7 +200,6 @@ public class OpenCmsSyncAction extends AnAction {
 		walkFileTree(module, file, syncMode, progressIndicatorManager);
 	}
 
-	// TODO: Datum nicht aus IntelliJ-VFS, sondern Real-File
 	// TODO: handle cases where a folder on the vfs has the same name as a file on the rfs or vice versa
 	private void walkFileTree(String module, VirtualFile file, SyncMode syncMode, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
 
