@@ -25,7 +25,6 @@ import java.io.File;
 import java.util.*;
 
 // TODO: prüfen und überlegen, ob es möglich und sinnvoll ist, Auto-Sync bei File change events zu realisieren
-// TODO: Sync von JSP-Files -> eher nicht, da diese von OpenCms automatisch aktualisiert werden
 public class OpenCmsSyncAction extends AnAction {
 
     Project project;
