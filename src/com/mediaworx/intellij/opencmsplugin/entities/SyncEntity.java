@@ -58,11 +58,13 @@ public class SyncEntity {
 
 	public File createRealFile() {
 		File realFile = new File(getRfsPath());
-		try {
-			realFile.createNewFile();
-		}
-		catch (IOException e) {
-			System.out.println("There was an Exception creating the local file" + getRfsPath() + ": " + e + "\n" + e.getMessage());
+		if (!realFile.exists()) {
+			try {
+				realFile.createNewFile();
+			}
+			catch (IOException e) {
+				System.out.println("There was an Exception creating the local file" + getRfsPath() + ": " + e + "\n" + e.getMessage());
+			}
 		}
 		this.realFile = realFile;
 		return realFile;
