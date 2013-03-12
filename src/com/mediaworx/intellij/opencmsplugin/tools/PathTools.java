@@ -27,10 +27,9 @@ public class PathTools {
     }
 
     public static String getVfsPathFromIdeaVFile(String moduleName, OpenCmsPluginConfigurationData config, VirtualFile file) {
-        String filepath = file.getPath();
-        String syncRoot = config.getLocalModuleVfsRoot(moduleName);
+        String filepath = file.getPath().replace('\\', '/');
+        String syncRoot = config.getLocalModuleVfsRoot(moduleName).replace('\\', '/');
         String relativeName = filepath.substring(filepath.indexOf(syncRoot) + syncRoot.length(), filepath.length());
-        relativeName = relativeName.replaceAll("\\\\", "/");
         if (relativeName.length() == 0) {
             relativeName = "/";
         }
@@ -46,8 +45,8 @@ public class PathTools {
 	    String modulesPath = (PathTools.getLocalModulesPath(moduleName, config) + File.separator).replace('\\', '/');
         System.out.println("moduleName: "+getModuleName(config, file));
         System.out.println(modulesPath);
-        System.out.println(file.getPath());
-        return file.getPath().matches(Pattern.quote(modulesPath) + ".+");
+        System.out.println(file.getPath().replace('\\', '/'));
+        return file.getPath().replace('\\', '/').matches(Pattern.quote(modulesPath) + ".+");
     }
 
 
@@ -56,7 +55,7 @@ public class PathTools {
 	    HashMap<String,String> vfsRoots = config.getLocalModuleVfsRootMap();
 	    if (vfsRoots != null) {
 	        for (String tmpModuleName : config.getLocalModuleVfsRootMap().keySet()) {
-	            if (file.getPath().startsWith(config.getLocalModuleVfsRoot(tmpModuleName))) {
+	            if (file.getPath().replace('\\', '/').startsWith(config.getLocalModuleVfsRoot(tmpModuleName).replace('\\', '/'))) {
 		            moduleName = tmpModuleName;
 		            break;
 	            }
