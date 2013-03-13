@@ -177,15 +177,20 @@ public class OpenCmsSyncAction extends AnAction {
 		ProgressManager.getInstance().runProcessWithProgressSynchronously(deployRunner, "Analyzing local and VFS files and folders ...", true, project);
 	}
 
+	private boolean fileOrPathIsIgnored(final VirtualFile virtualFile) {
+		final String pathLC = virtualFile.getPath().toLowerCase();
+		return pathLC.contains(".git")
+				|| pathLC.contains(".svn")
+				|| pathLC.contains(".cvs")
+				|| virtualFile.getName().equals("#SyncJob.txt")
+				|| virtualFile.getName().equals(".config")
+				|| virtualFile.getName().equals("manifest.xml")
+				|| virtualFile.getName().equals(".gitignore");
+	}
+
 	private void handleSelectedFiles(final VirtualFile[] selectedFiles, StringBuilder message, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
 		for (VirtualFile selectedFile : selectedFiles) {
-			final String pathLC = selectedFile.getPath().toLowerCase();
-			if (pathLC.contains(".git")
-					|| pathLC.contains(".svn")
-					|| pathLC.contains(".cvs")
-					|| selectedFile.getName().equals("#SyncJob.txt")
-					|| selectedFile.getName().equals(".config")
-					|| selectedFile.getName().equals("manifest.xml")) {
+			if (fileOrPathIsIgnored(selectedFile)) {
 				// do nothing (filter VCS files and OpenCms Sync Metadata)
 				System.out.println("File is ignored");
 			}
@@ -223,6 +228,11 @@ public class OpenCmsSyncAction extends AnAction {
 		}
 		if (module == null) {
 			System.out.println("No modules configured");
+			return;
+		}
+
+		if (fileOrPathIsIgnored(file)) {
+			System.out.println("File is ignored: "+file.getPath()+" "+file.getName());
 			return;
 		}
 

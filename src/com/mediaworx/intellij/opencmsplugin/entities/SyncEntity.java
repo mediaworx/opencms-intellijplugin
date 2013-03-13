@@ -60,7 +60,12 @@ public class SyncEntity {
 		File realFile = new File(getRfsPath());
 		if (!realFile.exists()) {
 			try {
-				realFile.createNewFile();
+				if (isFolder()) {
+					realFile.mkdirs();
+				}
+				else {
+					realFile.createNewFile();
+				}
 			}
 			catch (IOException e) {
 				System.out.println("There was an Exception creating the local file" + getRfsPath() + ": " + e + "\n" + e.getMessage());

@@ -226,8 +226,7 @@ public class SyncJob {
 
         if (entity.isFolder()) {
             try {
-	            File folder = entity.createRealFile();
-                FileUtils.forceMkdir(folder);
+	            FileUtils.forceMkdir(new File(entity.getRfsPath()));
             } catch (IOException e) {
                 System.out.println("There was an Exception creating a local directory: " + e + "\n" + e.getMessage());
            }
