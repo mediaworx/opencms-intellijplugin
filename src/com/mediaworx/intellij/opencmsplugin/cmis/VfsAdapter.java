@@ -1,7 +1,5 @@
 package com.mediaworx.intellij.opencmsplugin.cmis;
 
-import a.j.se;
-import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
@@ -23,7 +21,9 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedExce
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class VfsAdapter {
 
@@ -88,6 +88,10 @@ public class VfsAdapter {
     }
 
     public boolean exists(String path) {
+	    if (!connected) {
+		    System.out.println("not connected");
+		    return false;
+	    }
         try {
             session.getObjectByPath(path);
             return true;
@@ -98,7 +102,11 @@ public class VfsAdapter {
     }
 
     public CmisObject getVfsObject(String path) throws CmsPermissionDeniedException {
-        try {
+	    if (!connected) {
+		    System.out.println("not connected");
+		    return null;
+	    }
+	    try {
             return session.getObjectByPath(path);
         }
         catch (CmisObjectNotFoundException e) {
@@ -111,8 +119,12 @@ public class VfsAdapter {
     }
 
     private Folder getOrCreateFolder(String path) {
+	    if (!connected) {
+		    System.out.println("not connected");
+		    return null;
+	    }
 
-        // check if the folder exists
+	    // check if the folder exists
         try {
             return (Folder)session.getObjectByPath(path);
         }
@@ -145,6 +157,11 @@ public class VfsAdapter {
 	}
 
 	public Document pushFile(SyncEntity entity) throws CmsPushException {
+		if (!connected) {
+			System.out.println("not connected");
+			return null;
+		}
+
 		File rfsFile = entity.getRealFile();
 		FileInputStream rfsFileInputStream = null;
 		Document vfsFile = null;
@@ -216,8 +233,11 @@ public class VfsAdapter {
 	}
 
     public void pullFile(SyncEntity syncEntity) {
-
-        Document document = (Document)syncEntity.getVfsObject();
+	    if (!connected) {
+		    System.out.println("not connected");
+		    return;
+	    }
+	    Document document = (Document)syncEntity.getVfsObject();
 
         System.out.println("Pulling "+syncEntity.getVfsPath()+" to "+syncEntity.getRfsPath());
 
@@ -249,6 +269,10 @@ public class VfsAdapter {
 
 
     public void deleteFile(String vfsPath) {
+	    if (!connected) {
+		    System.out.println("not connected");
+		    return;
+	    }
 	    CmisObject vfsFile = null;
 	    try {
 		    vfsFile = getVfsObject(vfsPath);

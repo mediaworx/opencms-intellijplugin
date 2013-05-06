@@ -1,6 +1,9 @@
 package com.mediaworx.intellij.opencmsplugin.actions;
 
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -8,7 +11,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginComponent;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginConfigurationComponent;
@@ -69,69 +71,80 @@ public class OpenCmsSyncAction extends AnAction {
 	            FileDocumentManager.getInstance().saveAllDocuments();
 		        FileDocumentManager.getInstance().reloadFiles();
 
-		        VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
-		        int numSyncEntities;
-		        this.syncJob = new SyncJob(project, config, vfsAdapter);
-
-		        StringBuilder message = new StringBuilder();
-
 		        try {
-			        executeFileAnalysis(selectedFiles, message);
-			        if (syncJob == null) {
+			        VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+			        int numSyncEntities;
+			        this.syncJob = new SyncJob(project, config, vfsAdapter);
+
+			        StringBuilder message = new StringBuilder();
+
+			        try {
+				        executeFileAnalysis(selectedFiles, message);
+				        if (syncJob == null) {
+					        return;
+				        }
+				        numSyncEntities = syncJob.numSyncEntities();
+			        }
+			        catch (CmsPermissionDeniedException e) {
+				        Messages.showDialog("Error! OpenCms VFS-Adapter says:\n" + e.getMessage(),
+						        "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+
+				        // Get the hell out of here
 				        return;
 			        }
-			        numSyncEntities = syncJob.numSyncEntities();
-		        }
-		        catch (CmsPermissionDeniedException e) {
-			        Messages.showDialog("Error! OpenCms VFS-Adapter says:\n" + e.getMessage(),
-					        "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 
-			        // Get the hell out of here
-			        return;
-		        }
+			        boolean proceed = syncJob != null && syncJob.hasSyncEntities();
+					System.out.println("proceed? "+proceed);
 
-		        boolean proceed = syncJob != null && syncJob.hasSyncEntities();
-				System.out.println("proceed? "+proceed);
-
-	            if (numSyncEntities == 0) {
-	                proceed = false;
-		            message.append("Nothing to sync");
-	                Messages.showMessageDialog(message.toString(), "OpenCms VFS Sync", Messages.getInformationIcon());
-	            }
-	            else if (numSyncEntities > 1) {
-		            message.append("The following ").append(numSyncEntities).append(" files or folders will be synced to or from OpenCms VFS:\n\n");
-					List<SyncEntity> syncEntities = syncJob.getSyncList();
-		            for (SyncEntity syncEntity : syncEntities) {
-			            message.append(syncEntity.getSyncMode() == SyncMode.PUSH ? "PUSH " : "PULL ");
-			            message.append(syncEntity.getVfsPath());
-			            if (!syncEntity.replaceExistingEntity()) {
-				            message.append(" (new)");
-			            }
-					    message.append("\n");
+		            if (numSyncEntities == 0) {
+		                proceed = false;
+			            message.append("Nothing to sync");
+		                Messages.showMessageDialog(message.toString(), "OpenCms VFS Sync", Messages.getInformationIcon());
 		            }
-		            message.append("\nProceed?");
-	                int dlgStatus = Messages.showOkCancelDialog( message.toString(), "Start OpenCms VFS Sync?", Messages.getQuestionIcon());
-	                proceed = dlgStatus == 0;
-	            }
-
-	            if (proceed) {
-	                syncJob.execute();
-		            if (syncJob.hasPullEntities()) {
-			            List<SyncEntity> pullEntityList = syncJob.getPullEntityList();
-			            List<File> refreshFiles = new ArrayList<File>(pullEntityList.size());
-
-			            for (SyncEntity entity : pullEntityList) {
-				            refreshFiles.add(entity.getRealFile());
+		            else if (numSyncEntities > 1) {
+			            message.append("The following ").append(numSyncEntities).append(" files or folders will be synced to or from OpenCms VFS:\n\n");
+						List<SyncEntity> syncEntities = syncJob.getSyncList();
+			            for (SyncEntity syncEntity : syncEntities) {
+				            message.append(syncEntity.getSyncMode() == SyncMode.PUSH ? "PUSH " : "PULL ");
+				            message.append(syncEntity.getVfsPath());
+				            if (!syncEntity.replaceExistingEntity()) {
+					            message.append(" (new)");
+				            }
+						    message.append("\n");
 			            }
-
+			            message.append("\nProceed?");
 			            try {
-				            LocalFileSystem.getInstance().refreshIoFiles(refreshFiles);
+			                int dlgStatus = Messages.showOkCancelDialog( message.toString(), "Start OpenCms VFS Sync?", Messages.getQuestionIcon());
+			                proceed = dlgStatus == 0;
 			            }
 			            catch (Exception e) {
-				            // if there's an exception then the file was not found.
+				            System.out.println("There was an exception showing a dialog: ");
+				            e.printStackTrace(System.out);
 			            }
 		            }
-	            }
+
+		            if (proceed) {
+		                syncJob.execute();
+			            if (syncJob.hasPullEntities()) {
+				            List<SyncEntity> pullEntityList = syncJob.getPullEntityList();
+				            List<File> refreshFiles = new ArrayList<File>(pullEntityList.size());
+
+				            for (SyncEntity entity : pullEntityList) {
+					            refreshFiles.add(entity.getRealFile());
+				            }
+
+				            try {
+					            LocalFileSystem.getInstance().refreshIoFiles(refreshFiles);
+				            }
+				            catch (Exception e) {
+					            // if there's an exception then the file was not found.
+				            }
+			            }
+		            }
+		        }
+		        catch (Exception e) {
+			        System.out.println("Exception in OpenCmsPlugin.actionPerformed: " + e.getMessage());
+		        }
 	        }
 		}
 	}
@@ -185,6 +198,7 @@ public class OpenCmsSyncAction extends AnAction {
 				|| virtualFile.getName().equals("#SyncJob.txt")
 				|| virtualFile.getName().equals(".config")
 				|| virtualFile.getName().equals("manifest.xml")
+				|| virtualFile.getName().equals("log4j.properties")
 				|| virtualFile.getName().equals(".gitignore");
 	}
 

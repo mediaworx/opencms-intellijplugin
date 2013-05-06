@@ -32,12 +32,10 @@ public class OnFileChangeComponent implements ProjectComponent {
 
     private Project project;
     private OpenCmsPluginConfigurationData config;
-    private VfsAdapter vfsAdapter;
 
     public OnFileChangeComponent(Project project) {
         this.project = project;
         this.config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getConfigurationData();
-        this.vfsAdapter = project.getComponent(OpenCmsPluginComponent.class).getVfsAdapter();
     }
 
 
@@ -48,9 +46,9 @@ public class OnFileChangeComponent implements ProjectComponent {
 
     public void initComponent() {
 
-        if (config != null && config.isOpenCmsPluginActive() && vfsAdapter != null && vfsAdapter.isConnected()) {
+        if (config != null && config.isOpenCmsPluginActive()) {
 
-            MessageBus bus = ApplicationManager.getApplication().getMessageBus();
+	        MessageBus bus = ApplicationManager.getApplication().getMessageBus();
             MessageBusConnection connection = bus.connect();
 
             connection.subscribe(AppTopics.FILE_DOCUMENT_SYNC,
@@ -62,150 +60,7 @@ public class OnFileChangeComponent implements ProjectComponent {
                         }
                     });
 
-            connection.subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
-                public void before(@NotNull List<? extends VFileEvent> vFileEvents) {
-                }
-                public void after(@NotNull List<? extends VFileEvent> vFileEvents) {
-
-                    ArrayList<String> vfsFilesToBeDeleted = new ArrayList<String>();
-                    ArrayList<VfsFileMoveInfo> vfsFilesToBeMoved = new ArrayList<VfsFileMoveInfo>();
-                    ArrayList<VfsFileRenameInfo> vfsFilesToBeRenamed = new ArrayList<VfsFileRenameInfo>();
-
-                    for (VFileEvent event : vFileEvents) {
-
-                        // File is deleted
-                        if (event instanceof VFileDeleteEvent) {
-
-                            VirtualFile file = event.getFile();
-
-                             // check if the file belongs to an OpenCms module
-                            if (PathTools.isFileInModulePath(config, file)) {
-                                String vfsPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, file), config, file);
-                                if (vfsAdapter.exists(vfsPath)) {
-                                    vfsFilesToBeDeleted.add(vfsPath);
-                                }
-                            }
-                        }
-
-                        // File is moved
-                        if (event instanceof VFileMoveEvent) {
-                            VirtualFile file = event.getFile();
-                            VirtualFile oldParent = ((VFileMoveEvent) event).getOldParent();
-                            VirtualFile newParent = ((VFileMoveEvent) event).getNewParent();
-
-                            // old and new parent are in a module -> move the file in the OpenCms VFS
-                            if (PathTools.isFileInModulePath(config, oldParent) && PathTools.isFileInModulePath(config, newParent)) {
-                                String module = PathTools.getModuleName(config, file);
-                                String oldParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, oldParent);
-                                String vfsPath = oldParentPath+"/"+file.getName();
-                                if (vfsAdapter.exists(vfsPath)) {
-                                    String newParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, newParent);
-                                    vfsFilesToBeMoved.add(new VfsFileMoveInfo(vfsPath, oldParentPath, newParentPath));
-                                }
-                            }
-
-                            // check if the file belongs to an OpenCms module
-                            if (PathTools.isFileInModulePath(config, file)) {
-                                String vfsPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, file), config, file);
-                                if (vfsAdapter.exists(vfsPath)) {
-                                    vfsFilesToBeDeleted.add(vfsPath);
-                                }
-                            }
-                        }
-
-                        // File is renamed
-                        if (event instanceof VFilePropertyChangeEvent) {
-                            String propertyName = ((VFilePropertyChangeEvent) event).getPropertyName();
-                            if (propertyName.equals("name")) {
-                                VirtualFile file = event.getFile();
-                                String oldName = (String)((VFilePropertyChangeEvent) event).getOldValue();
-                                String newName = (String)((VFilePropertyChangeEvent) event).getNewValue();
-                                String module = PathTools.getModuleName(config, file);
-                                String newVfsPath = PathTools.getVfsPathFromIdeaVFile(module, config, file);
-                                String oldVfsPath = newVfsPath.replaceFirst(newName, oldName);
-
-                                if (vfsAdapter.exists(oldVfsPath)) {
-                                    vfsFilesToBeRenamed.add(new VfsFileRenameInfo(oldVfsPath, newName));
-                                }
-                            }
-                        }
-                    }
-
-                    // Delete files
-                    if (vfsFilesToBeDeleted.size() > 0) {
-
-                        StringBuilder msg = new StringBuilder("Do you want to delete the following files/folders from the OpenCms VFS as well?");
-                        for (String vfsFileToBeDeleted : vfsFilesToBeDeleted) {
-                            msg.append("\n").append(vfsFileToBeDeleted);
-                        }
-
-                        int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Delete files/folders?", Messages.getQuestionIcon());
-
-                        if (dlgStatus == 0) {
-                            for (String vfsFileToBeDeleted : vfsFilesToBeDeleted) {
-                                vfsAdapter.deleteFile(vfsFileToBeDeleted);
-                            }
-                        }
-                    }
-
-                    // Move files
-                    if (vfsFilesToBeMoved.size() > 0) {
-                        StringBuilder msg = new StringBuilder("Do you want to move the following files/folders in the OpenCms VFS as well?");
-                        for (VfsFileMoveInfo vfsFileToBeMoved : vfsFilesToBeMoved) {
-                            msg.append("\n").append(vfsFileToBeMoved.getVfsPath());
-                        }
-
-                        int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move files/folders?", Messages.getQuestionIcon());
-
-                        if (dlgStatus == 0) {
-                            for (VfsFileMoveInfo moveInfo : vfsFilesToBeMoved) {
-	                            try {
-	                                System.out.println("Moving "+moveInfo.getVfsPath()+" to "+moveInfo.getNewParentPath());
-	                                Folder oldParent = (Folder)vfsAdapter.getVfsObject(moveInfo.getOldParentPath());
-	                                Folder newParent = (Folder)vfsAdapter.getVfsObject(moveInfo.getNewParentPath());
-	                                if (newParent == null) {
-	                                    newParent = vfsAdapter.createFolder(moveInfo.getNewParentPath());
-	                                }
-	                                FileableCmisObject file = (FileableCmisObject)vfsAdapter.getVfsObject(moveInfo.getVfsPath());
-	                                file.move(oldParent, newParent);
-	                            }
-	                            catch (CmsPermissionDeniedException e) {
-		                            Messages.showDialog("Error moving files/folders. " + e.getMessage(),
-				                            "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
-	                            }
-                            }
-                        }
-                    }
-
-                    // Rename files
-                    if (vfsFilesToBeRenamed.size() > 0) {
-                        StringBuilder msg = new StringBuilder("Do you want to rename the following files/folders in the OpenCms VFS as well?");
-                        for (VfsFileRenameInfo vfsFileToBeRenamed : vfsFilesToBeRenamed) {
-                            msg.append("\n").append(vfsFileToBeRenamed.getOldVfsPath()+" -> "+vfsFileToBeRenamed.getNewName());
-                        }
-
-                        int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move files/folders?", Messages.getQuestionIcon());
-
-                        if (dlgStatus == 0) {
-                            for (VfsFileRenameInfo renameInfo : vfsFilesToBeRenamed) {
-                                System.out.println("Renaming " + renameInfo.getOldVfsPath() + " to " + renameInfo.getNewName());
-	                            try {
-		                            CmisObject file = vfsAdapter.getVfsObject(renameInfo.oldVfsPath);
-		                            HashMap<String, Object> properties = new HashMap<String, Object>();
-	                                properties.put(PropertyIds.NAME, renameInfo.getNewName());
-	                                file.updateProperties(properties);
-	                            }
-	                            catch (CmsPermissionDeniedException e) {
-		                            System.out.println("Exception moving files: " + e.getMessage());
-		                            Messages.showDialog("Error moving files/folders. "+e.getMessage(),
-				                            "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
-	                            }
-                            }
-                        }
-                    }
-
-                }
-            });
+            connection.subscribe(VirtualFileManager.VFS_CHANGES, fileChangeListener);
         }
     }
 
@@ -217,6 +72,185 @@ public class OnFileChangeComponent implements ProjectComponent {
 
     public void projectClosed() {
     }
+
+	private BulkFileListener fileChangeListener = new BulkFileListener() {
+
+		VfsAdapter vfsAdapter;
+
+		private VfsAdapter getVfsAdapter() {
+
+			if (vfsAdapter == null) {
+				vfsAdapter = project.getComponent(OpenCmsPluginComponent.class).getVfsAdapter();
+			}
+
+			// Not connected yet (maybe OpenCms wasn't started when the project opened)
+			if (!vfsAdapter.isConnected()) {
+				// Try to connect
+				vfsAdapter.startSession();
+
+				// Still not connected? Show an error message and stop
+				if (!vfsAdapter.isConnected()) {
+					System.out.println("VFS adapter is not connected. File change events won't be handled!");
+				}
+			}
+			return vfsAdapter;
+		}
+
+		public void before(@NotNull List<? extends VFileEvent> vFileEvents) {
+		}
+
+		public void after(@NotNull List<? extends VFileEvent> vFileEvents) {
+
+			ArrayList<String> vfsFilesToBeDeleted = new ArrayList<String>();
+			ArrayList<VfsFileMoveInfo> vfsFilesToBeMoved = new ArrayList<VfsFileMoveInfo>();
+			ArrayList<VfsFileRenameInfo> vfsFilesToBeRenamed = new ArrayList<VfsFileRenameInfo>();
+
+			for (VFileEvent event : vFileEvents) {
+
+				// File is deleted
+				if (event instanceof VFileDeleteEvent) {
+
+					VirtualFile file = event.getFile();
+
+					System.out.println("The following file was deleted: " + file.getPath());
+
+					// check if the file belongs to an OpenCms module
+					if (PathTools.isFileInModulePath(config, file)) {
+						String vfsPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, file), config, file);
+						if (getVfsAdapter().exists(vfsPath)) {
+							vfsFilesToBeDeleted.add(vfsPath);
+						}
+					}
+				}
+
+				// File is moved
+				if (event instanceof VFileMoveEvent) {
+					VirtualFile file = event.getFile();
+
+					System.out.println("The following file was moved: " + file.getPath());
+
+					VirtualFile oldParent = ((VFileMoveEvent) event).getOldParent();
+					VirtualFile newParent = ((VFileMoveEvent) event).getNewParent();
+
+					// old and new parent are in a module -> move the file in the OpenCms VFS
+					if (PathTools.isFileInModulePath(config, oldParent) && PathTools.isFileInModulePath(config, newParent)) {
+						String module = PathTools.getModuleName(config, file);
+						String oldParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, oldParent);
+						String vfsPath = oldParentPath + "/" + file.getName();
+						if (getVfsAdapter().exists(vfsPath)) {
+							String newParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, newParent);
+							vfsFilesToBeMoved.add(new VfsFileMoveInfo(vfsPath, oldParentPath, newParentPath));
+						}
+					}
+
+					// if the new parent path is not inside a module, remove it
+					else if (!PathTools.isFileInModulePath(config, newParent)) {
+						String oldParentPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, oldParent), config, oldParent);
+						String vfsPath = oldParentPath + "/" + file.getName();
+
+						System.out.println("File was moved out of the module path, deleting " + vfsPath);
+
+						if (getVfsAdapter().exists(vfsPath)) {
+							vfsFilesToBeDeleted.add(vfsPath);
+						}
+					}
+				}
+
+				// File is renamed
+				if (event instanceof VFilePropertyChangeEvent) {
+
+					String propertyName = ((VFilePropertyChangeEvent) event).getPropertyName();
+					if (propertyName.equals("name")) {
+						VirtualFile file = event.getFile();
+						System.out.println("The following file was renamed: " + file.getPath());
+
+						String oldName = (String) ((VFilePropertyChangeEvent) event).getOldValue();
+						String newName = (String) ((VFilePropertyChangeEvent) event).getNewValue();
+						String module = PathTools.getModuleName(config, file);
+						String newVfsPath = PathTools.getVfsPathFromIdeaVFile(module, config, file);
+						String oldVfsPath = newVfsPath.replaceFirst(newName, oldName);
+
+						if (getVfsAdapter().exists(oldVfsPath)) {
+							vfsFilesToBeRenamed.add(new VfsFileRenameInfo(oldVfsPath, newName));
+						}
+					}
+				}
+			}
+
+			// Delete files
+			if (vfsFilesToBeDeleted.size() > 0) {
+
+				StringBuilder msg = new StringBuilder("Do you want to delete the following files/folders from the OpenCms VFS as well?");
+				for (String vfsFileToBeDeleted : vfsFilesToBeDeleted) {
+					msg.append("\n").append(vfsFileToBeDeleted);
+				}
+
+				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Delete files/folders?", Messages.getQuestionIcon());
+
+				if (dlgStatus == 0) {
+					for (String vfsFileToBeDeleted : vfsFilesToBeDeleted) {
+						getVfsAdapter().deleteFile(vfsFileToBeDeleted);
+					}
+				}
+			}
+
+			// Move files
+			if (vfsFilesToBeMoved.size() > 0) {
+				StringBuilder msg = new StringBuilder("Do you want to move the following files/folders in the OpenCms VFS as well?");
+				for (VfsFileMoveInfo vfsFileToBeMoved : vfsFilesToBeMoved) {
+					msg.append("\n").append(vfsFileToBeMoved.getVfsPath());
+				}
+
+				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move files/folders?", Messages.getQuestionIcon());
+
+				if (dlgStatus == 0) {
+					for (VfsFileMoveInfo moveInfo : vfsFilesToBeMoved) {
+						try {
+							System.out.println("Moving " + moveInfo.getVfsPath() + " to " + moveInfo.getNewParentPath());
+							Folder oldParent = (Folder) getVfsAdapter().getVfsObject(moveInfo.getOldParentPath());
+							Folder newParent = (Folder) getVfsAdapter().getVfsObject(moveInfo.getNewParentPath());
+							if (newParent == null) {
+								newParent = getVfsAdapter().createFolder(moveInfo.getNewParentPath());
+							}
+							FileableCmisObject file = (FileableCmisObject) getVfsAdapter().getVfsObject(moveInfo.getVfsPath());
+							file.move(oldParent, newParent);
+						}
+						catch (CmsPermissionDeniedException e) {
+							Messages.showDialog("Error moving files/folders." + e.getMessage(),
+									"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+						}
+					}
+				}
+			}
+
+			// Rename files
+			if (vfsFilesToBeRenamed.size() > 0) {
+				StringBuilder msg = new StringBuilder("Do you want to rename the following files/folders in the OpenCms VFS as well?");
+				for (VfsFileRenameInfo vfsFileToBeRenamed : vfsFilesToBeRenamed) {
+					msg.append("\n").append(vfsFileToBeRenamed.getOldVfsPath() + " -> " + vfsFileToBeRenamed.getNewName());
+				}
+
+				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move files/folders?", Messages.getQuestionIcon());
+
+				if (dlgStatus == 0) {
+					for (VfsFileRenameInfo renameInfo : vfsFilesToBeRenamed) {
+						System.out.println("Renaming " + renameInfo.getOldVfsPath() + " to " + renameInfo.getNewName());
+						try {
+							CmisObject file = getVfsAdapter().getVfsObject(renameInfo.oldVfsPath);
+							HashMap<String, Object> properties = new HashMap<String, Object>();
+							properties.put(PropertyIds.NAME, renameInfo.getNewName());
+							file.updateProperties(properties);
+						}
+						catch (CmsPermissionDeniedException e) {
+							System.out.println("Exception moving files: " + e.getMessage());
+							Messages.showDialog("Error moving files/folders. " + e.getMessage(),
+									"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+						}
+					}
+				}
+			}
+		}
+	};
 
 
     private class VfsFileMoveInfo {
