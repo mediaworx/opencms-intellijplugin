@@ -1,8 +1,5 @@
 package com.mediaworx.intellij.opencmsplugin.tools;
 
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 
@@ -22,7 +19,7 @@ public class PathTools {
     public static final String VFS_SYSTEMFOLDER = File.separator+"system";
     public static final String VFS_MODULESFOLDER = File.separator+"modules";
 
-    public static String getLocalModulesPath(String moduleName, OpenCmsPluginConfigurationData config) {
+    public static String getLocalModulesParentPath(String moduleName, OpenCmsPluginConfigurationData config) {
         return config.getLocalModuleVfsRoot(moduleName) + VFS_SYSTEMFOLDER + VFS_MODULESFOLDER;
     }
 
@@ -42,7 +39,7 @@ public class PathTools {
 		    System.out.println("No module configured");
 		    return false;
 	    }
-	    String modulesPath = (PathTools.getLocalModulesPath(moduleName, config) + File.separator).replace('\\', '/');
+	    String modulesPath = (PathTools.getLocalModulesParentPath(moduleName, config) + File.separator).replace('\\', '/');
         System.out.println("moduleName: "+getModuleName(config, file));
         System.out.println(modulesPath);
         System.out.println(file.getPath().replace('\\', '/'));

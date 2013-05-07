@@ -32,6 +32,11 @@
 			<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl D"/>
 			<add-to-group group-id="ToolsMenu" anchor="last"/>
 		</action>
+		<action id="OpenCmsSyncAll" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAllAction" text="OpenCms: Sync all Modules"
+		        description="OpenCms: Sync all modules with OpenCms" icon="/icons/opencms_menu.png">
+			<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt D"/>
+			<add-to-group group-id="ToolsMenu" anchor="last"/>
+		</action>
 	</actions>
 
     <extensions defaultExtensionNs="com.intellij">

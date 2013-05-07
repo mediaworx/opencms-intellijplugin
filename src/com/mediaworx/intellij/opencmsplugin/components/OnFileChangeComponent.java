@@ -144,7 +144,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 					}
 
 					// if the new parent path is not inside a module, remove it
-					else if (!PathTools.isFileInModulePath(config, newParent)) {
+					else if (PathTools.isFileInModulePath(config, oldParent) && !PathTools.isFileInModulePath(config, newParent)) {
 						String oldParentPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, oldParent), config, oldParent);
 						String vfsPath = oldParentPath + "/" + file.getName();
 

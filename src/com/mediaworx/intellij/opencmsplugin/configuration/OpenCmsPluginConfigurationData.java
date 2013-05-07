@@ -3,6 +3,7 @@ package com.mediaworx.intellij.opencmsplugin.configuration;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 public class OpenCmsPluginConfigurationData {
 
@@ -76,7 +77,7 @@ public class OpenCmsPluginConfigurationData {
 
             String[] moduleAssignmentStrings = localModuleVfsRoots.split(NEW_LINE);
 
-            this.localModuleVfsRootMap = new HashMap<String,String>(moduleAssignmentStrings.length);
+            this.localModuleVfsRootMap = new LinkedHashMap<String,String>(moduleAssignmentStrings.length);
             moduleFolders = new HashSet<String>(moduleAssignmentStrings.length);
 
             for (String moduleAssignmentString : moduleAssignmentStrings) {
@@ -102,7 +103,7 @@ public class OpenCmsPluginConfigurationData {
         return localModuleVfsRootMap;
     }
 
-    public HashSet<String> getModuleFolders() {
+    public HashSet<String> getModuleParentPaths() {
         return moduleFolders;
     }
 
