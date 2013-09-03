@@ -4,7 +4,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
@@ -24,7 +23,9 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -308,18 +309,20 @@ public class SyncJob {
 	}
 
     public void addSyncEntityToExportListIfNecessary(String moduleName, SyncEntity syncEntity) {
-        for (String uri : EXPORTPOINTS.get(moduleName).keySet()) {
-            String entityPath = syncEntity.getVfsPath();
-            if (entityPath.startsWith(uri)) {
-                String destination = EXPORTPOINTS.get(moduleName).get(uri);
-                String relativePath = entityPath.substring(uri.length());
-                ExportEntity exportEntity = new ExportEntity();
-                exportEntity.setSourcePath(config.getLocalModuleVfsRoot(moduleName)+entityPath);
-                exportEntity.setTargetPath(config.getWebappRoot() + File.separator + destination + relativePath);
-                exportEntity.setVfsPath(entityPath);
-                exportEntity.setDestination(destination);
-                addExportEntity(exportEntity);
-            }
+        if (EXPORTPOINTS.get(moduleName) != null) {
+		    for (String uri : EXPORTPOINTS.get(moduleName).keySet()) {
+	            String entityPath = syncEntity.getVfsPath();
+	            if (entityPath.startsWith(uri)) {
+	                String destination = EXPORTPOINTS.get(moduleName).get(uri);
+	                String relativePath = entityPath.substring(uri.length());
+	                ExportEntity exportEntity = new ExportEntity();
+	                exportEntity.setSourcePath(config.getLocalModuleVfsRoot(moduleName)+entityPath);
+	                exportEntity.setTargetPath(config.getWebappRoot() + File.separator + destination + relativePath);
+	                exportEntity.setVfsPath(entityPath);
+	                exportEntity.setDestination(destination);
+	                addExportEntity(exportEntity);
+	            }
+	        }
         }
     }
 
