@@ -21,9 +21,6 @@ import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import java.io.File;
 import java.util.*;
 
-/**
- * Huhu
- */
 public class FileSyncer {
 
 	Project project;
