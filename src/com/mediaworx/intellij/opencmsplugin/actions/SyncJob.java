@@ -8,7 +8,7 @@ import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
-import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
+import com.mediaworx.intellij.opencmsplugin.entities.FolderSyncMode;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.NamedNodeMap;
@@ -172,7 +172,7 @@ public class SyncJob {
 
 	public String doSync(SyncEntity entity) {
 		String syncResult;
-		if (entity.getSyncMode() == SyncMode.PUSH) {
+		if (entity.getFolderSyncMode() == FolderSyncMode.PUSH) {
 			syncResult = doPush(entity);
 		}
 		else {
@@ -300,7 +300,7 @@ public class SyncJob {
 
 	public void addSyncEntity(String module, SyncEntity entity) {
 		if (!syncList.contains(entity)) {
-			if (entity.getSyncMode() == SyncMode.PULL) {
+			if (entity.getFolderSyncMode() == FolderSyncMode.PULL) {
 				this.pullEntityList.add(entity);
 			}
             addSyncEntityToExportListIfNecessary(module, entity);

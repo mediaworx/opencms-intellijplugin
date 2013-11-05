@@ -89,7 +89,7 @@ public class FileSyncer {
 			message.append("The following ").append(numSyncEntities).append(" syncFiles or folders will be synced to or from OpenCms VFS:\n\n");
 			List<SyncEntity> syncEntities = syncJob.getSyncList();
 			for (SyncEntity syncEntity : syncEntities) {
-				message.append(syncEntity.getSyncMode() == SyncMode.PUSH ? "PUSH " : "PULL ");
+				message.append(syncEntity.getFolderSyncMode() == FolderSyncMode.PUSH ? "PUSH " : "PULL ");
 				message.append(syncEntity.getVfsPath());
 				if (!syncEntity.replaceExistingEntity()) {
 					message.append(" (new)");
@@ -196,12 +196,12 @@ public class FileSyncer {
 			}
 			else {
 				System.out.println("Handling a module or a file in a module");
-				handleSyncFile(syncFile, SyncMode.AUTO, progressIndicatorManager);
+				handleSyncFile(syncFile, FolderSyncMode.AUTO, progressIndicatorManager);
 			}
 		}
 	}
 
-	private void handleSyncFile(final VirtualFile file, SyncMode syncMode, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
+	private void handleSyncFile(final VirtualFile file, FolderSyncMode folderSyncMode, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
 
 		if (progressIndicatorManager.isCanceled()) {
 			return;
@@ -212,11 +212,11 @@ public class FileSyncer {
 		System.out.println("Module: " + module);
 		syncJob.initModuleExportPoints(module);
 
-		walkFileTree(module, file, syncMode, progressIndicatorManager);
+		walkFileTree(module, file, folderSyncMode, progressIndicatorManager);
 	}
 
 	// TODO: handle cases where a folder on the vfs has the same name as a file on the rfs or vice versa
-	private void walkFileTree(String module, VirtualFile file, SyncMode syncMode, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
+	private void walkFileTree(String module, VirtualFile file, FolderSyncMode folderSyncMode, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
 
 		if (progressIndicatorManager.isCanceled()) {
 			return;
@@ -239,7 +239,7 @@ public class FileSyncer {
 		boolean vfsObjectExists;
 		CmisObject vfsObject = null;
 
-		if (syncMode != SyncMode.PUSH) {
+		if (folderSyncMode != FolderSyncMode.PUSH) {
 			// Get the corresponding vfs object (if it exists)
 			vfsObject = vfsAdapter.getVfsObject(vfsPath);
 
@@ -284,12 +284,12 @@ public class FileSyncer {
 					// The file/folder does not exist on the VFS, recurse in PUSH mode
 					if (!vfsChildMap.containsKey(filename)) {
 						System.out.println("RFS child " + rfsChild.getName() + " is not on the VFS, handle it in PUSH mode");
-						walkFileTree(module, rfsChild, SyncMode.PUSH, progressIndicatorManager);
+						walkFileTree(module, rfsChild, FolderSyncMode.PUSH, progressIndicatorManager);
 					}
 					// The file/folder does exist on the VFS, recurse in AUTO mode
 					else {
 						System.out.println("RFS child " + rfsChild.getName() + " exists on the VFS, handle it in AUTO mode");
-						walkFileTree(module, rfsChild, SyncMode.AUTO, progressIndicatorManager);
+						walkFileTree(module, rfsChild, FolderSyncMode.AUTO, progressIndicatorManager);
 
 						// remove the file from the vfsChildren map, so that only files that exist only on the vfs will be left
 						vfsChildMap.remove(filename);
@@ -347,7 +347,7 @@ public class FileSyncer {
 	}
 
 
-	private SyncEntity getSyncEntity(SyncEntityType type, String vfsPath, String rfsPath, VirtualFile file, CmisObject vfsObject, SyncMode syncMode, boolean replaceExistingEntity) {
+	private SyncEntity getSyncEntity(SyncEntityType type, String vfsPath, String rfsPath, VirtualFile file, CmisObject vfsObject, FolderSyncMode folderSyncMode, boolean replaceExistingEntity) {
 		SyncEntity entity;
 		if (type == SyncEntityType.FILE) {
 			entity = new SyncFile();
@@ -359,20 +359,20 @@ public class FileSyncer {
 		entity.setRfsPath(rfsPath);
 		entity.setIdeaVFile(file);
 		entity.setVfsObject(vfsObject);
-		entity.setSyncMode(syncMode);
+		entity.setFolderSyncMode(folderSyncMode);
 		entity.setReplaceExistingEntity(replaceExistingEntity);
 		return entity;
 	}
 
 	private void addPushFileToSyncJob(String module, String vfsPath, VirtualFile file, Document vfsFile) {
 		System.out.println("Adding PUSH file " + vfsPath);
-		SyncFile syncFile = (SyncFile) getSyncEntity(SyncEntityType.FILE, vfsPath, file.getPath(), file, vfsFile, SyncMode.PUSH, vfsFile != null);
+		SyncFile syncFile = (SyncFile) getSyncEntity(SyncEntityType.FILE, vfsPath, file.getPath(), file, vfsFile, FolderSyncMode.PUSH, vfsFile != null);
 		syncJob.addSyncEntity(module, syncFile);
 	}
 
 	private void addPushFolderTreeToSyncJob(String module, String vfsPath, VirtualFile file, boolean replaceExistingEntity, ProgressIndicatorManager progressIndicatorManager) {
 		System.out.println("Adding PUSH folder " + vfsPath);
-		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntityType.FOLDER, vfsPath, file.getPath(), file, null, SyncMode.PUSH, replaceExistingEntity);
+		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntityType.FOLDER, vfsPath, file.getPath(), file, null, FolderSyncMode.PUSH, replaceExistingEntity);
 		syncJob.addSyncEntity(module, syncFile);
 
 		System.out.println("Get children of folder " + vfsPath);
@@ -380,7 +380,7 @@ public class FileSyncer {
 		for (VirtualFile child : children) {
 			System.out.println("Handle PUSH child " + child.getPath());
 			try {
-				walkFileTree(module, child, SyncMode.PUSH, progressIndicatorManager);
+				walkFileTree(module, child, FolderSyncMode.PUSH, progressIndicatorManager);
 			}
 			catch (CmsPermissionDeniedException e) {
 				System.out.println("Exception walking the file tree: " + e.getMessage());
@@ -390,13 +390,13 @@ public class FileSyncer {
 
 	private void addPullFileToSyncJob(String module, String vfsPath, String rfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
 		System.out.println("Adding PULL file " + vfsPath);
-		SyncFile syncFile = (SyncFile) getSyncEntity(SyncEntityType.FILE, vfsPath, rfsPath, null, vfsObject, SyncMode.PULL, replaceExistingEntity);
+		SyncFile syncFile = (SyncFile) getSyncEntity(SyncEntityType.FILE, vfsPath, rfsPath, null, vfsObject, FolderSyncMode.PULL, replaceExistingEntity);
 		syncJob.addSyncEntity(module, syncFile);
 	}
 
 	private void addPullFolderTreeToSyncJob(String module, String vfsPath, String rfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
 		System.out.println("Adding PULL folder " + vfsPath);
-		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntityType.FOLDER, vfsPath, rfsPath, null, vfsObject, SyncMode.PULL, replaceExistingEntity);
+		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntityType.FOLDER, vfsPath, rfsPath, null, vfsObject, FolderSyncMode.PULL, replaceExistingEntity);
 		syncJob.addSyncEntity(module, syncFile);
 
 		// traverse folder, add children to the SyncJob

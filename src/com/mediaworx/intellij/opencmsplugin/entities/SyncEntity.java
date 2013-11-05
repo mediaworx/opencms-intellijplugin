@@ -12,7 +12,7 @@ public class SyncEntity {
     private VirtualFile ideaVFile;
     private File realFile;
     private CmisObject vfsObject;
-    private SyncMode syncMode;
+    private FolderSyncMode folderSyncMode;
     private boolean replaceExistingEntity;
 
     public SyncEntityType getType() {
@@ -83,12 +83,12 @@ public class SyncEntity {
         this.vfsObject = vfsObject;
     }
 
-    public SyncMode getSyncMode() {
-        return syncMode;
+    public FolderSyncMode getFolderSyncMode() {
+        return folderSyncMode;
     }
 
-    public void setSyncMode(SyncMode syncMode) {
-        this.syncMode = syncMode;
+    public void setFolderSyncMode(FolderSyncMode folderSyncMode) {
+        this.folderSyncMode = folderSyncMode;
     }
 
     public boolean replaceExistingEntity() {

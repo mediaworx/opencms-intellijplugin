@@ -20,6 +20,7 @@ public class OpenCmsPluginConfigurationForm {
     private JTextField password;
     private JTextField webappRoot;
     private JTextArea localModuleVfsRoots;
+	private JComboBox syncMode;
 
 	private JLabel activeCheckBoxLabel;
 	private JLabel repositoryLabel;
@@ -28,6 +29,7 @@ public class OpenCmsPluginConfigurationForm {
 	private JLabel webappRootLabel;
     private JLabel moduleConfigurationLabel;
 	private JLabel moduleConfigurationHint;
+	private JLabel syncModeLabel;
 
 //    private void createUIComponents() {
 //    }
@@ -51,6 +53,7 @@ public class OpenCmsPluginConfigurationForm {
 		setConfiguredOrKeepDefault(password, data.getPassword());
         setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
         setConfiguredOrKeepDefault(localModuleVfsRoots, data.getLocalModuleVfsRoots());
+        syncMode.setSelectedItem(data.getSyncMode());
 	}
 
 
@@ -61,6 +64,7 @@ public class OpenCmsPluginConfigurationForm {
 		data.setPassword(password.getText());
         data.setWebappRoot(webappRoot.getText());
         data.setLocalModuleVfsRoots(localModuleVfsRoots.getText());
+		data.setSyncMode((String)syncMode.getSelectedItem());
 	}
 
 
@@ -71,6 +75,7 @@ public class OpenCmsPluginConfigurationForm {
 		if (password.getText() != null ? !password.getText().equals(data.getPassword()) : data.getPassword() != null) return true;
         if (webappRoot.getText() != null ? !webappRoot.getText().equals(data.getWebappRoot()) : data.getWebappRoot() != null) return true;
         if (localModuleVfsRoots.getText() != null ? !localModuleVfsRoots.getText().equals(data.getLocalModuleVfsRoots()) : data.getLocalModuleVfsRoots() != null) return true;
+		if (syncMode.getSelectedItem() != null ? !syncMode.getSelectedItem().equals(data.getSyncMode()) : data.getSyncMode() != null) return true;
 		return false;
 	}
 

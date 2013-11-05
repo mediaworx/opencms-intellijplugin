@@ -16,6 +16,7 @@ public class OpenCmsPluginConfigurationData {
     private String webappRoot;
     private HashMap<String,String> localModuleVfsRootMap;
     private HashSet<String> moduleFolders;
+	private String syncMode;
 
 	public boolean isOpenCmsPluginActive() {
 		return openCmsPluginActive;
@@ -111,7 +112,15 @@ public class OpenCmsPluginConfigurationData {
         return localModuleVfsRootMap.get(moduleName);
     }
 
-    private String stripTrailingSeparator(String s) {
+	public String getSyncMode() {
+		return syncMode != null ? syncMode : "PUSH";
+	}
+
+	public void setSyncMode(String syncMode) {
+		this.syncMode = syncMode;
+	}
+
+	private String stripTrailingSeparator(String s) {
 		if (s != null && s.endsWith(File.separator)) {
 			return s.substring(0, s.length() - 1);
 		}
