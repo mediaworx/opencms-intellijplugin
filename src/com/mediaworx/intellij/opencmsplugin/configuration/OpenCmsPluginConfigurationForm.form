@@ -10,34 +10,6 @@
     </properties>
     <border type="none" title=""/>
     <children>
-      <component id="aface" class="javax.swing.JTextField" binding="repository">
-        <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <text value="http://localhost:8080/opencms/cmisatom/cmis-offline/"/>
-        </properties>
-      </component>
-      <component id="82a68" class="javax.swing.JTextField" binding="username">
-        <constraints>
-          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <text value="Admin"/>
-        </properties>
-      </component>
-      <component id="fa6d5" class="javax.swing.JTextField" binding="password">
-        <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
       <component id="61a28" class="javax.swing.JLabel" binding="repositoryLabel">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
@@ -78,32 +50,11 @@
           <text value="OpenCms &amp;Webapp Root"/>
         </properties>
       </component>
-      <component id="89d49" class="javax.swing.JTextField" binding="webappRoot">
-        <constraints>
-          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <text value="/your/tomcat/root/webapps/opencms"/>
-          <toolTipText value="The vfsPath to your OpenCms webapp, usually [Tomcat root]/webapps/opencms"/>
-        </properties>
-      </component>
-      <component id="61b6b" class="javax.swing.JTextArea" binding="localModuleVfsRoots">
-        <constraints>
-          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <minimum-size width="-1" height="100"/>
-            <preferred-size width="0" height="200"/>
-          </grid>
-        </constraints>
-        <properties>
-          <text value=""/>
-        </properties>
-      </component>
       <component id="e46bb" class="javax.swing.JLabel" binding="moduleConfigurationLabel">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="9" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="163" height="118"/>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="30"/>
+            <maximum-size width="-1" height="30"/>
           </grid>
         </constraints>
         <properties>
@@ -117,6 +68,66 @@
         </constraints>
         <properties>
           <text value="Activate Plugin for this Project"/>
+        </properties>
+      </component>
+      <scrollpane id="8f83b">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="75"/>
+            <preferred-size width="-1" height="150"/>
+            <maximum-size width="-1" height="700"/>
+          </grid>
+        </constraints>
+        <properties>
+          <requestFocusEnabled value="false"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="61b6b" class="javax.swing.JTextArea" binding="localModuleVfsRoots">
+            <constraints/>
+            <properties>
+              <text value=""/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <component id="89d49" class="javax.swing.JTextField" binding="webappRoot">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="/your/tomcat/root/webapps/opencms"/>
+          <toolTipText value="The vfsPath to your OpenCms webapp, usually [Tomcat root]/webapps/opencms"/>
+        </properties>
+      </component>
+      <component id="fa6d5" class="javax.swing.JTextField" binding="password">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="82a68" class="javax.swing.JTextField" binding="username">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="Admin"/>
+        </properties>
+      </component>
+      <component id="aface" class="javax.swing.JTextField" binding="repository">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="http://localhost:8080/opencms/cmisatom/cmis-offline/"/>
         </properties>
       </component>
       <component id="2fdbf" class="javax.swing.JCheckBox" binding="activeCheckBox" default-binding="true">
@@ -136,11 +147,10 @@
           <verticalAlignment value="1"/>
         </properties>
       </component>
-      <vspacer id="959fe">
+      <vspacer id="10ee2">
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="2" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
-            <minimum-size width="-1" height="25"/>
-            <maximum-size width="-1" height="100"/>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="300"/>
           </grid>
         </constraints>
       </vspacer>
