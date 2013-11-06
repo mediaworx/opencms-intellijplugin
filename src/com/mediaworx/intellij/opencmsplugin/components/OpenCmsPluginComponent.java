@@ -67,7 +67,7 @@ public class OpenCmsPluginComponent implements ProjectComponent {
     public VfsAdapter getVfsAdapter() {
         if (vfsAdapter == null) {
             if (config != null && config.isOpenCmsPluginActive() && config.getPassword() != null && config.getPassword().length() > 0) {
-                this.vfsAdapter = new VfsAdapter(config);
+                this.vfsAdapter = new VfsAdapter(config.getRepository(), config.getUsername(), config.getPassword());
             }
         }
         return vfsAdapter;

@@ -1,6 +1,5 @@
 package com.mediaworx.intellij.opencmsplugin.cmis;
 
-import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
@@ -30,61 +29,75 @@ public class VfsAdapter {
     private Session session;
     private boolean connected;
 
-    private OpenCmsPluginConfigurationData config;
-	private SessionFactory sessionFactory;
-	private Map<String, String> sessionParams;
+	private String atompubUrl;
+	private String user;
+	private String password;
 
     // TODO: Handle ConnectionException
-    public VfsAdapter(OpenCmsPluginConfigurationData config) {
-        this.config = config;
+    public VfsAdapter(String atompubUrl, String user, String password) {
 
-        if (config.getPassword() != null && config.getPassword().length() > 0) {
+	    if (atompubUrl == null || atompubUrl.length() == 0) {
+		    throw new RuntimeException("parameter atompubUrl must not be null or empty");
+	    }
+	    if (user == null || user.length() == 0) {
+		    throw new RuntimeException("parameter user must not be null or empty");
+	    }
+	    if (password == null || password.length() == 0) {
+		    throw new RuntimeException("parameter password must not be null or empty");
+	    }
 
-            this.sessionParams = new HashMap<String, String>();
+        this.atompubUrl = atompubUrl;
+	    this.user = user;
+	    this.password = password;
 
-            // Create a SessionFactory and set up the SessionParameter map
-            this.sessionFactory = SessionFactoryImpl.newInstance();
-
-            // user credentials
-            this.sessionParams.put(SessionParameter.USER, config.getUsername());
-            this.sessionParams.put(SessionParameter.PASSWORD, config.getPassword());
-
-            // repository
-            this.sessionParams.put(SessionParameter.ATOMPUB_URL, config.getRepository());
-            this.sessionParams.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
-
-	        startSession();
-        }
+	    startSession();
     }
 
     public void startSession() {
-	    try {
-		    // find all the repositories at this URL - there should only be one.
-		    List<Repository> repositories = this.sessionFactory.getRepositories(sessionParams);
-		    for (Repository r : repositories) {
-			    System.out.println("Found repository: " + r.getName());
+
+	    if (password != null && password.length() > 0) {
+
+		    Map<String, String> sessionParams = new HashMap<String, String>();
+
+	        // Create a SessionFactory and set up the SessionParameter map
+		    SessionFactory sessionFactory = SessionFactoryImpl.newInstance();
+
+	        // user credentials
+	        sessionParams.put(SessionParameter.USER, user);
+	        sessionParams.put(SessionParameter.PASSWORD, password);
+
+	        // repository
+	        sessionParams.put(SessionParameter.ATOMPUB_URL, atompubUrl);
+	        sessionParams.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+
+		    try {
+			    // find all the repositories at this URL - there should only be one.
+			    List<Repository> repositories = sessionFactory.getRepositories(sessionParams);
+			    for (Repository r : repositories) {
+				    System.out.println("Found repository: " + r.getName());
+			    }
+
+			    // create session with the first (and only) repository
+			    Repository repository = repositories.get(0);
+			    sessionParams.put(SessionParameter.REPOSITORY_ID, repository.getId());
+			    sessionParams.put(SessionParameter.CONNECT_TIMEOUT, "500");
+
+			    System.out.println("Starting CMIS session using repository " + atompubUrl);
+			    this.session = sessionFactory.createSession(sessionParams);
+
+			    if (this.session != null) {
+				    connected = true;
+			    }
+			    else {
+				    connected = false;
+				    System.out.println("Error: CMIS session is null");
+			    }
 		    }
-
-		    // create session with the first (and only) repository
-		    Repository repository = repositories.get(0);
-		    this.sessionParams.put(SessionParameter.REPOSITORY_ID, repository.getId());
-		    this.sessionParams.put(SessionParameter.CONNECT_TIMEOUT, "500");
-
-		    System.out.println("Starting CMIS session using repository " + config.getRepository());
-		    this.session = sessionFactory.createSession(sessionParams);
-
-		    if (this.session != null) {
-			    connected = true;
-		    }
-		    else {
+		    catch (Exception e) {
+			    System.out.println("Exception connecting to VFS: " + e.getMessage());
 			    connected = false;
-			    System.out.println("Error: CMIS session is null");
 		    }
-	    }
-	    catch (Exception e) {
-		    System.out.println("Exception connecting to VFS: " + e.getMessage());
-		    connected = false;
-	    }
+		}
     }
 
     public boolean exists(String path) {
