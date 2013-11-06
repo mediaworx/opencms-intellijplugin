@@ -185,6 +185,7 @@ public class FileSyncer {
 
 	private void handleSyncFiles(final VirtualFile[] syncFiles, StringBuilder message, ProgressIndicatorManager progressIndicatorManager) throws CmsPermissionDeniedException {
 		for (VirtualFile syncFile : syncFiles) {
+
 			if (fileOrPathIsIgnored(syncFile)) {
 				// do nothing (filter VCS files and OpenCms Sync Metadata)
 				System.out.println("File is ignored");

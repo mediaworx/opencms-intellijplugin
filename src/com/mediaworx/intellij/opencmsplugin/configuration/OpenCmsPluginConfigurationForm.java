@@ -53,7 +53,7 @@ public class OpenCmsPluginConfigurationForm {
 		setConfiguredOrKeepDefault(password, data.getPassword());
         setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
         setConfiguredOrKeepDefault(localModuleVfsRoots, data.getLocalModuleVfsRoots());
-        syncMode.setSelectedItem(data.getSyncMode());
+        syncMode.setSelectedItem(data.getSyncMode().toString());
 	}
 
 

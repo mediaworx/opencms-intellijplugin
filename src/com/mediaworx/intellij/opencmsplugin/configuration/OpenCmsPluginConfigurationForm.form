@@ -58,7 +58,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="Local Sync Roots"/>
+          <text value="Local &amp;Sync Roots"/>
           <verticalAlignment value="1"/>
         </properties>
       </component>
@@ -135,7 +135,8 @@
           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Active"/>
+          <actionCommand value="Active"/>
+          <text value="Active (Restart IntelliJ after changing this setting)"/>
         </properties>
       </component>
       <component id="6b074" class="javax.swing.JLabel" binding="moduleConfigurationHint">

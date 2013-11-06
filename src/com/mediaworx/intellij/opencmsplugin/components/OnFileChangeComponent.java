@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 
 
+/**
+ * handles changes (edits, moves, renames, deletions) to files in the IntelliJ File System
+ */
 public class OnFileChangeComponent implements ProjectComponent {
 
     private Project project;
@@ -41,7 +44,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 
     @NotNull
     public String getComponentName() {
-        return "My OnFileChangeComponent";
+        return "OpenCmsPluginOnFileChangeComponent";
     }
 
     public void initComponent() {
@@ -54,7 +57,7 @@ public class OnFileChangeComponent implements ProjectComponent {
             connection.subscribe(AppTopics.FILE_DOCUMENT_SYNC,
                     new FileDocumentManagerAdapter() {
                         @Override
-                        public void beforeDocumentSaving(Document document) {
+                        public void beforeDocumentSaving(@NotNull Document document) {
                             System.out.println("Document was saved: "+document);
                             // TODO: Überlegen, ob File Save Events direkt ins VFS gesynct werden sollen
                         }
@@ -185,7 +188,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 					msg.append("\n").append(vfsFileToBeDeleted);
 				}
 
-				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Delete files/folders?", Messages.getQuestionIcon());
+				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Delete Files/Folders?", Messages.getQuestionIcon());
 
 				if (dlgStatus == 0) {
 					for (String vfsFileToBeDeleted : vfsFilesToBeDeleted) {
@@ -201,7 +204,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 					msg.append("\n").append(vfsFileToBeMoved.getVfsPath());
 				}
 
-				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move files/folders?", Messages.getQuestionIcon());
+				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move Files/Folders?", Messages.getQuestionIcon());
 
 				if (dlgStatus == 0) {
 					for (VfsFileMoveInfo moveInfo : vfsFilesToBeMoved) {
@@ -227,10 +230,10 @@ public class OnFileChangeComponent implements ProjectComponent {
 			if (vfsFilesToBeRenamed.size() > 0) {
 				StringBuilder msg = new StringBuilder("Do you want to rename the following files/folders in the OpenCms VFS as well?");
 				for (VfsFileRenameInfo vfsFileToBeRenamed : vfsFilesToBeRenamed) {
-					msg.append("\n").append(vfsFileToBeRenamed.getOldVfsPath() + " -> " + vfsFileToBeRenamed.getNewName());
+					msg.append("\n").append(vfsFileToBeRenamed.getOldVfsPath()).append(" -> ").append(vfsFileToBeRenamed.getNewName());
 				}
 
-				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move files/folders?", Messages.getQuestionIcon());
+				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move Files/Folders?", Messages.getQuestionIcon());
 
 				if (dlgStatus == 0) {
 					for (VfsFileRenameInfo renameInfo : vfsFilesToBeRenamed) {

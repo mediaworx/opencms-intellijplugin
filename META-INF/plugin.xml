@@ -26,17 +26,20 @@
     <module-components>
     </module-components>
 
+
 	<actions>
-		<action id="OpenCmsSync" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="OpenCms: Sync File/Folder/Module"
-				description="OpenCms: Sync file, folder or module with OpenCms" icon="/icons/opencms_menu.png">
-			<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl D"/>
-			<add-to-group group-id="ToolsMenu" anchor="last"/>
-		</action>
-		<action id="OpenCmsSyncAll" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAllAction" text="OpenCms: Sync all Modules"
-		        description="OpenCms: Sync all modules with OpenCms" icon="/icons/opencms_menu.png">
-			<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt D"/>
-			<add-to-group group-id="ToolsMenu" anchor="last"/>
-		</action>
+		<group id="OpenCmsPlugin.ActionMenu" text="_OpenCms" description="OpenCms Plugin Actions">
+			<action id="OpenCmsSyncAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="OpenCms: _Sync selected Files/Folders/Modules"
+					description="OpenCms: Sync file, folder or module with OpenCms" icon="/icons/opencms_menu.png">
+				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl D"/>
+			</action>
+			<action id="OpenCmsSyncAllAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAllAction" text="OpenCms: Sync all _Modules"
+			        description="OpenCms: Sync all modules with OpenCms" icon="/icons/opencms_menu.png">
+				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt D"/>
+			</action>
+		</group>
+		<action id="OpenCmsEditorPopupAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsEditorPopupAction" text="OpenCms: Sync File" description="OpenCms: Sync the file in the Editor to OpenCms" icon="/icons/opencms_menu.png" />
+		<action id="OpenCmsProjectViewPopupAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="OpenCms: Sync selected files/folders" description="OpenCms: Sync all selected Files/Folders to OpenCms" icon="/icons/opencms_menu.png" />
 	</actions>
 
     <extensions defaultExtensionNs="com.intellij">

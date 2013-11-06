@@ -1,5 +1,7 @@
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
+import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +18,7 @@ public class OpenCmsPluginConfigurationData {
     private String webappRoot;
     private HashMap<String,String> localModuleVfsRootMap;
     private HashSet<String> moduleFolders;
-	private String syncMode;
+	private SyncMode syncMode;
 
 	public boolean isOpenCmsPluginActive() {
 		return openCmsPluginActive;
@@ -112,11 +114,15 @@ public class OpenCmsPluginConfigurationData {
         return localModuleVfsRootMap.get(moduleName);
     }
 
-	public String getSyncMode() {
-		return syncMode != null ? syncMode : "PUSH";
+	public SyncMode getSyncMode() {
+		return syncMode != null ? syncMode : SyncMode.PUSH;
 	}
 
 	public void setSyncMode(String syncMode) {
+		this.syncMode = SyncMode.fromString(syncMode);
+	}
+
+	public void setSyncMode(SyncMode syncMode) {
 		this.syncMode = syncMode;
 	}
 

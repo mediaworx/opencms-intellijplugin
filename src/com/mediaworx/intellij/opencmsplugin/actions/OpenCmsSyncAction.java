@@ -10,7 +10,6 @@ import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginComponent;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginConfigurationComponent;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 
-// TODO: prüfen und überlegen, ob es möglich und sinnvoll ist, Auto-Sync bei File change events zu realisieren
 public class OpenCmsSyncAction extends AnAction {
 
     Project project;
@@ -21,6 +20,11 @@ public class OpenCmsSyncAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
 
 	    this.project = DataKeys.PROJECT.getData(event.getDataContext());
+
+		if (project == null || project.getComponent(OpenCmsPluginConfigurationComponent.class) == null) {
+			return;
+		}
+
 		this.config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getConfigurationData();
 
 		System.out.println("Event: " + event);
@@ -39,7 +43,7 @@ public class OpenCmsSyncAction extends AnAction {
 			        fileSyncer.syncFiles(event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY));
 		        }
 		        catch (Exception e) {
-			        System.out.println("Exception in OpenCmsPlugin.actionPerformed: " + e.getMessage());
+			        System.out.println("Exception in OpenCmsSyncAction.actionPerformed: " + e.getMessage());
 		        }
 	        }
 		}
