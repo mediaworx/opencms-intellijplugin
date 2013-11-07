@@ -5,32 +5,20 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
+import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
 import org.apache.commons.io.FileUtils;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class SyncJob {
-
-    private static final String MODULECONFIGPATH = File.separator+"WEB-INF"+File.separator+"config"+File.separator+"opencms-modules.xml";
-
-    private static final HashMap<String, HashMap<String, String>> EXPORTPOINTS = new HashMap<String, HashMap<String, String>>();
 
 	private Project project;
     private OpenCmsPluginConfigurationData config;
@@ -120,47 +108,6 @@ public class SyncJob {
 		Messages.showMessageDialog(msg, "OpenCms VFS Sync", msg.contains("ERROR") ? Messages.getErrorIcon() : Messages.getInformationIcon());
 	}
 
-
-    public void initModuleExportPoints(String module) {
-
-        if (module != null && !EXPORTPOINTS.containsKey(module)) {
-            System.out.println("Initializing export points for module "+module);
-
-            try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                factory.setValidating(false);
-                factory.setFeature("http://xml.org/sax/features/namespaces", false);
-                factory.setFeature("http://xml.org/sax/features/validation", false);
-                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-                DocumentBuilder builder = factory.newDocumentBuilder();
-
-                String moduleConfig = config.getWebappRoot()+MODULECONFIGPATH;
-
-                org.w3c.dom.Document doc = builder.parse(moduleConfig);
-                XPathFactory xPathfactory = XPathFactory.newInstance();
-                XPath xpath = xPathfactory.newXPath();
-                XPathExpression expr = xpath.compile(String.format("/opencms/modules/module/name[normalize-space(text())=\"%s\"]/../exportpoints/exportpoint", module));
-
-                NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-                int numExportPoints = nl.getLength();
-
-                EXPORTPOINTS.put(module, new HashMap<String, String>(numExportPoints));
-
-                for (int i = 0; i < numExportPoints; i++) {
-                    Node n = nl.item(i);
-                    NamedNodeMap attr = n.getAttributes();
-                    String uri = attr.getNamedItem("uri").getNodeValue();
-                    String destination = attr.getNamedItem("destination").getNodeValue();
-                    System.out.println("Exportpoint "+(i+1)+": uri="+uri+" - destination="+destination);
-                    EXPORTPOINTS.get(module).put(uri, destination);
-                }
-            }
-            catch (Exception e) {
-                System.out.println("There was an Exception initializing export points for module " + module + " : "+e+"\n"+e.getMessage());
-            }
-        }
-    }
 
 	public String doSync(SyncEntity entity) {
 		String syncResult = "";
@@ -352,16 +299,21 @@ public class SyncJob {
 	}
 
     public void addSyncEntityToExportListIfNecessary(String moduleName, SyncEntity syncEntity) {
-        if (EXPORTPOINTS.get(moduleName) != null) {
-		    for (String uri : EXPORTPOINTS.get(moduleName).keySet()) {
-	            String entityPath = syncEntity.getVfsPath();
-	            if (entityPath.startsWith(uri)) {
-	                String destination = EXPORTPOINTS.get(moduleName).get(uri);
-	                String relativePath = entityPath.substring(uri.length());
+
+	    OpenCmsModule module = config.getModule(moduleName);
+	    List<ModuleExportPoint> exportPoints = module.getExportPoints();
+
+        if (exportPoints != null) {
+		    for (ModuleExportPoint exportPoint : exportPoints) {
+	            String entityVfsPath = syncEntity.getVfsPath();
+			    String vfsExportUri = exportPoint.getVfsSource();
+	            if (entityVfsPath.startsWith(vfsExportUri)) {
+	                String destination = exportPoint.getRfsTarget();
+	                String relativePath = entityVfsPath.substring(vfsExportUri.length());
 	                ExportEntity exportEntity = new ExportEntity();
-	                exportEntity.setSourcePath(config.getLocalModuleVfsRoot(moduleName)+entityPath);
+	                exportEntity.setSourcePath(config.getLocalModuleVfsRoot(moduleName)+entityVfsPath);
 	                exportEntity.setTargetPath(config.getWebappRoot() + File.separator + destination + relativePath);
-	                exportEntity.setVfsPath(entityPath);
+	                exportEntity.setVfsPath(entityVfsPath);
 	                exportEntity.setDestination(destination);
 		            exportEntity.setToBeDeleted(syncEntity.getSyncAction() == SyncAction.DELETE_RFS);
 	                addExportEntity(exportEntity);

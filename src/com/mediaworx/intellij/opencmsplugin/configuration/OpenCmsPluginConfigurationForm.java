@@ -68,6 +68,7 @@ public class OpenCmsPluginConfigurationForm {
         data.setWebappRoot(webappRoot.getText());
         data.setLocalModuleVfsRoots(localModuleVfsRoots.getText());
 		data.setSyncMode((String)syncMode.getSelectedItem());
+		data.initModuleConfiguration();
 	}
 
 

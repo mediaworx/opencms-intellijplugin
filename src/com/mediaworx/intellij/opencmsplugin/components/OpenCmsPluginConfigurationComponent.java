@@ -99,6 +99,7 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 			this.configurationData = new OpenCmsPluginConfigurationData();
 		}
         XmlSerializerUtil.copyBean(configurationData, this.configurationData);
+	    this.configurationData.initModuleConfiguration();
     }
 
     public OpenCmsPluginConfigurationData getConfigurationData() {

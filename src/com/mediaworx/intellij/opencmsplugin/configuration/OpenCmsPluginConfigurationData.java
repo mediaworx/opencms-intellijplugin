@@ -1,12 +1,17 @@
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
 import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
+import org.w3c.dom.Document;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class OpenCmsPluginConfigurationData {
+
+	private static final String MODULECONFIGPATH = File.separator+"WEB-INF"+File.separator+"config"+File.separator+"opencms-modules.xml";
 
     public static final String NEW_LINE = System.getProperty("line.separator");
 
@@ -124,14 +129,31 @@ public class OpenCmsPluginConfigurationData {
 		this.syncMode = SyncMode.fromString(syncMode);
 	}
 
-	public void setSyncMode(SyncMode syncMode) {
-		this.syncMode = syncMode;
-	}
-
 	private String stripTrailingSeparator(String s) {
 		if (s != null && s.endsWith(File.separator)) {
 			return s.substring(0, s.length() - 1);
 		}
 		return s;
+	}
+
+	public void initModuleConfiguration() {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setValidating(false);
+		try {
+			factory.setFeature("http://xml.org/sax/features/namespaces", false);
+			factory.setFeature("http://xml.org/sax/features/validation", false);
+			factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+			factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document moduleConfiguration = builder.parse(getWebappRoot() + MODULECONFIGPATH);
+
+			for (OpenCmsModule module : modules.values()) {
+				module.initModuleConfig(moduleConfiguration);
+			}
+		}
+		catch (Exception e) {
+			System.out.println("Exception during initialization of the module configuration: " + e);
+			e.printStackTrace(System.out);
+		}
 	}
 }

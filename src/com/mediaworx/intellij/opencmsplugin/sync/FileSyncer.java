@@ -255,8 +255,6 @@ public class FileSyncer {
 
 		String module = PathTools.getModuleName(config, file);
 		System.out.println("Module: " + module);
-		syncJob.initModuleExportPoints(module);
-
 		walkFileTree(module, file, folderSyncMode, progressIndicatorManager);
 	}
 
