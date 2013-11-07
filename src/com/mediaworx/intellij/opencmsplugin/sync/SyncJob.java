@@ -306,10 +306,10 @@ public class SyncJob {
         if (exportPoints != null) {
 		    for (ModuleExportPoint exportPoint : exportPoints) {
 	            String entityVfsPath = syncEntity.getVfsPath();
-			    String vfsExportUri = exportPoint.getVfsSource();
-	            if (entityVfsPath.startsWith(vfsExportUri)) {
+			    String vfsSource = exportPoint.getVfsSource();
+	            if (entityVfsPath.startsWith(vfsSource)) {
 	                String destination = exportPoint.getRfsTarget();
-	                String relativePath = entityVfsPath.substring(vfsExportUri.length());
+	                String relativePath = entityVfsPath.substring(vfsSource.length());
 	                ExportEntity exportEntity = new ExportEntity();
 	                exportEntity.setSourcePath(config.getLocalModuleVfsRoot(moduleName)+entityVfsPath);
 	                exportEntity.setTargetPath(config.getWebappRoot() + File.separator + destination + relativePath);
@@ -334,12 +334,12 @@ public class SyncJob {
 		return numSyncEntities() > 0;
 	}
 
-	public int getNumPullEntities() {
+	public int getNumRefreshEntities() {
 		return refreshEntityList.size();
 	}
 
-	public boolean hasPullEntities() {
-		return getNumPullEntities() > 0;
+	public boolean hasRefreshEntities() {
+		return getNumRefreshEntities() > 0;
 	}
 
 	public int numExportEntities() {

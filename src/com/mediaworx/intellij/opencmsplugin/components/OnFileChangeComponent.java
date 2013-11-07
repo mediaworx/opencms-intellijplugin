@@ -7,13 +7,19 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManagerAdapter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
-import com.intellij.openapi.vfs.newvfs.events.*;
+import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
+import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
 import com.mediaworx.intellij.opencmsplugin.tools.PathTools;
@@ -21,8 +27,10 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -186,6 +194,23 @@ public class OnFileChangeComponent implements ProjectComponent {
 				}
 			}
 
+			List<ModuleExportPoint> allExportPoints = null;
+			List<File> refreshFiles = null;
+
+			if (vfsFilesToBeDeleted.size() > 0 || vfsFilesToBeMoved.size() > 0 || vfsFilesToBeRenamed.size() > 0) {
+				allExportPoints = new ArrayList<ModuleExportPoint>();
+				refreshFiles = new ArrayList<File>();
+				for (OpenCmsModule module : config.getModules().values()) {
+					List<ModuleExportPoint> exportPoints = module.getExportPoints();
+					if (exportPoints != null) {
+						for (ModuleExportPoint exportPoint : exportPoints) {
+							allExportPoints.add(exportPoint);
+						}
+					}
+				}
+
+			}
+
 			// Delete files
 			if (vfsFilesToBeDeleted.size() > 0) {
 
@@ -196,11 +221,23 @@ public class OnFileChangeComponent implements ProjectComponent {
 
 				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Delete Files/Folders?", Messages.getQuestionIcon());
 
-				// TODO: ExportPoints berücksichtigen!
-
 				if (dlgStatus == 0) {
 					for (String vfsFileToBeDeleted : vfsFilesToBeDeleted) {
 						getVfsAdapter().deleteResource(vfsFileToBeDeleted);
+						// check export points
+						for (ModuleExportPoint exportPoint : allExportPoints) {
+							if (vfsFileToBeDeleted.startsWith(exportPoint.getVfsSource())) {
+				                String destination = exportPoint.getRfsTarget();
+				                String relativePath = vfsFileToBeDeleted.substring(exportPoint.getVfsSource().length());
+					            String exportedPath = config.getWebappRoot() + File.separator + destination + relativePath;
+					            File exportedFileToBeDeleted = new File(exportedPath);
+					            if (exportedFileToBeDeleted.exists()) {
+						            FileUtils.deleteQuietly(exportedFileToBeDeleted);
+									refreshFiles.add(exportedFileToBeDeleted);
+					            }
+					            break;
+							}
+						}
 					}
 				}
 			}
@@ -225,6 +262,8 @@ public class OnFileChangeComponent implements ProjectComponent {
 							}
 							FileableCmisObject file = (FileableCmisObject) getVfsAdapter().getVfsObject(moveInfo.getVfsPath());
 							file.move(oldParent, newParent);
+
+							// TODO: ExportPoints berücksichtigen, wenn ein File in eine Export-Struktur verschoben wurde oder/und aus einer Export-Struktur entfernt wurde
 						}
 						catch (CmsPermissionDeniedException e) {
 							Messages.showDialog("Error moving files/folders." + e.getMessage(),
@@ -251,6 +290,8 @@ public class OnFileChangeComponent implements ProjectComponent {
 							HashMap<String, Object> properties = new HashMap<String, Object>();
 							properties.put(PropertyIds.NAME, renameInfo.getNewName());
 							file.updateProperties(properties);
+
+							// TODO: ExportPoints berücksichtigen, wenn ein File innerhalb einer Export-Struktur umbenannt wurde.
 						}
 						catch (CmsPermissionDeniedException e) {
 							System.out.println("Exception moving files: " + e.getMessage());
@@ -259,6 +300,10 @@ public class OnFileChangeComponent implements ProjectComponent {
 						}
 					}
 				}
+			}
+
+			if (refreshFiles != null && refreshFiles.size() > 0) {
+				LocalFileSystem.getInstance().refreshIoFiles(refreshFiles);
 			}
 		}
 	};

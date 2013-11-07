@@ -153,7 +153,7 @@ public class FileSyncer {
 
 		if (proceed) {
 			syncJob.execute();
-			if (syncJob.hasPullEntities()) {
+			if (syncJob.hasRefreshEntities()) {
 				List<SyncEntity> pullEntityList = syncJob.getRefreshEntityList();
 				List<File> refreshFiles = new ArrayList<File>(pullEntityList.size());
 
