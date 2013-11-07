@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.actions;
+package com.mediaworx.intellij.opencmsplugin.sync;
 
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -28,11 +28,47 @@ public class FileSyncer {
 	private VfsAdapter vfsAdapter;
 	private SyncJob syncJob;
 
+	private SyncAction rfsOnlySyncAction;
+	private SyncAction vfsOnlySyncAction;
+
 
 	public FileSyncer(Project project, OpenCmsPluginConfigurationData config, VfsAdapter vfsAdapter) {
 		this.project = project;
 		this.config = config;
 		this.vfsAdapter = vfsAdapter;
+
+		rfsOnlySyncAction = getRfsOnlySyncAction();
+		vfsOnlySyncAction = getVfsOnlySyncAction();
+	}
+
+	private SyncAction getRfsOnlySyncAction() {
+		SyncAction syncAction;
+		switch (config.getSyncMode()) {
+			case PULL:
+				syncAction = SyncAction.DELETE_RFS;
+				break;
+			case PUSH:
+			case SYNC:
+			default:
+				syncAction = SyncAction.PUSH;
+				break;
+		}
+		return syncAction;
+	}
+
+	private SyncAction getVfsOnlySyncAction() {
+		SyncAction syncAction;
+		switch (config.getSyncMode()) {
+			case PUSH:
+				syncAction = SyncAction.DELETE_VFS;
+				break;
+			case PULL:
+			case SYNC:
+			default:
+				syncAction = SyncAction.PULL;
+				break;
+		}
+		return syncAction;
 	}
 
 	public boolean syncFiles(VirtualFile[] syncFiles) {
@@ -89,10 +125,18 @@ public class FileSyncer {
 			message.append("The following ").append(numSyncEntities).append(" syncFiles or folders will be synced to or from OpenCms VFS:\n\n");
 			List<SyncEntity> syncEntities = syncJob.getSyncList();
 			for (SyncEntity syncEntity : syncEntities) {
-				message.append(syncEntity.getFolderSyncMode() == FolderSyncMode.PUSH ? "PUSH " : "PULL ");
+				message.append(syncEntity.getSyncAction().getDescription()).append(" ");
 				message.append(syncEntity.getVfsPath());
 				if (!syncEntity.replaceExistingEntity()) {
-					message.append(" (new)");
+					if (!syncEntity.getSyncAction().isDeleteAction()) {
+						message.append(" (new)");
+					}
+					else {
+						message.append(" (obsolete)");
+					}
+				}
+				else {
+					message.append(" (changed)");
 				}
 				message.append("\n");
 			}
@@ -110,7 +154,7 @@ public class FileSyncer {
 		if (proceed) {
 			syncJob.execute();
 			if (syncJob.hasPullEntities()) {
-				List<SyncEntity> pullEntityList = syncJob.getPullEntityList();
+				List<SyncEntity> pullEntityList = syncJob.getRefreshEntityList();
 				List<File> refreshFiles = new ArrayList<File>(pullEntityList.size());
 
 				for (SyncEntity entity : pullEntityList) {
@@ -136,9 +180,9 @@ public class FileSyncer {
 				ProgressIndicatorManager progressIndicatorManager = new ProgressIndicatorManager() {
 					ProgressIndicator indicator;
 
-					public void setText(final String text) {
-						indicator.setText(text);
-					}
+					// public void setText(final String text) {
+					// 	indicator.setText(text);
+					// }
 
 					public void init() {
 						indicator = ProgressManager.getInstance().getProgressIndicator();
@@ -256,7 +300,7 @@ public class FileSyncer {
 			// The folder is not there, so push it with all child contents
 			if (!vfsObjectExists) {
 				System.out.println("It's a folder that does not exist on the VFS, PUSH recursively");
-				addPushFolderTreeToSyncJob(module, vfsPath, file, false, progressIndicatorManager);
+				addRfsOnlyFolderTreeToSyncJob(module, vfsPath, file, false, progressIndicatorManager);
 			}
 			// The Folder is there, compare contents of VFS and RFS
 			else {
@@ -276,6 +320,7 @@ public class FileSyncer {
 				System.out.println("Looping RFS children");
 				VirtualFile[] rfsChildren = file.getChildren();
 
+				// handle resources in the RFS
 				for (VirtualFile rfsChild : rfsChildren) {
 					if (progressIndicatorManager.isCanceled()) {
 						return;
@@ -308,11 +353,11 @@ public class FileSyncer {
 
 					// files
 					if (vfsChild.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
-						addPullFileToSyncJob(module, childVfsPath, childRfsPath, vfsChild, false);
+						addVfsOnlyFileToSyncJob(module, childVfsPath, childRfsPath, vfsChild, false);
 					}
 					// folders
 					else if (vfsChild.getBaseTypeId().equals(BaseTypeId.CMIS_FOLDER)) {
-						addPullFolderTreeToSyncJob(module, childVfsPath, childRfsPath, vfsChild, false);
+						addVfsOnlyFolderTreeToSyncJob(module, childVfsPath, childRfsPath, vfsChild, false);
 					}
 				}
 
@@ -323,24 +368,39 @@ public class FileSyncer {
 			// The file is not there, so push it
 			if (!vfsObjectExists) {
 				System.out.println("It's a file that does not exist on the VFS, PUSH");
-				addPushFileToSyncJob(module, vfsPath, file, null);
+				addRfsOnlyFileToSyncJob(module, vfsPath, file, null);
 			}
 			// The file exists, check which one is newer
 			else {
-				System.out.println("It's a file that exists on the VFS, compare dates");
-				File realFile = new File(file.getPath());
-				Date localDate = new Date(realFile.lastModified());
-				Date vfsDate = vfsObject.getLastModificationDate().getTime();
-				if (localDate.after(vfsDate)) {
-					System.out.println("RFS file is newer, PUSH");
-					addPushFileToSyncJob(module, vfsPath, file, (Document) vfsObject);
+				System.out.println("It's a file that exists on the VFS and the RFS");
+				if (config.getSyncMode() == SyncMode.SYNC) {
+					System.out.println("SyncMode is SYNC, so compare dates");
+					File realFile = new File(file.getPath());
+					Date localDate = new Date(realFile.lastModified());
+					Date vfsDate = vfsObject.getLastModificationDate().getTime();
+					if (localDate.after(vfsDate)) {
+						System.out.println("RFS file is newer, PUSH");
+						SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsObject, SyncAction.PUSH, true);
+						syncJob.addSyncEntity(module, syncFile);
+					}
+					else if (vfsDate.after(localDate)) {
+						System.out.println("VFS file is newer, PULL");
+						SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsObject, SyncAction.PULL, true);
+						syncJob.addSyncEntity(module, syncFile);
+					}
+					else {
+						System.out.println("VFS file and RFS file have the same date, ignore");
+					}
 				}
-				else if (vfsDate.after(localDate)) {
-					System.out.println("VFS file is newer, PULL");
-					addPullFileToSyncJob(module, vfsPath, rfsPath, vfsObject, true);
+				else if (config.getSyncMode() == SyncMode.PUSH) {
+					System.out.println("SyncMode is PUSH, so force push");
+					SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsObject, SyncAction.PUSH, true);
+					syncJob.addSyncEntity(module, syncFile);
 				}
-				else {
-					System.out.println("VFS file and RFS file have the same date, ignore");
+				else if (config.getSyncMode() == SyncMode.PULL) {
+					System.out.println("SyncMode is PULL, so force pull");
+					SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsObject, SyncAction.PULL, true);
+					syncJob.addSyncEntity(module, syncFile);
 				}
 			}
 		}
@@ -348,9 +408,9 @@ public class FileSyncer {
 	}
 
 
-	private SyncEntity getSyncEntity(SyncEntityType type, String vfsPath, String rfsPath, VirtualFile file, CmisObject vfsObject, FolderSyncMode folderSyncMode, boolean replaceExistingEntity) {
+	private SyncEntity getSyncEntity(SyncEntity.Type type, String vfsPath, String rfsPath, VirtualFile file, CmisObject vfsObject, SyncAction syncAction, boolean replaceExistingEntity) {
 		SyncEntity entity;
-		if (type == SyncEntityType.FILE) {
+		if (type == SyncEntity.Type.FILE) {
 			entity = new SyncFile();
 		}
 		else {
@@ -360,60 +420,66 @@ public class FileSyncer {
 		entity.setRfsPath(rfsPath);
 		entity.setIdeaVFile(file);
 		entity.setVfsObject(vfsObject);
-		entity.setFolderSyncMode(folderSyncMode);
+		entity.setSyncAction(syncAction);
 		entity.setReplaceExistingEntity(replaceExistingEntity);
 		return entity;
 	}
 
-	private void addPushFileToSyncJob(String module, String vfsPath, VirtualFile file, Document vfsFile) {
-		System.out.println("Adding PUSH file " + vfsPath);
-		SyncFile syncFile = (SyncFile) getSyncEntity(SyncEntityType.FILE, vfsPath, file.getPath(), file, vfsFile, FolderSyncMode.PUSH, vfsFile != null);
+	private void addRfsOnlyFileToSyncJob(String module, String vfsPath, VirtualFile file, Document vfsFile) {
+		System.out.println("Adding RFS only file " + vfsPath);
+		SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsFile, rfsOnlySyncAction, vfsFile != null);
 		syncJob.addSyncEntity(module, syncFile);
 	}
 
-	private void addPushFolderTreeToSyncJob(String module, String vfsPath, VirtualFile file, boolean replaceExistingEntity, ProgressIndicatorManager progressIndicatorManager) {
-		System.out.println("Adding PUSH folder " + vfsPath);
-		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntityType.FOLDER, vfsPath, file.getPath(), file, null, FolderSyncMode.PUSH, replaceExistingEntity);
+	private void addRfsOnlyFolderTreeToSyncJob(String module, String vfsPath, VirtualFile file, boolean replaceExistingEntity, ProgressIndicatorManager progressIndicatorManager) {
+		System.out.println("Adding RFS only folder " + vfsPath);
+
+		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntity.Type.FOLDER, vfsPath, file.getPath(), file, null, rfsOnlySyncAction, replaceExistingEntity);
 		syncJob.addSyncEntity(module, syncFile);
 
-		System.out.println("Get children of folder " + vfsPath);
-		VirtualFile[] children = file.getChildren();
-		for (VirtualFile child : children) {
-			System.out.println("Handle PUSH child " + child.getPath());
-			try {
-				walkFileTree(module, child, FolderSyncMode.PUSH, progressIndicatorManager);
-			}
-			catch (CmsPermissionDeniedException e) {
-				System.out.println("Exception walking the file tree: " + e.getMessage());
+		if (rfsOnlySyncAction != SyncAction.DELETE_RFS) {
+			System.out.println("Get children of folder " + vfsPath);
+			VirtualFile[] children = file.getChildren();
+			for (VirtualFile child : children) {
+				System.out.println("Handle PUSH child " + child.getPath());
+				try {
+					walkFileTree(module, child, FolderSyncMode.PUSH, progressIndicatorManager);
+				}
+				catch (CmsPermissionDeniedException e) {
+					System.out.println("Exception walking the file tree: " + e.getMessage());
+				}
 			}
 		}
 	}
 
-	private void addPullFileToSyncJob(String module, String vfsPath, String rfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
-		System.out.println("Adding PULL file " + vfsPath);
-		SyncFile syncFile = (SyncFile) getSyncEntity(SyncEntityType.FILE, vfsPath, rfsPath, null, vfsObject, FolderSyncMode.PULL, replaceExistingEntity);
+	private void addVfsOnlyFileToSyncJob(String module, String vfsPath, String rfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
+		System.out.println("Adding VFS only file " + vfsPath);
+		SyncFile syncFile = (SyncFile) getSyncEntity(SyncEntity.Type.FILE, vfsPath, rfsPath, null, vfsObject, vfsOnlySyncAction, replaceExistingEntity);
 		syncJob.addSyncEntity(module, syncFile);
 	}
 
-	private void addPullFolderTreeToSyncJob(String module, String vfsPath, String rfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
-		System.out.println("Adding PULL folder " + vfsPath);
-		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntityType.FOLDER, vfsPath, rfsPath, null, vfsObject, FolderSyncMode.PULL, replaceExistingEntity);
+	private void addVfsOnlyFolderTreeToSyncJob(String module, String vfsPath, String rfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
+		System.out.println("Adding VFS only folder " + vfsPath);
+
+		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntity.Type.FOLDER, vfsPath, rfsPath, null, vfsObject, vfsOnlySyncAction, replaceExistingEntity);
 		syncJob.addSyncEntity(module, syncFile);
 
-		// traverse folder, add children to the SyncJob
-		System.out.println("Get children of VFS folder " + vfsPath);
-		ItemIterable<CmisObject> vfsChildren = ((Folder) vfsObject).getChildren();
-		for (CmisObject child : vfsChildren) {
-			String childVfsPath = vfsPath + "/" + child.getName();
-			String childRfsPath = rfsPath + File.separator + child.getName();
+		if (vfsOnlySyncAction != SyncAction.DELETE_VFS) {
+			// traverse folder, add children to the SyncJob
+			System.out.println("Get children of VFS folder " + vfsPath);
+			ItemIterable<CmisObject> vfsChildren = ((Folder) vfsObject).getChildren();
+			for (CmisObject child : vfsChildren) {
+				String childVfsPath = vfsPath + "/" + child.getName();
+				String childRfsPath = rfsPath + File.separator + child.getName();
 
-			// files
-			if (child.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
-				addPullFileToSyncJob(module, childVfsPath, childRfsPath, child, false);
-			}
-			// folders
-			else if (child.getBaseTypeId().equals(BaseTypeId.CMIS_FOLDER)) {
-				addPullFolderTreeToSyncJob(module, childVfsPath, childRfsPath, child, false);
+				// files
+				if (child.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
+					addVfsOnlyFileToSyncJob(module, childVfsPath, childRfsPath, child, false);
+				}
+				// folders
+				else if (child.getBaseTypeId().equals(BaseTypeId.CMIS_FOLDER)) {
+					addVfsOnlyFolderTreeToSyncJob(module, childVfsPath, childRfsPath, child, false);
+				}
 			}
 		}
 	}

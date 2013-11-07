@@ -1,27 +1,29 @@
 package com.mediaworx.intellij.opencmsplugin.entities;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 
 import java.io.File;
 import java.io.IOException;
 
 public class SyncEntity {
+
     private String vfsPath;
     private String rfsPath;
     private VirtualFile ideaVFile;
     private File realFile;
     private CmisObject vfsObject;
-    private FolderSyncMode folderSyncMode;
+    private SyncAction syncAction;
     private boolean replaceExistingEntity;
 
-    public SyncEntityType getType() {
+    public Type getType() {
         Object test = this;
         if (test instanceof SyncFolder) {
-            return SyncEntityType.FOLDER;
+            return Type.FOLDER;
         }
         else {
-            return SyncEntityType.FILE;
+            return Type.FILE;
         }
     }
 
@@ -61,10 +63,14 @@ public class SyncEntity {
 		if (!realFile.exists()) {
 			try {
 				if (isFolder()) {
-					realFile.mkdirs();
+					if (!realFile.mkdirs()) {
+						System.out.println("The directories for " + getRfsPath() + " could not be created");
+					}
 				}
 				else {
-					realFile.createNewFile();
+					if (realFile.createNewFile()) {
+						System.out.println("The file " + getRfsPath() + " could not be created");
+					}
 				}
 			}
 			catch (IOException e) {
@@ -83,12 +89,12 @@ public class SyncEntity {
         this.vfsObject = vfsObject;
     }
 
-    public FolderSyncMode getFolderSyncMode() {
-        return folderSyncMode;
+    public SyncAction getSyncAction() {
+        return syncAction;
     }
 
-    public void setFolderSyncMode(FolderSyncMode folderSyncMode) {
-        this.folderSyncMode = folderSyncMode;
+    public void setSyncAction(SyncAction syncAction) {
+        this.syncAction = syncAction;
     }
 
     public boolean replaceExistingEntity() {
@@ -100,10 +106,15 @@ public class SyncEntity {
     }
 
     public boolean isFile() {
-        return getType() == SyncEntityType.FILE;
+        return getType() == Type.FILE;
     }
 
     public boolean isFolder() {
-        return getType() == SyncEntityType.FOLDER;
+        return getType() == Type.FOLDER;
     }
+
+	public static enum Type {
+	    FILE,
+	    FOLDER
+	}
 }

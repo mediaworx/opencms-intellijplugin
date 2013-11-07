@@ -30,6 +30,7 @@ public enum SyncMode {
 
 	/** creates a new sync mode from a String ("PUSH", "SYNC" or "PULL") */
 	public static SyncMode fromString(String syncModeStr) throws IllegalArgumentException {
+		syncModeStr = syncModeStr.replaceAll("([A-Z]+) ?.*", "$1");
 		if (!MODES.containsKey(syncModeStr)) {
 			throw new IllegalArgumentException(syncModeStr + " is not a legal previewType");
 		}

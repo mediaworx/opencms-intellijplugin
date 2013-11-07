@@ -1,15 +1,10 @@
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
+import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
+
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
-/**
- * Created with IntelliJ IDEA.
- * User: widmann
- * Date: 07.11.12
- * Time: 10:30
- * To change this template use File | Settings | File Templates.
- */
 public class OpenCmsPluginConfigurationForm {
 
     private JPanel rootComponent;
@@ -53,7 +48,15 @@ public class OpenCmsPluginConfigurationForm {
 		setConfiguredOrKeepDefault(password, data.getPassword());
         setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
         setConfiguredOrKeepDefault(localModuleVfsRoots, data.getLocalModuleVfsRoots());
-        syncMode.setSelectedItem(data.getSyncMode().toString());
+		if (data.getSyncMode() == SyncMode.PUSH) {
+			syncMode.setSelectedIndex(0);
+		}
+		else if (data.getSyncMode() == SyncMode.SYNC) {
+			syncMode.setSelectedIndex(1);
+		}
+		else if (data.getSyncMode() == SyncMode.PULL) {
+			syncMode.setSelectedIndex(2);
+		}
 	}
 
 

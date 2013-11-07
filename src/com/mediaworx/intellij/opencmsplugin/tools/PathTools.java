@@ -1,6 +1,7 @@
 package com.mediaworx.intellij.opencmsplugin.tools;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 
 import java.io.File;
@@ -49,9 +50,9 @@ public class PathTools {
 
     public static String getModuleName(OpenCmsPluginConfigurationData config, final VirtualFile file) {
 	    String moduleName = null;
-	    HashMap<String,String> vfsRoots = config.getLocalModuleVfsRootMap();
-	    if (vfsRoots != null) {
-	        for (String tmpModuleName : config.getLocalModuleVfsRootMap().keySet()) {
+	    HashMap<String,OpenCmsModule> modules = config.getModules();
+	    if (modules != null) {
+	        for (String tmpModuleName : modules.keySet()) {
 	            if (file.getPath().replace('\\', '/').startsWith(config.getLocalModuleVfsRoot(tmpModuleName).replace('\\', '/'))) {
 		            moduleName = tmpModuleName;
 		            break;

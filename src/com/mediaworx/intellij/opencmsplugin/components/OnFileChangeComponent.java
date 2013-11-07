@@ -115,13 +115,15 @@ public class OnFileChangeComponent implements ProjectComponent {
 
 					VirtualFile file = event.getFile();
 
-					System.out.println("The following file was deleted: " + file.getPath());
+					if (file != null) {
+						System.out.println("The following file was deleted: " + file.getPath());
 
-					// check if the file belongs to an OpenCms module
-					if (PathTools.isFileInModulePath(config, file)) {
-						String vfsPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, file), config, file);
-						if (getVfsAdapter().exists(vfsPath)) {
-							vfsFilesToBeDeleted.add(vfsPath);
+						// check if the file belongs to an OpenCms module
+						if (PathTools.isFileInModulePath(config, file)) {
+							String vfsPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, file), config, file);
+							if (getVfsAdapter().exists(vfsPath)) {
+								vfsFilesToBeDeleted.add(vfsPath);
+							}
 						}
 					}
 				}
@@ -130,31 +132,33 @@ public class OnFileChangeComponent implements ProjectComponent {
 				if (event instanceof VFileMoveEvent) {
 					VirtualFile file = event.getFile();
 
-					System.out.println("The following file was moved: " + file.getPath());
+					if (file != null) {
+						System.out.println("The following file was moved: " + file.getPath());
 
-					VirtualFile oldParent = ((VFileMoveEvent) event).getOldParent();
-					VirtualFile newParent = ((VFileMoveEvent) event).getNewParent();
+						VirtualFile oldParent = ((VFileMoveEvent) event).getOldParent();
+						VirtualFile newParent = ((VFileMoveEvent) event).getNewParent();
 
-					// old and new parent are in a module -> move the file in the OpenCms VFS
-					if (PathTools.isFileInModulePath(config, oldParent) && PathTools.isFileInModulePath(config, newParent)) {
-						String module = PathTools.getModuleName(config, file);
-						String oldParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, oldParent);
-						String vfsPath = oldParentPath + "/" + file.getName();
-						if (getVfsAdapter().exists(vfsPath)) {
-							String newParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, newParent);
-							vfsFilesToBeMoved.add(new VfsFileMoveInfo(vfsPath, oldParentPath, newParentPath));
+						// old and new parent are in a module -> move the file in the OpenCms VFS
+						if (PathTools.isFileInModulePath(config, oldParent) && PathTools.isFileInModulePath(config, newParent)) {
+							String module = PathTools.getModuleName(config, file);
+							String oldParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, oldParent);
+							String vfsPath = oldParentPath + "/" + file.getName();
+							if (getVfsAdapter().exists(vfsPath)) {
+								String newParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, newParent);
+								vfsFilesToBeMoved.add(new VfsFileMoveInfo(vfsPath, oldParentPath, newParentPath));
+							}
 						}
-					}
 
-					// if the new parent path is not inside a module, remove it
-					else if (PathTools.isFileInModulePath(config, oldParent) && !PathTools.isFileInModulePath(config, newParent)) {
-						String oldParentPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, oldParent), config, oldParent);
-						String vfsPath = oldParentPath + "/" + file.getName();
+						// if the new parent path is not inside a module, remove it
+						else if (PathTools.isFileInModulePath(config, oldParent) && !PathTools.isFileInModulePath(config, newParent)) {
+							String oldParentPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, oldParent), config, oldParent);
+							String vfsPath = oldParentPath + "/" + file.getName();
 
-						System.out.println("File was moved out of the module path, deleting " + vfsPath);
+							System.out.println("File was moved out of the module path, deleting " + vfsPath);
 
-						if (getVfsAdapter().exists(vfsPath)) {
-							vfsFilesToBeDeleted.add(vfsPath);
+							if (getVfsAdapter().exists(vfsPath)) {
+								vfsFilesToBeDeleted.add(vfsPath);
+							}
 						}
 					}
 				}
@@ -162,19 +166,21 @@ public class OnFileChangeComponent implements ProjectComponent {
 				// File is renamed
 				if (event instanceof VFilePropertyChangeEvent) {
 
-					String propertyName = ((VFilePropertyChangeEvent) event).getPropertyName();
-					if (propertyName.equals("name")) {
+					String propertyName = ((VFilePropertyChangeEvent)event).getPropertyName();
+					if ("name".equals(propertyName)) {
 						VirtualFile file = event.getFile();
-						System.out.println("The following file was renamed: " + file.getPath());
+						if (file != null) {
+							System.out.println("The following file was renamed: " + file.getPath());
 
-						String oldName = (String) ((VFilePropertyChangeEvent) event).getOldValue();
-						String newName = (String) ((VFilePropertyChangeEvent) event).getNewValue();
-						String module = PathTools.getModuleName(config, file);
-						String newVfsPath = PathTools.getVfsPathFromIdeaVFile(module, config, file);
-						String oldVfsPath = newVfsPath.replaceFirst(newName, oldName);
+							String oldName = (String) ((VFilePropertyChangeEvent) event).getOldValue();
+							String newName = (String) ((VFilePropertyChangeEvent) event).getNewValue();
+							String module = PathTools.getModuleName(config, file);
+							String newVfsPath = PathTools.getVfsPathFromIdeaVFile(module, config, file);
+							String oldVfsPath = newVfsPath.replaceFirst(newName, oldName);
 
-						if (getVfsAdapter().exists(oldVfsPath)) {
-							vfsFilesToBeRenamed.add(new VfsFileRenameInfo(oldVfsPath, newName));
+							if (getVfsAdapter().exists(oldVfsPath)) {
+								vfsFilesToBeRenamed.add(new VfsFileRenameInfo(oldVfsPath, newName));
+							}
 						}
 					}
 				}
@@ -190,9 +196,11 @@ public class OnFileChangeComponent implements ProjectComponent {
 
 				int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Delete Files/Folders?", Messages.getQuestionIcon());
 
+				// TODO: ExportPoints berücksichtigen!
+
 				if (dlgStatus == 0) {
 					for (String vfsFileToBeDeleted : vfsFilesToBeDeleted) {
-						getVfsAdapter().deleteFile(vfsFileToBeDeleted);
+						getVfsAdapter().deleteResource(vfsFileToBeDeleted);
 					}
 				}
 			}
@@ -256,7 +264,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 	};
 
 
-    private class VfsFileMoveInfo {
+    private static class VfsFileMoveInfo {
 
         private String vfsPath;
         private String oldParentPath;
@@ -281,7 +289,7 @@ public class OnFileChangeComponent implements ProjectComponent {
         }
     }
 
-    private class VfsFileRenameInfo {
+    private static class VfsFileRenameInfo {
         String oldVfsPath;
         String newName;
 

@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.actions;
+package com.mediaworx.intellij.opencmsplugin.sync;
 
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -8,7 +8,6 @@ import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
-import com.mediaworx.intellij.opencmsplugin.entities.FolderSyncMode;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.NamedNodeMap;
@@ -27,13 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: widmann
- * Date: 24.01.13
- * Time: 14:27
- * To change this template use File | Settings | File Templates.
- */
 public class SyncJob {
 
     private static final String MODULECONFIGPATH = File.separator+"WEB-INF"+File.separator+"config"+File.separator+"opencms-modules.xml";
@@ -44,7 +36,7 @@ public class SyncJob {
     private OpenCmsPluginConfigurationData config;
 	private VfsAdapter adapter;
 	private List<SyncEntity> syncList;
-	private List<SyncEntity> pullEntityList;
+	private List<SyncEntity> refreshEntityList;
 	private List<ExportEntity> exportList;
 
 	public SyncJob(Project project, OpenCmsPluginConfigurationData config, VfsAdapter adapter) {
@@ -52,7 +44,7 @@ public class SyncJob {
         this.config = config;
 		this.adapter = adapter;
 		this.syncList = new ArrayList<SyncEntity>();
-		this.pullEntityList = new ArrayList<SyncEntity>();
+		this.refreshEntityList = new ArrayList<SyncEntity>();
 		this.exportList = new ArrayList<ExportEntity>();
 	}
 
@@ -113,7 +105,7 @@ public class SyncJob {
                             progressIndicatorManager.setProgress((double) c++ / numSyncEntities);
                         }
 
-                        String syncResult = doExportPointCopy(entity);
+                        String syncResult = doExportPointHandling(entity);
 
                         outputBuffer.append(syncResult).append('\n');
                     }
@@ -165,18 +157,24 @@ public class SyncJob {
                 }
             }
             catch (Exception e) {
-                System.out.println("There was an Exception initializing export points: "+e+"\n"+e.getMessage());
+                System.out.println("There was an Exception initializing export points for module " + module + " : "+e+"\n"+e.getMessage());
             }
         }
     }
 
 	public String doSync(SyncEntity entity) {
-		String syncResult;
-		if (entity.getFolderSyncMode() == FolderSyncMode.PUSH) {
+		String syncResult = "";
+		if (entity.getSyncAction() == SyncAction.PUSH) {
 			syncResult = doPush(entity);
 		}
-		else {
+		else if (entity.getSyncAction() == SyncAction.PULL) {
 			syncResult = doPull(entity);
+		}
+		else if (entity.getSyncAction() == SyncAction.DELETE_RFS) {
+			syncResult = doDeleteFromRfs(entity);
+		}
+		else if (entity.getSyncAction() == SyncAction.DELETE_VFS) {
+			syncResult = doDeleteFromVfs(entity);
 		}
 		return syncResult;
 	}
@@ -244,30 +242,73 @@ public class SyncJob {
 		return confirmation.toString();
 	}
 
-    public String doExportPointCopy(ExportEntity entity) {
-        StringBuilder confirmation = new StringBuilder("Copy of ").append(entity.getVfsPath()).append(" to ").append(entity.getDestination()).append(" - ");
-        File file = new File(entity.getSourcePath());
-        if (file.exists()) {
-            if (file.isFile()) {
-                try {
-                    FileUtils.copyFile(file, new File(entity.getTargetPath()));
-                    confirmation.append("SUCCESS");
-                } catch (IOException e) {
-                    confirmation.append("FAILED (").append(e.getMessage()).append(")");
-                }
-            }
-            else if (file.isDirectory()) {
-                try {
-                    FileUtils.copyDirectory(file, new File(entity.getTargetPath()));
-                    confirmation.append("SUCCESS");
-                } catch (IOException e) {
-                    confirmation.append("FAILED (").append(e.getMessage()).append(")");
-                }
-            }
-        }
-        else {
-            confirmation.append(" - FILE NOT FOUND");
-        }
+	public String doDeleteFromRfs(SyncEntity entity) {
+		StringBuilder confirmation = new StringBuilder("DELETE: ").append(entity.getRfsPath()).append(" (not in the VFS) - ");
+		File rfsFile = entity.getRealFile();
+		if (FileUtils.deleteQuietly(rfsFile)) {
+			confirmation.append(" SUCCESS");
+		}
+		else {
+			confirmation.append(" FAILED!");
+		}
+		return confirmation.toString();
+	}
+
+	public String doDeleteFromVfs(SyncEntity entity) {
+		StringBuilder confirmation = new StringBuilder("DELETE: ").append(entity.getVfsPath()).append(" (not in the RFS) - ");
+		if (adapter.deleteResource(entity.getVfsPath())) {
+			confirmation.append(" SUCCESS");
+		}
+		else {
+			confirmation.append(" FAILED!");
+		}
+		return confirmation.toString();
+	}
+
+	public String doExportPointHandling(ExportEntity entity) {
+        StringBuilder confirmation = new StringBuilder();
+
+		if (!entity.isToBeDeleted()) {
+			confirmation.append("Copy of ").append(entity.getVfsPath()).append(" to ").append(entity.getDestination()).append(" - ");
+	        File file = new File(entity.getSourcePath());
+	        if (file.exists()) {
+	            if (file.isFile()) {
+	                try {
+	                    FileUtils.copyFile(file, new File(entity.getTargetPath()));
+	                    confirmation.append("SUCCESS");
+	                } catch (IOException e) {
+	                    confirmation.append("FAILED (").append(e.getMessage()).append(")");
+	                }
+	            }
+	            else if (file.isDirectory()) {
+	                try {
+	                    FileUtils.copyDirectory(file, new File(entity.getTargetPath()));
+	                    confirmation.append("SUCCESS");
+	                } catch (IOException e) {
+	                    confirmation.append("FAILED (").append(e.getMessage()).append(")");
+	                }
+	            }
+	        }
+	        else {
+	            confirmation.append(" - FILE NOT FOUND");
+	        }
+		}
+		else {
+			confirmation.append("Resource ").append(entity.getVfsPath()).append(" removed, deletion of exported file ")
+					.append(entity.getDestination()).append(" - ");
+			File file = new File(entity.getTargetPath());
+			if (file.exists()) {
+				if (FileUtils.deleteQuietly(file)) {
+					confirmation.append("SUCCESS");
+				}
+				else {
+					confirmation.append("FAILED");
+				}
+			}
+			else {
+				confirmation.append("NOT NECESSARY (doesn't exist)");
+			}
+		}
         return confirmation.toString();
     }
 
@@ -286,8 +327,8 @@ public class SyncJob {
 		return syncList;
 	}
 
-	public List<SyncEntity> getPullEntityList() {
-		return pullEntityList;
+	public List<SyncEntity> getRefreshEntityList() {
+		return refreshEntityList;
 	}
 
 	public List<ExportEntity> getExportList() {
@@ -300,10 +341,12 @@ public class SyncJob {
 
 	public void addSyncEntity(String module, SyncEntity entity) {
 		if (!syncList.contains(entity)) {
-			if (entity.getFolderSyncMode() == FolderSyncMode.PULL) {
-				this.pullEntityList.add(entity);
+			if (entity.getSyncAction() == SyncAction.PULL || entity.getSyncAction() == SyncAction.DELETE_RFS) {
+				this.refreshEntityList.add(entity);
 			}
-            addSyncEntityToExportListIfNecessary(module, entity);
+			if (entity.getSyncAction() != SyncAction.DELETE_VFS) {
+	            addSyncEntityToExportListIfNecessary(module, entity);
+			}
             syncList.add(entity);
 		}
 	}
@@ -320,6 +363,7 @@ public class SyncJob {
 	                exportEntity.setTargetPath(config.getWebappRoot() + File.separator + destination + relativePath);
 	                exportEntity.setVfsPath(entityPath);
 	                exportEntity.setDestination(destination);
+		            exportEntity.setToBeDeleted(syncEntity.getSyncAction() == SyncAction.DELETE_RFS);
 	                addExportEntity(exportEntity);
 	            }
 	        }
@@ -339,7 +383,7 @@ public class SyncJob {
 	}
 
 	public int getNumPullEntities() {
-		return pullEntityList.size();
+		return refreshEntityList.size();
 	}
 
 	public boolean hasPullEntities() {

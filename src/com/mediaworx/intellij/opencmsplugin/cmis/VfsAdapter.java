@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.cmis;
 
+import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
@@ -14,6 +15,7 @@ import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNameConstraintViolationException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
@@ -24,17 +26,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Adapter used to sync the RFS with the OpenCms VFS. Doesn't handle properties, siblings or content types.
+ * @author Kai Widmann, widmann@mediaworx.com
+ */
 public class VfsAdapter {
 
-    private Session session;
-    private boolean connected;
+	/** the CMIS session */
+	private Session session;
 
+	/** boolean flag denoting if the adapter is connected */
+	private boolean connected;
+
+	/** repository URL, for OpenCms CMIS usually "http://localhost:8080/opencms/cmisatom/cmis-offline/" */
 	private String atompubUrl;
+
+	/** OpenCms user with sufficient privileges to read/write from/to the VFS, e.g. "Admin" */
 	private String user;
+
+	/** the OpenCms user's password */
 	private String password;
 
-    // TODO: Handle ConnectionException
-    public VfsAdapter(String atompubUrl, String user, String password) {
+	/**
+	 * creates a new VfsAdapter that may be connected by calling {@link #startSession()}
+	 * @param atompubUrl repository URL, for OpenCms CMIS usually "http://localhost:8080/opencms/cmisatom/cmis-offline/"
+	 * @param user       OpenCms user with sufficient privileges to read/write from/to the VFS, e.g. "Admin"
+	 * @param password   the OpenCms user's password
+	 */
+	public VfsAdapter(String atompubUrl, String user, String password) {
 
 	    if (atompubUrl == null || atompubUrl.length() == 0) {
 		    throw new RuntimeException("parameter atompubUrl must not be null or empty");
@@ -46,14 +65,15 @@ public class VfsAdapter {
 		    throw new RuntimeException("parameter password must not be null or empty");
 	    }
 
-        this.atompubUrl = atompubUrl;
+	    this.atompubUrl = atompubUrl;
 	    this.user = user;
-	    this.password = password;
+		this.password = password;
+	}
 
-	    startSession();
-    }
-
-    public void startSession() {
+	/**
+	 * starts the CMIS session that is used to push or pull files/folders
+	 */
+	public void startSession() {
 
 	    if (password != null && password.length() > 0) {
 
@@ -98,77 +118,113 @@ public class VfsAdapter {
 			    connected = false;
 		    }
 		}
-    }
+	}
 
-    public boolean exists(String path) {
+	/**
+	 * checks if a VFS resource exists at the given path
+	 * @param path  the path to be checked (full root path, e.g.
+	 *              <code>/system/modules/com.mycompany.mymodule/classes/messages.properties</code>)
+	 * @return  <code>true</code> if the resource exists in the VFS, <code>false</code> otherwise
+	 */
+	public boolean exists(String path) {
 	    if (!connected) {
 		    System.out.println("not connected");
 		    return false;
 	    }
-        try {
-            session.getObjectByPath(path);
-            return true;
-        }
-        catch (CmisObjectNotFoundException e) {
-            return false;
-        }
-    }
+	    try {
+	        session.getObjectByPath(path);
+	        return true;
+	    }
+	    catch (CmisObjectNotFoundException e) {
+	        return false;
+	    }
+	}
 
-    public CmisObject getVfsObject(String path) throws CmsPermissionDeniedException {
+	/**
+	 * retrieves (pulls) the VFS resource at the given path
+	 * @param path  path of the resource to be pulled
+	 * @return  the VFS resource
+	 * @throws CmsPermissionDeniedException
+	 */
+	public CmisObject getVfsObject(String path) throws CmsPermissionDeniedException {
 	    if (!connected) {
 		    System.out.println("not connected");
 		    return null;
 	    }
 	    try {
-            return session.getObjectByPath(path);
-        }
-        catch (CmisObjectNotFoundException e) {
-            return null;
-        }
+	        return session.getObjectByPath(path);
+	    }
+	    catch (CmisObjectNotFoundException e) {
+	        return null;
+	    }
 	    catch (CmisPermissionDeniedException e) {
 		    e.printStackTrace(System.out);
 		    throw new CmsPermissionDeniedException("Permission denied, can't access "+path, e);
 	    }
-    }
+		catch (CmisConnectionException e) {
+			Messages.showDialog("Error connecting to the VFS" + e.getMessage() + "\nIs OpenCms running?",
+								"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+			e.printStackTrace(System.out);
+			connected = false;
+			return null;
+		}
+	}
 
-    private Folder getOrCreateFolder(String path) {
+	/**
+	 * retrieves a VFS folder, creating it if it doesn't exist
+	 * @param path  the path of the folder to be retrieved
+	 * @return  the VFS folder (may be newly created)
+	 */
+	private Folder getOrCreateFolder(String path) {
 	    if (!connected) {
 		    System.out.println("not connected");
 		    return null;
 	    }
 
 	    // check if the folder exists
-        try {
-            return (Folder)session.getObjectByPath(path);
-        }
-        // if the folder does not exist, create it
-        catch (CmisObjectNotFoundException e) {
-            String parentPath = path.substring(0, path.lastIndexOf("/"));
-            String foldername = path.substring(path.lastIndexOf("/") + 1, path.length());
-            System.out.println("creating folder "+path);
-            System.out.println("parent path "+parentPath);
-            System.out.println("foldername "+foldername);
+	    try {
+	        return (Folder)session.getObjectByPath(path);
+	    }
+	    // if the folder does not exist, create it
+	    catch (CmisObjectNotFoundException e) {
+	        String parentPath = path.substring(0, path.lastIndexOf("/"));
+	        String foldername = path.substring(path.lastIndexOf("/") + 1, path.length());
+	        System.out.println("creating folder "+path);
+	        System.out.println("parent path "+parentPath);
+	        System.out.println("foldername "+foldername);
 
-            Folder parent;
+	        Folder parent;
 
-            try {
-                parent = (Folder)session.getObjectByPath(parentPath);
-            }
-            catch (CmisObjectNotFoundException e2) {
-                parent = getOrCreateFolder(parentPath);
-            }
+	        try {
+	            parent = (Folder)session.getObjectByPath(parentPath);
+	        }
+	        catch (CmisObjectNotFoundException e2) {
+	            parent = getOrCreateFolder(parentPath);
+	        }
 
-            Map<String, String> newFolderProps = new HashMap<String, String>();
-            newFolderProps.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_FOLDER.value());
-            newFolderProps.put(PropertyIds.NAME, foldername);
-            return parent.createFolder(newFolderProps);
-        }
-    }
+	        Map<String, String> newFolderProps = new HashMap<String, String>();
+	        newFolderProps.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_FOLDER.value());
+	        newFolderProps.put(PropertyIds.NAME, foldername);
+	        return parent.createFolder(newFolderProps);
+	    }
+	}
 
+	/**
+	 * creates a folder in the VFS and returns it. If the folder already exists, the existing folder is returned
+	 * @param path  the folder's VFS path (full root path, e.g.
+	 *              <code>/system/modules/com.mycompany.mymodule/classes</code>)
+	 * @return  the newly created folder (or the folder that existed previously)
+	 */
 	public Folder createFolder(String path) {
 		return getOrCreateFolder(path);
 	}
 
+	/**
+	 * pushs a file from the RFS to the VFS
+	 * @param entity    the sync entity representing the file to be pushed
+	 * @return  a CMIS document of the newly created VFS file
+	 * @throws CmsPushException
+	 */
 	public Document pushFile(SyncEntity entity) throws CmsPushException {
 		if (!connected) {
 			System.out.println("not connected");
@@ -187,24 +243,28 @@ public class VfsAdapter {
 			ContentStream contentStream = session.getObjectFactory().createContentStream(rfsFile.getName(),
 					rfsFile.length(), mimetype, rfsFileInputStream);
 
+			// if the file already exists in the VFS ...
 			if (entity.replaceExistingEntity()) {
+				// ... update its content
 				vfsFile = (Document)entity.getVfsObject();
 				vfsFile.setContentStream(contentStream, true, true);
 			}
+			// if the file doesn't exist in the VFS
 			else {
-				// get the parent folder object from vfs
+				// ... get the parent folder object from the VFS
 				String parentPath = entity.getVfsPath().substring(0, entity.getVfsPath().lastIndexOf("/"));
 				Folder parent = getOrCreateFolder(parentPath);
 
-				// Create the file as Document Object
+				// ... and create the file as Document Object under the parent folder
 				Map<String, Object> properties = new HashMap<String, Object>();
 				properties.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_DOCUMENT.value());
 				properties.put(PropertyIds.NAME, rfsFile.getName());
 				vfsFile = parent.createDocument(properties, contentStream, VersioningState.NONE);
 			}
 
-			// Set file modification date
-            // This does not work when using OpenCms since OpenCms always sets the date of the CMIS change event
+			// Set file modification date in the VFS to the RFS file date
+	        // This does not work when using OpenCms since OpenCms always sets the date of the CMIS change event
+			// That's why the file date in the RFS has to be set to the VFS date (see finally block)
 			/*
 			Map<String, Object> dateProperties = new HashMap<String, Object>(1);
 			GregorianCalendar modifiedGC = new GregorianCalendar();
@@ -228,7 +288,7 @@ public class VfsAdapter {
 				}
 
 				if (vfsFileModifiedTime > 0) {
-					// Since setting the modification Date on the vfs file ain't possible, set the date for the rfs file
+					// Since setting the modification Date on the VFS file ain't possible, set the date for the RFS file
 					if (rfsFile.setLastModified(vfsFileModifiedTime)) {
 						System.out.println("Setting lastModificationDate successful");
 					}
@@ -245,47 +305,65 @@ public class VfsAdapter {
 		return vfsFile;
 	}
 
-    public void pullFile(SyncEntity syncEntity) {
+	/**
+	 * pulls a VFS file to the RFS
+	 * @param syncEntity    the sync entity representing the file to be pulled
+	 */
+	public void pullFile(SyncEntity syncEntity) {
 	    if (!connected) {
 		    System.out.println("not connected");
 		    return;
 	    }
 	    Document document = (Document)syncEntity.getVfsObject();
 
-        System.out.println("Pulling "+syncEntity.getVfsPath()+" to "+syncEntity.getRfsPath());
+	    System.out.println("Pulling "+syncEntity.getVfsPath()+" to "+syncEntity.getRfsPath());
 
-        InputStream is = document.getContentStream().getStream();
-        File rfsFile = syncEntity.createRealFile();
+	    InputStream is = document.getContentStream().getStream();
+	    File rfsFile = syncEntity.createRealFile();
 	    OutputStream os = null;
 	    try {
 	        os = new FileOutputStream(rfsFile);
 	        byte[] buffer = new byte[4096];
-            for (int n; (n = is.read(buffer)) != -1; ) {
-                os.write(buffer, 0, n);
-            }
-        }
-        catch (IOException e) {
-            System.out.println("There was an Exception writing to the local file "+syncEntity.getRfsPath()+": "+e+"\n"+e.getMessage());
-            rfsFile.delete();
-        }
-        finally {
-            try {
+	        for (int n; (n = is.read(buffer)) != -1; ) {
+	            os.write(buffer, 0, n);
+	        }
+	    }
+	    catch (IOException e) {
+	        System.out.println("There was an Exception writing to the local file " + syncEntity.getRfsPath() + ": " + e + "\n" + e.getMessage());
+	    }
+	    finally {
+	        try {
 	            is.close();
-	            os.close();
-            }
-            catch (IOException e) {
+	        }
+	        catch (IOException e) {
 	            // Do nothing
-            }
-            rfsFile.setLastModified(document.getLastModificationDate().getTimeInMillis());
-        }
-    }
+	        }
+		    if (os != null) {
+			    try {
+				    os.close();
+			    }
+			    catch (IOException e) {
+				    // Do nothing
+			    }
+		    }
+	        if (!rfsFile.setLastModified(document.getLastModificationDate().getTimeInMillis())) {
+		        System.out.println("there was an error setting the modification date for " + syncEntity.getRfsPath());
+	        }
+	    }
+	}
 
 
-    public void deleteFile(String vfsPath) {
+	/**
+	 * deletes a file or folder from the VFS
+	 * @param vfsPath   the path of the resource to be deleted (full root path, e.g.
+	 *              <code>/system/modules/com.mycompany.mymodule/formatters/delete_me.jsp</code>)
+	 */
+	public boolean deleteResource(String vfsPath) {
 	    if (!connected) {
 		    System.out.println("not connected");
-		    return;
+		    return false;
 	    }
+		boolean success = false;
 	    CmisObject vfsFile = null;
 	    try {
 		    vfsFile = getVfsObject(vfsPath);
@@ -294,26 +372,49 @@ public class VfsAdapter {
 		    e.printStackTrace(System.out);
 	    }
 	    if (vfsFile != null) {
-            if (vfsFile instanceof Folder) {
-                System.out.println("Deleting the following folder from the VFS: "+vfsPath);
-                ((Folder)vfsFile).deleteTree(true, UnfileObject.DELETE, true);
-            }
-            else {
-                System.out.println("Deleting the following file from the VFS: "+vfsPath);
-                vfsFile.delete();
-            }
-        }
-    }
+		    // Folders
+	        if (vfsFile instanceof Folder) {
+	            System.out.println("Deleting the following folder from the VFS: "+vfsPath);
+	            List<String> failedResourcePaths = ((Folder)vfsFile).deleteTree(true, UnfileObject.DELETE, true);
+		        success = failedResourcePaths == null || failedResourcePaths.size() <= 0;
+	        }
+	        // Files
+	        else {
+	            System.out.println("Deleting the following file from the VFS: "+vfsPath);
+	            vfsFile.delete();
+		        success = true;
+	        }
+	    }
+		return success;
+	}
 
-    public boolean isConnected() {
-        return connected;
-    }
+	/**
+	 * checks if the adapter is connected (a CMIS session is active)
+	 * @return  <code>true</code> id the adapter is connected, <code>false</code> otherwise
+	 */
+	public boolean isConnected() {
+		Folder folder = null;
+		try {
+			folder = session.getRootFolder();
+		}
+		catch (CmisConnectionException e) {
+			e.printStackTrace(System.out);
+			connected = false;
+		}
+	    return folder != null && connected;
+	}
 
-    public void clearCache() {
-        session.clear();
-    }
+	/**
+	 * clears the CMIS session cache
+	 */
+	public void clearCache() {
+	    session.clear();
+	}
 
 
+	/**
+	 * logs the CMIS capabilities, for debugging purposes
+	 */
 	public void logCapabilities() {
 		System.out.println("Printing repository capabilities...");
 		final RepositoryInfo repInfo = session.getRepositoryInfo();
@@ -347,6 +448,9 @@ public class VfsAdapter {
 		System.out.println("End of  repository capabilities");
 	}
 
+	/**
+	 * logs the properties of a CMIS object, for debugging purposes
+	 */
 	public void logCmisObjectProperties(CmisObject object) {
 		List<Property<?>> properties = object.getProperties();
 		for (Property<?> property : properties) {

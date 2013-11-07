@@ -1,12 +1,5 @@
 package com.mediaworx.intellij.opencmsplugin.entities;
 
-/**
- * Created with IntelliJ IDEA.
- * User: widmann
- * Date: 24.01.13
- * Time: 14:29
- * To change this template use File | Settings | File Templates.
- */
 public class ExportEntity {
 
 	public ExportEntity() {
@@ -16,6 +9,7 @@ public class ExportEntity {
 	String targetPath;
     String vfsPath;
     String destination;
+	boolean toBeDeleted;
 
 	public String getSourcePath() {
 		return sourcePath;
@@ -48,4 +42,12 @@ public class ExportEntity {
     public void setDestination(String destination) {
         this.destination = destination;
     }
+
+	public boolean isToBeDeleted() {
+		return toBeDeleted;
+	}
+
+	public void setToBeDeleted(boolean toBeDeleted) {
+		this.toBeDeleted = toBeDeleted;
+	}
 }

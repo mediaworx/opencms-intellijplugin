@@ -9,13 +9,14 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginComponent;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginConfigurationComponent;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.sync.FileSyncer;
 import com.mediaworx.intellij.opencmsplugin.tools.PathTools;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 
 public class OpenCmsSyncAllAction extends AnAction {
 
@@ -47,13 +48,11 @@ public class OpenCmsSyncAllAction extends AnAction {
 
 				FileSyncer fileSyncer = new FileSyncer(project, config, vfsAdapter);
 
-				HashMap<String, String> modulePaths = config.getLocalModuleVfsRootMap();
-				ArrayList<VirtualFile> moduleFolders = new ArrayList<VirtualFile>(modulePaths.size());
-
-				Iterator it = modulePaths.keySet().iterator();
+				Map<String, OpenCmsModule> modules = config.getModules();
+				ArrayList<VirtualFile> moduleFolders = new ArrayList<VirtualFile>(modules.size());
 
 				// First put all valid module paths in
-				for (String moduleName : modulePaths.keySet()) {
+				for (String moduleName : modules.keySet()) {
 					String modulePath = PathTools.getLocalModulesParentPath(moduleName, config) + File.separator + moduleName;
 					System.out.println("module path: " + modulePath);
 					VirtualFile parentFolder = LocalFileSystem.getInstance().findFileByIoFile(new File(modulePath));

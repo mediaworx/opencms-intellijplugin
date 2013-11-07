@@ -7,10 +7,10 @@ public class SyncFile extends SyncEntity {
     private Date lastChangeDate;
 
     public Date getLastChangeDate() {
-        return lastChangeDate;
+        return (Date)lastChangeDate.clone();
     }
 
     public void setLastChangeDate(Date lastChangeDate) {
-        this.lastChangeDate = lastChangeDate;
+        this.lastChangeDate = (Date)lastChangeDate.clone();
     }
 }

@@ -9,6 +9,7 @@ import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginComponent;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginConfigurationComponent;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.sync.FileSyncer;
 
 public class OpenCmsSyncAction extends AnAction {
 
