@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 public class OpenCmsPluginConfigurationData {
 
 	private static final String MODULECONFIGPATH = File.separator+"WEB-INF"+File.separator+"config"+File.separator+"opencms-modules.xml";
-
     public static final String NEW_LINE = System.getProperty("line.separator");
 
 	private boolean openCmsPluginActive;
@@ -20,8 +19,9 @@ public class OpenCmsPluginConfigurationData {
     private String username;
     private String password;
     private String webappRoot;
+	private String defaultLocalVfsRoot;
 	private HashMap<String, OpenCmsModule> modules;
-	private SyncMode syncMode;
+	private SyncMode defaultSyncMode;
 
 	public boolean isOpenCmsPluginActive() {
 		return openCmsPluginActive;
@@ -63,7 +63,15 @@ public class OpenCmsPluginConfigurationData {
         this.webappRoot = webappRoot;
     }
 
-    public String getLocalModuleVfsRoots() {
+	public String getDefaultLocalVfsRoot() {
+		return defaultLocalVfsRoot;
+	}
+
+	public void setDefaultLocalVfsRoot(String defaultLocalVfsRoot) {
+		this.defaultLocalVfsRoot = defaultLocalVfsRoot;
+	}
+
+	public String getLocalModuleVfsRoots() {
         StringBuilder localModuleVfsRoots = new StringBuilder();
         if (this.modules != null) {
             for (String moduleName : this.modules.keySet()) {
@@ -121,12 +129,12 @@ public class OpenCmsPluginConfigurationData {
         return modules.get(moduleName).getLocalVfsRoot();
     }
 
-	public SyncMode getSyncMode() {
-		return syncMode != null ? syncMode : SyncMode.PUSH;
+	public SyncMode getDefaultSyncMode() {
+		return defaultSyncMode != null ? defaultSyncMode : SyncMode.PUSH;
 	}
 
-	public void setSyncMode(String syncMode) {
-		this.syncMode = SyncMode.fromString(syncMode);
+	public void setDefaultSyncMode(SyncMode defaultSyncMode) {
+		this.defaultSyncMode = defaultSyncMode;
 	}
 
 	private String stripTrailingSeparator(String s) {

@@ -9,6 +9,7 @@ import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigura
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationForm;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -90,6 +91,7 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 		form = null;
     }
 
+	@Nullable
     public OpenCmsPluginConfigurationData getState() {
         return this.configurationData;
     }

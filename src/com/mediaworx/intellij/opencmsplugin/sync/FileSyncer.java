@@ -43,7 +43,7 @@ public class FileSyncer {
 
 	private SyncAction getRfsOnlySyncAction() {
 		SyncAction syncAction;
-		switch (config.getSyncMode()) {
+		switch (config.getDefaultSyncMode()) {
 			case PULL:
 				syncAction = SyncAction.DELETE_RFS;
 				break;
@@ -58,7 +58,7 @@ public class FileSyncer {
 
 	private SyncAction getVfsOnlySyncAction() {
 		SyncAction syncAction;
-		switch (config.getSyncMode()) {
+		switch (config.getDefaultSyncMode()) {
 			case PUSH:
 				syncAction = SyncAction.DELETE_VFS;
 				break;
@@ -371,7 +371,7 @@ public class FileSyncer {
 			// The file exists, check which one is newer
 			else {
 				System.out.println("It's a file that exists on the VFS and the RFS");
-				if (config.getSyncMode() == SyncMode.SYNC) {
+				if (config.getDefaultSyncMode() == SyncMode.SYNC) {
 					System.out.println("SyncMode is SYNC, so compare dates");
 					File realFile = new File(file.getPath());
 					Date localDate = new Date(realFile.lastModified());
@@ -390,12 +390,12 @@ public class FileSyncer {
 						System.out.println("VFS file and RFS file have the same date, ignore");
 					}
 				}
-				else if (config.getSyncMode() == SyncMode.PUSH) {
+				else if (config.getDefaultSyncMode() == SyncMode.PUSH) {
 					System.out.println("SyncMode is PUSH, so force push");
 					SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsObject, SyncAction.PUSH, true);
 					syncJob.addSyncEntity(module, syncFile);
 				}
-				else if (config.getSyncMode() == SyncMode.PULL) {
+				else if (config.getDefaultSyncMode() == SyncMode.PULL) {
 					System.out.println("SyncMode is PULL, so force pull");
 					SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsObject, SyncAction.PULL, true);
 					syncJob.addSyncEntity(module, syncFile);

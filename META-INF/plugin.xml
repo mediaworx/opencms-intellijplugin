@@ -24,6 +24,10 @@
     </project-components>
 
     <module-components>
+	    <component>
+		    <implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsModuleConfigurationComponent
+		    </implementation-class>
+	    </component>
     </module-components>
 
 
