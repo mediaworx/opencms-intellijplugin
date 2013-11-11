@@ -6,6 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.configuration.module.OpenCmsModuleConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
 
 import java.util.List;
 
@@ -14,8 +15,10 @@ public class OpenCmsModule {
 	OpenCmsPlugin plugin;
 	Module ideaModule;
 	OpenCmsModuleConfigurationData moduleConfig;
+
 	List<ModuleExportPoint> exportPoints;
 	String localVfsRoot;
+	SyncMode syncMode;
 
 	public OpenCmsModule(OpenCmsPlugin plugin, Module ideaModule) {
 		this.plugin = plugin;
@@ -43,6 +46,12 @@ public class OpenCmsModule {
 		vfsRootBuilder.append(moduleRoots[0].getPath()).append("/").append(relativeVfsRoot);
 		localVfsRoot = vfsRootBuilder.toString();
 
+		if (moduleConfig.isUseProjectDefaultSyncModeEnabled()) {
+			syncMode = plugin.getPluginConfiguration().getDefaultSyncMode();
+		}
+		else {
+			syncMode = moduleConfig.getSyncMode();
+		}
 	}
 
 	public void refresh(OpenCmsPlugin plugin, OpenCmsModuleConfigurationData moduleConfig) {
@@ -56,6 +65,10 @@ public class OpenCmsModule {
 
 	public String getLocalVfsRoot() {
 		return localVfsRoot;
+	}
+
+	public SyncMode getSyncMode() {
+		return syncMode;
 	}
 
 	public List<ModuleExportPoint> getExportPoints() {

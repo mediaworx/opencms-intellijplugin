@@ -27,22 +27,16 @@ public class FileSyncer {
 	private VfsAdapter vfsAdapter;
 	private SyncJob syncJob;
 
-	private SyncAction rfsOnlySyncAction;
-	private SyncAction vfsOnlySyncAction;
-
 
 	public FileSyncer(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
 		config = plugin.getPluginConfiguration();
 		vfsAdapter = plugin.getVfsAdapter();
-
-		rfsOnlySyncAction = getRfsOnlySyncAction();
-		vfsOnlySyncAction = getVfsOnlySyncAction();
 	}
 
-	private SyncAction getRfsOnlySyncAction() {
+	private SyncAction getRfsOnlySyncAction(SyncMode syncMode) {
 		SyncAction syncAction;
-		switch (config.getDefaultSyncMode()) {
+		switch (syncMode) {
 			case PULL:
 				syncAction = SyncAction.DELETE_RFS;
 				break;
@@ -55,9 +49,9 @@ public class FileSyncer {
 		return syncAction;
 	}
 
-	private SyncAction getVfsOnlySyncAction() {
+	private SyncAction getVfsOnlySyncAction(SyncMode syncMode) {
 		SyncAction syncAction;
-		switch (config.getDefaultSyncMode()) {
+		switch (syncMode) {
 			case PUSH:
 				syncAction = SyncAction.DELETE_VFS;
 				break;
@@ -424,17 +418,19 @@ public class FileSyncer {
 
 	private void addRfsOnlyFileToSyncJob(OpenCmsModule ocmsModule, String vfsPath, VirtualFile file, Document vfsFile) {
 		System.out.println("Adding RFS only file " + vfsPath);
-		SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsFile, rfsOnlySyncAction, vfsFile != null);
+		SyncAction syncAction = getRfsOnlySyncAction(ocmsModule.getSyncMode());
+		SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsFile, syncAction, vfsFile != null);
 		syncJob.addSyncEntity(ocmsModule, syncFile);
 	}
 
 	private void addRfsOnlyFolderTreeToSyncJob(OpenCmsModule ocmsModule, String vfsPath, VirtualFile file, boolean replaceExistingEntity, ProgressIndicatorManager progressIndicatorManager) {
 		System.out.println("Adding RFS only folder " + vfsPath);
 
-		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntity.Type.FOLDER, vfsPath, file.getPath(), file, null, rfsOnlySyncAction, replaceExistingEntity);
+		SyncAction syncAction = getRfsOnlySyncAction(ocmsModule.getSyncMode());
+		SyncFolder syncFile = (SyncFolder)getSyncEntity(SyncEntity.Type.FOLDER, vfsPath, file.getPath(), file, null, syncAction, replaceExistingEntity);
 		syncJob.addSyncEntity(ocmsModule, syncFile);
 
-		if (rfsOnlySyncAction != SyncAction.DELETE_RFS) {
+		if (syncAction != SyncAction.DELETE_RFS) {
 			System.out.println("Get children of folder " + vfsPath);
 			VirtualFile[] children = file.getChildren();
 			for (VirtualFile child : children) {
@@ -451,17 +447,19 @@ public class FileSyncer {
 
 	private void addVfsOnlyFileToSyncJob(OpenCmsModule ocmsModule, String vfsPath, String rfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
 		System.out.println("Adding VFS only file " + vfsPath);
-		SyncFile syncFile = (SyncFile) getSyncEntity(SyncEntity.Type.FILE, vfsPath, rfsPath, null, vfsObject, vfsOnlySyncAction, replaceExistingEntity);
+		SyncAction syncAction = getVfsOnlySyncAction(ocmsModule.getSyncMode());
+		SyncFile syncFile = (SyncFile) getSyncEntity(SyncEntity.Type.FILE, vfsPath, rfsPath, null, vfsObject, syncAction, replaceExistingEntity);
 		syncJob.addSyncEntity(ocmsModule, syncFile);
 	}
 
 	private void addVfsOnlyFolderTreeToSyncJob(OpenCmsModule ocmsModule, String vfsPath, String rfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
 		System.out.println("Adding VFS only folder " + vfsPath);
 
-		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntity.Type.FOLDER, vfsPath, rfsPath, null, vfsObject, vfsOnlySyncAction, replaceExistingEntity);
+		SyncAction syncAction = getVfsOnlySyncAction(ocmsModule.getSyncMode());
+		SyncFolder syncFile = (SyncFolder) getSyncEntity(SyncEntity.Type.FOLDER, vfsPath, rfsPath, null, vfsObject, syncAction, replaceExistingEntity);
 		syncJob.addSyncEntity(ocmsModule, syncFile);
 
-		if (vfsOnlySyncAction != SyncAction.DELETE_VFS) {
+		if (syncAction != SyncAction.DELETE_VFS) {
 			// traverse folder, add children to the SyncJob
 			System.out.println("Get children of VFS folder " + vfsPath);
 			ItemIterable<CmisObject> vfsChildren = ((Folder) vfsObject).getChildren();
