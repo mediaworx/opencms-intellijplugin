@@ -59,6 +59,11 @@ public class OpenCmsModule {
 		init(moduleConfig);
 	}
 
+	public void refresh() {
+		// for now a refresh just does the same as init
+		init(moduleConfig);
+	}
+
 	public String getModuleName() {
 		return moduleConfig.getModuleName();
 	}

@@ -3,63 +3,72 @@ package com.mediaworx.intellij.opencmsplugin.components;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationForm;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Collection;
 
 @State(
-    name = "OpenCmsPluginConfigurationData",
-    storages = {
-        @Storage( file = "$WORKSPACE_FILE$"),
-        @Storage( file = "$PROJECT_CONFIG_DIR$/opencms.xml", scheme = StorageScheme.DIRECTORY_BASED)
-    }
+	name = "OpenCmsPluginConfigurationData",
+	storages = {
+		@Storage( file = "$WORKSPACE_FILE$"),
+		@Storage( file = "$PROJECT_CONFIG_DIR$/opencms.xml", scheme = StorageScheme.DIRECTORY_BASED)
+	}
 )
 public class OpenCmsProjectConfigurationComponent implements ProjectComponent, Configurable, PersistentStateComponent<OpenCmsPluginConfigurationData> {
 
    	private OpenCmsPluginConfigurationForm form;
-    private OpenCmsPluginConfigurationData configurationData;
+	private OpenCmsPluginConfigurationData configurationData;
 
-    public void projectOpened() {
-        // Do nothing
-    }
+	Project project;
 
-    public void projectClosed() {
-        // Do nothing
-    }
+	public OpenCmsProjectConfigurationComponent(Project project) {
+		this.project = project;
+	}
 
-    public void initComponent() {
-        // Do nothing
-    }
+	public void projectOpened() {
+		// Do nothing
+	}
 
-    public void disposeComponent() {
-        // Do nothing
-    }
+	public void projectClosed() {
+		// Do nothing
+	}
 
-    @NotNull
-    public String getComponentName() {
-        return "OpenCmsPluginConfigurationComponent";
-    }
+	public void initComponent() {
+		// Do nothing
+	}
 
-    @Nls
-    public String getDisplayName() {
-        return "OpenCms Plugin";
-    }
+	public void disposeComponent() {
+		// Do nothing
+	}
 
-    public Icon getIcon() {
-        return IconLoader.getIcon("/icons/opencms.png");
-    }
+	@NotNull
+	public String getComponentName() {
+		return "OpenCmsPluginConfigurationComponent";
+	}
 
-    public String getHelpTopic() {
-        return null;  // Do nothing
-    }
+	@Nls
+	public String getDisplayName() {
+		return "OpenCms Plugin";
+	}
 
-    public JComponent createComponent() {
+	public Icon getIcon() {
+		return IconLoader.getIcon("/icons/opencms.png");
+	}
+
+	public String getHelpTopic() {
+		return null;  // Do nothing
+	}
+
+	public JComponent createComponent() {
 		if (configurationData == null) {
 			configurationData = new OpenCmsPluginConfigurationData();
 		}
@@ -67,43 +76,51 @@ public class OpenCmsProjectConfigurationComponent implements ProjectComponent, C
 			form = new OpenCmsPluginConfigurationForm();
 		}
 		return form.getRootComponent();
-    }
+	}
 
-    public boolean isModified() {
+	public boolean isModified() {
 		return form != null && form.isModified(configurationData);
-    }
+	}
 
-    public void apply() throws ConfigurationException {
+	public void apply() throws ConfigurationException {
 		if (form != null) {
 			// Get data from editor to component
 			form.getData(configurationData);
-		}
-    }
 
-    public void reset() {
+			OpenCmsPlugin plugin = project.getComponent(OpenCmsPlugin.class);
+			if (plugin.getOpenCmsModules() != null && plugin.getOpenCmsModules().getAllModules().size() > 0) {
+				Collection<OpenCmsModule> openCmsModules = plugin.getOpenCmsModules().getAllModules();
+				for (OpenCmsModule openCmsModule : openCmsModules) {
+					openCmsModule.refresh();
+				}
+			}
+		}
+	}
+
+	public void reset() {
 		if (form != null) {
 			// Reset form data from component
 			form.setData(configurationData);
 		}
-    }
+	}
 
-    public void disposeUIResources() {
+	public void disposeUIResources() {
 		form = null;
-    }
+	}
 
 	@Nullable
-    public OpenCmsPluginConfigurationData getState() {
-        return this.configurationData;
-    }
+	public OpenCmsPluginConfigurationData getState() {
+		return this.configurationData;
+	}
 
-    public void loadState(OpenCmsPluginConfigurationData configurationData) {
+	public void loadState(OpenCmsPluginConfigurationData configurationData) {
 		if (this.configurationData == null) {
 			this.configurationData = new OpenCmsPluginConfigurationData();
 		}
-        XmlSerializerUtil.copyBean(configurationData, this.configurationData);
-    }
+		XmlSerializerUtil.copyBean(configurationData, this.configurationData);
+	}
 
-    public OpenCmsPluginConfigurationData getConfigurationData() {
-        return configurationData;
-    }
+	public OpenCmsPluginConfigurationData getConfigurationData() {
+		return configurationData;
+	}
 }
