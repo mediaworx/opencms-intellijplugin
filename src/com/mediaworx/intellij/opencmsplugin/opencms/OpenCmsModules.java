@@ -8,7 +8,6 @@ import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.configuration.module.OpenCmsModuleConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.tools.PathTools;
 
-import java.io.File;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -64,7 +63,7 @@ public class OpenCmsModules {
 			System.out.println("No module configured for the file " + file.getPath());
 			return false;
 		}
-		String modulesPath = (PathTools.getLocalModulesParentPath(ocmsModule) + File.separator).replace('\\', '/');
+		String modulesPath = (PathTools.getLocalModulesParentPath(ocmsModule)+"/").replace('\\', '/');
 		System.out.println("moduleName: " + ocmsModule.getModuleName());
 		System.out.println("modulesPath: " + modulesPath);
 		System.out.println("filePath: " + file.getPath().replace('\\', '/'));

@@ -3,11 +3,12 @@ package com.mediaworx.intellij.opencmsplugin.configuration;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
 
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
-public class OpenCmsPluginConfigurationForm implements ActionListener {
+public class OpenCmsPluginConfigurationForm implements ActionListener, FocusListener {
 
 	private JPanel rootComponent;
 
@@ -27,19 +28,14 @@ public class OpenCmsPluginConfigurationForm implements ActionListener {
 	public OpenCmsPluginConfigurationForm() {
 		formPanel.setVisible(false);
 		activeCheckBox.addActionListener(this);
+		webappRoot.addFocusListener(this);
+		defaultLocalVfsRoot.addFocusListener(this);
 	}
 
 	// Method returns the root component of the form
 	public JComponent getRootComponent() {
 		return rootComponent;
 	}
-
-	private void setConfiguredOrKeepDefault(JTextComponent field, String configured) {
-		if (configured != null && configured.length() > 0 && field != null) {
-			field.setText(configured);
-		}
-	}
-
 
 	public void setData(OpenCmsPluginConfigurationData data) {
 		activeCheckBox.setSelected(data.isOpenCmsPluginActive());
@@ -49,11 +45,11 @@ public class OpenCmsPluginConfigurationForm implements ActionListener {
 		else {
 			formPanel.setVisible(false);
 		}
-		setConfiguredOrKeepDefault(repository, data.getRepository());
-		setConfiguredOrKeepDefault(username, data.getUsername());
-		setConfiguredOrKeepDefault(password, data.getPassword());
-		setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
-		setConfiguredOrKeepDefault(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot());
+		FormTools.setConfiguredOrKeepDefault(repository, data.getRepository());
+		FormTools.setConfiguredOrKeepDefault(username, data.getUsername());
+		FormTools.setConfiguredOrKeepDefault(password, data.getPassword());
+		FormTools.setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
+		FormTools.setConfiguredOrKeepDefault(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot());
 		if (data.getDefaultSyncMode() == SyncMode.PUSH) {
 			defaultSyncMode.setSelectedIndex(0);
 		}
@@ -102,5 +98,19 @@ public class OpenCmsPluginConfigurationForm implements ActionListener {
 			}
 		}
 
+	}
+
+	public void focusGained(FocusEvent e) {
+		// do nothing
+	}
+
+	public void focusLost(FocusEvent e) {
+		JTextField textField = (JTextField)e.getSource();
+		if (textField == webappRoot) {
+			FormTools.clearPathField(webappRoot, false);
+		}
+		if (textField == defaultLocalVfsRoot) {
+			FormTools.clearPathField(defaultLocalVfsRoot, true);
+		}
 	}
 }

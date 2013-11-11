@@ -311,7 +311,7 @@ public class SyncJob {
 	                String relativePath = entityVfsPath.substring(vfsSource.length());
 	                ExportEntity exportEntity = new ExportEntity();
 	                exportEntity.setSourcePath(localModuleVfsRoot+entityVfsPath);
-	                exportEntity.setTargetPath(config.getWebappRoot() + File.separator + destination + relativePath);
+	                exportEntity.setTargetPath(config.getWebappRoot() + "/" + destination + relativePath);
 	                exportEntity.setVfsPath(entityVfsPath);
 	                exportEntity.setDestination(destination);
 		            exportEntity.setToBeDeleted(syncEntity.getSyncAction() == SyncAction.DELETE_RFS);

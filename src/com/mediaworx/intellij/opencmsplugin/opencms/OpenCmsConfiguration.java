@@ -12,13 +12,12 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OpenCmsConfiguration {
 
-	private static final String CONFIGPATH = File.separator+"WEB-INF"+File.separator+"config"+File.separator;
+	private static final String CONFIGPATH = "/WEB-INF/config/";
 	private static final String MODULECONFIGFILE = "opencms-modules.xml";
 	private static final String EXPORTPOINT_XPATH = "/opencms/modules/module/name[normalize-space(text())=\"%s\"]/../exportpoints/exportpoint";
 

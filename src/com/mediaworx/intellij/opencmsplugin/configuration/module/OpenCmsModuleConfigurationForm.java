@@ -4,11 +4,12 @@ import com.mediaworx.intellij.opencmsplugin.configuration.FormTools;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
 
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
-public class OpenCmsModuleConfigurationForm implements ActionListener {
+public class OpenCmsModuleConfigurationForm implements ActionListener, FocusListener {
 
 	private JPanel rootComponent;
 	private JCheckBox isOpenCmsModule;
@@ -29,17 +30,12 @@ public class OpenCmsModuleConfigurationForm implements ActionListener {
 		useModuleSpecificVfsRootRadioButton.addActionListener(this);
 		useProjectDefaultSyncModeRadioButton.addActionListener(this);
 		useModuleSpecificSyncModeRadioButton.addActionListener(this);
+		localVfsRoot.addFocusListener(this);
 	}
 
 	// Method returns the root component of the form
 	public JComponent getRootComponent() {
 		return rootComponent;
-	}
-
-	private void setConfiguredOrKeepDefault(JTextComponent field, String configured) {
-		if (configured != null && configured.length() > 0 && field != null) {
-			field.setText(configured);
-		}
 	}
 
 	public void setData(OpenCmsModuleConfigurationData data) {
@@ -50,7 +46,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener {
 		else {
 			formPanel.setVisible(false);
 		}
-		setConfiguredOrKeepDefault(moduleName, data.getModuleName());
+		FormTools.setConfiguredOrKeepDefault(moduleName, data.getModuleName());
 
 		if (data.isUseProjectDefaultVfsRootEnabled()) {
 			useProjectDefaultVfsRootRadioButton.setSelected(true);
@@ -62,7 +58,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener {
 			useModuleSpecificVfsRootRadioButton.setSelected(true);
 			localVfsRoot.setEnabled(true);
 		}
-		setConfiguredOrKeepDefault(localVfsRoot, data.getLocalVfsRoot());
+		FormTools.setConfiguredOrKeepDefault(localVfsRoot, data.getLocalVfsRoot());
 
 		if (data.isUseProjectDefaultSyncModeEnabled()) {
 			useProjectDefaultSyncModeRadioButton.setSelected(true);
@@ -141,6 +137,17 @@ public class OpenCmsModuleConfigurationForm implements ActionListener {
 		}
 		if (source == useModuleSpecificSyncModeRadioButton && useModuleSpecificSyncModeRadioButton.isSelected()) {
 			syncMode.setEnabled(true);
+		}
+	}
+
+	public void focusGained(FocusEvent e) {
+		// do nothing
+	}
+
+	public void focusLost(FocusEvent e) {
+		JTextField textField = (JTextField)e.getSource();
+		if (textField == localVfsRoot) {
+			FormTools.clearPathField(localVfsRoot, true);
 		}
 	}
 }

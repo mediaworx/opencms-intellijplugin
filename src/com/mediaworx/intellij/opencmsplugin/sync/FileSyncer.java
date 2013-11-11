@@ -340,7 +340,7 @@ public class FileSyncer {
 						return;
 					}
 					String childVfsPath = vfsPath + "/" + vfsChild.getName();
-					String childRfsPath = rfsPath + File.separator + vfsChild.getName();
+					String childRfsPath = rfsPath + "/" + vfsChild.getName();
 
 					// files
 					if (vfsChild.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
@@ -465,7 +465,7 @@ public class FileSyncer {
 			ItemIterable<CmisObject> vfsChildren = ((Folder) vfsObject).getChildren();
 			for (CmisObject child : vfsChildren) {
 				String childVfsPath = vfsPath + "/" + child.getName();
-				String childRfsPath = rfsPath + File.separator + child.getName();
+				String childRfsPath = rfsPath + "/" + child.getName();
 
 				// files
 				if (child.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
