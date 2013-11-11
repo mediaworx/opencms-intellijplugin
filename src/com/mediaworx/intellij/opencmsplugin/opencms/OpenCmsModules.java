@@ -9,7 +9,6 @@ import com.mediaworx.intellij.opencmsplugin.configuration.module.OpenCmsModuleCo
 import com.mediaworx.intellij.opencmsplugin.tools.PathTools;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class OpenCmsModules {
 
@@ -64,10 +63,14 @@ public class OpenCmsModules {
 			return false;
 		}
 		String modulesPath = (PathTools.getLocalModulesParentPath(ocmsModule)+"/").replace('\\', '/');
-		System.out.println("moduleName: " + ocmsModule.getModuleName());
+		String filePath = file.getPath().replace('\\', '/');
+		if (filePath.endsWith(ocmsModule.getModuleName())) {
+			filePath = filePath + "/";
+		}
+		System.out.println("moduleName:  " + ocmsModule.getModuleName());
 		System.out.println("modulesPath: " + modulesPath);
-		System.out.println("filePath: " + file.getPath().replace('\\', '/'));
-		return file.getPath().replace('\\', '/').matches(Pattern.quote(modulesPath) + ".+");
+		System.out.println("filePath:    " + filePath);
+		return filePath.startsWith(modulesPath);
 	}
 
 	public ModuleExportPoint getExportPointForVfsResource(String resourcePath) {
