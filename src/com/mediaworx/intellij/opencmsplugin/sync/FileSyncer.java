@@ -364,11 +364,12 @@ public class FileSyncer {
 			// The file exists, check which one is newer
 			else {
 				System.out.println("It's a file that exists on the VFS and the RFS");
-				if (config.getDefaultSyncMode() == SyncMode.SYNC) {
+				File realFile = new File(file.getPath());
+				Date localDate = new Date(realFile.lastModified());
+				Date vfsDate = vfsObject.getLastModificationDate().getTime();
+
+				if (ocmsModule.getSyncMode() == SyncMode.SYNC) {
 					System.out.println("SyncMode is SYNC, so compare dates");
-					File realFile = new File(file.getPath());
-					Date localDate = new Date(realFile.lastModified());
-					Date vfsDate = vfsObject.getLastModificationDate().getTime();
 					if (localDate.after(vfsDate)) {
 						System.out.println("RFS file is newer, PUSH");
 						SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsObject, SyncAction.PUSH, true);
@@ -383,13 +384,13 @@ public class FileSyncer {
 						System.out.println("VFS file and RFS file have the same date, ignore");
 					}
 				}
-				else if (config.getDefaultSyncMode() == SyncMode.PUSH) {
-					System.out.println("SyncMode is PUSH, so force push");
+				else if (ocmsModule.getSyncMode() == SyncMode.PUSH && vfsDate.compareTo(localDate) != 0) {
+					System.out.println("SyncMode is PUSH and files are not equal, so force push");
 					SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsObject, SyncAction.PUSH, true);
 					syncJob.addSyncEntity(ocmsModule, syncFile);
 				}
-				else if (config.getDefaultSyncMode() == SyncMode.PULL) {
-					System.out.println("SyncMode is PULL, so force pull");
+				else if (ocmsModule.getSyncMode() == SyncMode.PULL && vfsDate.compareTo(localDate) != 0) {
+					System.out.println("SyncMode is PULL and files are not equal, so force pull");
 					SyncFile syncFile = (SyncFile)getSyncEntity(SyncEntity.Type.FILE, vfsPath, file.getPath(), file, vfsObject, SyncAction.PULL, true);
 					syncJob.addSyncEntity(ocmsModule, syncFile);
 				}
