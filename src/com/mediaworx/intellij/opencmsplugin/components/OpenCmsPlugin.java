@@ -25,6 +25,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
     public OpenCmsPlugin(Project project) {
         this.project = project;
+	    openCmsModules = new OpenCmsModules(this);
     }
 
     public void projectOpened() {
@@ -38,7 +39,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 	    ActionManager actionManager = ActionManager.getInstance();
 	    if (config != null && config.isOpenCmsPluginActive()) {
 		    openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
-		    openCmsModules = new OpenCmsModules(this);
 
 		    AnAction openCmsMenu = actionManager.getAction(OPENCMS_MENU_ID);
 		    DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction("MainMenu");

@@ -60,9 +60,7 @@ public class OpenCmsConfiguration {
 	}
 
 	private Document getParsedModuleConfigurationFile() {
-		if (parsedModuleConfigurationFile == null) {
-			parseConfiguration();
-		}
+		parseConfiguration();
 		return parsedModuleConfigurationFile;
 	}
 

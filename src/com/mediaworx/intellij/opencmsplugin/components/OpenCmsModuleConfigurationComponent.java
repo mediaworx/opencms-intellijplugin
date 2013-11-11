@@ -32,10 +32,10 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 
 	public OpenCmsModuleConfigurationComponent(Module module) {
 		this.module = module;
+		plugin = module.getProject().getComponent(OpenCmsPlugin.class);
 	}
 
 	public void initComponent() {
-		plugin = module.getProject().getComponent(OpenCmsPlugin.class);
 	}
 
 	public void disposeComponent() {
