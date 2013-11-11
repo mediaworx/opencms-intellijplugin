@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 public class OpenCmsModuleConfigurationForm implements ActionListener {
 
 	private JPanel rootComponent;
-	private JPanel basePanel;
 	private JCheckBox isOpenCmsModule;
 	private JTextField moduleName;
 	private JPanel formPanel;
@@ -118,7 +117,6 @@ public class OpenCmsModuleConfigurationForm implements ActionListener {
 	}
 
 	private void createUIComponents() {
-		// TODO: place custom component creation code here
 	}
 
 	public void actionPerformed(ActionEvent e) {

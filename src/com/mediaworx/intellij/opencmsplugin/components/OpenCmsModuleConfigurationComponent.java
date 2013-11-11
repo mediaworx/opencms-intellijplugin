@@ -25,18 +25,24 @@ import javax.swing.*;
 )
 public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Configurable, PersistentStateComponent<OpenCmsModuleConfigurationData> {
 
+	private OpenCmsPlugin plugin;
+	private Module module;
 	private OpenCmsModuleConfigurationForm form;
 	private OpenCmsModuleConfigurationData configurationData;
 
 	public OpenCmsModuleConfigurationComponent(Module module) {
+		this.module = module;
 	}
 
 	public void initComponent() {
-		// TODO: insert component initialization logic here
+		plugin = module.getProject().getComponent(OpenCmsPlugin.class);
 	}
 
 	public void disposeComponent() {
-		// TODO: insert component disposal logic here
+		plugin = null;
+		module = null;
+		form = null;
+		configurationData = null;
 	}
 
 	@NotNull
@@ -87,9 +93,20 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	}
 
 	public void apply() throws ConfigurationException {
+
 		if (form != null) {
 			// Get data from editor to component
 			form.getData(configurationData);
+			handleOcmsModuleRegistration();
+		}
+	}
+
+	private void handleOcmsModuleRegistration() {
+		if (configurationData.isOpenCmsModuleEnabled()) {
+			plugin.getOpenCmsModules().registerModule(module, configurationData);
+		}
+		else {
+			plugin.getOpenCmsModules().unregisterModule(module);
 		}
 	}
 
@@ -114,10 +131,6 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 			this.configurationData = new OpenCmsModuleConfigurationData();
 		}
         XmlSerializerUtil.copyBean(configurationData, this.configurationData);
-	    // this.configurationData.initModuleConfiguration();
-	}
-
-	public OpenCmsModuleConfigurationData getConfigurationData() {
-		return configurationData;
+		handleOcmsModuleRegistration();
 	}
 }

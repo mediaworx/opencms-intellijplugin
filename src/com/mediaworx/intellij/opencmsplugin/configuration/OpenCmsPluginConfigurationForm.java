@@ -17,12 +17,9 @@ public class OpenCmsPluginConfigurationForm implements ActionListener {
 	private JTextField password;
 	private JTextField webappRoot;
 	private JTextField defaultLocalVfsRoot;
-	private JTextArea localModuleVfsRoots;
 	private JComboBox defaultSyncMode;
 
-	private JLabel moduleConfigurationHint;
 	private JPanel formPanel;
-	private JPanel basePanel;
 
 //	private void createUIComponents() {
 //	}
@@ -57,7 +54,6 @@ public class OpenCmsPluginConfigurationForm implements ActionListener {
 		setConfiguredOrKeepDefault(password, data.getPassword());
 		setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
 		setConfiguredOrKeepDefault(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot());
-		setConfiguredOrKeepDefault(localModuleVfsRoots, data.getLocalModuleVfsRoots());
 		if (data.getDefaultSyncMode() == SyncMode.PUSH) {
 			defaultSyncMode.setSelectedIndex(0);
 		}
@@ -77,9 +73,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener {
 		data.setPassword(password.getText());
 		data.setWebappRoot(webappRoot.getText());
 		data.setDefaultLocalVfsRoot(defaultLocalVfsRoot.getText());
-		data.setLocalModuleVfsRoots(localModuleVfsRoots.getText());
 		data.setDefaultSyncMode(FormTools.getSyncModeFromComboBox(defaultSyncMode));
-		data.initModuleConfiguration();
 	}
 
 
@@ -90,13 +84,11 @@ public class OpenCmsPluginConfigurationForm implements ActionListener {
 		if (password.getText() != null ? !password.getText().equals(data.getPassword()) : data.getPassword() != null) return true;
 		if (webappRoot.getText() != null ? !webappRoot.getText().equals(data.getWebappRoot()) : data.getWebappRoot() != null) return true;
 		if (defaultLocalVfsRoot.getText() != null ? !defaultLocalVfsRoot.getText().equals(data.getDefaultLocalVfsRoot()) : data.getDefaultLocalVfsRoot() != null) return true;
-		if (localModuleVfsRoots.getText() != null ? !localModuleVfsRoots.getText().equals(data.getLocalModuleVfsRoots()) : data.getLocalModuleVfsRoots() != null) return true;
 		if (defaultSyncMode.getSelectedItem() != null ? !FormTools.getSyncModeFromComboBox(defaultSyncMode).equals(data.getDefaultSyncMode()) : data.getDefaultSyncMode() != null) return true;
 		return false;
 	}
 
 	private void createUIComponents() {
-		// TODO: place custom component creation code here
 	}
 
 	public void actionPerformed(ActionEvent e) {

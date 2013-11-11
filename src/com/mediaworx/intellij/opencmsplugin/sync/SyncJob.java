@@ -2,15 +2,14 @@ package com.mediaworx.intellij.opencmsplugin.sync;
 
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
+import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
-import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -20,17 +19,17 @@ import java.util.List;
 
 public class SyncJob {
 
-	private Project project;
+	private OpenCmsPlugin plugin;
     private OpenCmsPluginConfigurationData config;
 	private VfsAdapter adapter;
 	private List<SyncEntity> syncList;
 	private List<SyncEntity> refreshEntityList;
 	private List<ExportEntity> exportList;
 
-	public SyncJob(Project project, OpenCmsPluginConfigurationData config, VfsAdapter adapter) {
-		this.project = project;
-        this.config = config;
-		this.adapter = adapter;
+	public SyncJob(OpenCmsPlugin plugin) {
+		this.plugin = plugin;
+        config = plugin.getPluginConfiguration();
+		adapter = plugin.getVfsAdapter();
 		this.syncList = new ArrayList<SyncEntity>();
 		this.refreshEntityList = new ArrayList<SyncEntity>();
 		this.exportList = new ArrayList<ExportEntity>();
@@ -102,7 +101,7 @@ public class SyncJob {
 			}
 		};
 
-		ProgressManager.getInstance().runProcessWithProgressSynchronously(deployRunner, "Syncing with OpenCms VFS ...", true, project);
+		ProgressManager.getInstance().runProcessWithProgressSynchronously(deployRunner, "Syncing with OpenCms VFS ...", true, plugin.getProject());
 
 		String msg = outputBuffer.toString();
 		Messages.showMessageDialog(msg, "OpenCms VFS Sync", msg.contains("ERROR") ? Messages.getErrorIcon() : Messages.getInformationIcon());
@@ -215,6 +214,8 @@ public class SyncJob {
 	public String doExportPointHandling(ExportEntity entity) {
         StringBuilder confirmation = new StringBuilder();
 
+		System.out.println("ExportEntity: " + entity);
+
 		if (!entity.isToBeDeleted()) {
 			confirmation.append("Copy of ").append(entity.getVfsPath()).append(" to ").append(entity.getDestination()).append(" - ");
 	        File file = new File(entity.getSourcePath());
@@ -282,36 +283,34 @@ public class SyncJob {
 		return exportList;
 	}
 
-	public void setExportList(List<ExportEntity> exportList) {
-		this.exportList = exportList;
-	}
-
-	public void addSyncEntity(String module, SyncEntity entity) {
+	public void addSyncEntity(OpenCmsModule ocmsModule, SyncEntity entity) {
 		if (!syncList.contains(entity)) {
 			if (entity.getSyncAction() == SyncAction.PULL || entity.getSyncAction() == SyncAction.DELETE_RFS) {
 				this.refreshEntityList.add(entity);
 			}
 			if (entity.getSyncAction() != SyncAction.DELETE_VFS) {
-	            addSyncEntityToExportListIfNecessary(module, entity);
+	            addSyncEntityToExportListIfNecessary(ocmsModule, entity);
 			}
             syncList.add(entity);
 		}
 	}
 
-    public void addSyncEntityToExportListIfNecessary(String moduleName, SyncEntity syncEntity) {
+    public void addSyncEntityToExportListIfNecessary(OpenCmsModule ocmsModule, SyncEntity syncEntity) {
 
-	    OpenCmsModule module = config.getModule(moduleName);
-	    List<ModuleExportPoint> exportPoints = module.getExportPoints();
+	    List<ModuleExportPoint> exportPoints = ocmsModule.getExportPoints();
 
         if (exportPoints != null) {
+
+	        String localModuleVfsRoot = ocmsModule.getLocalVfsRoot();
+	        String entityVfsPath = syncEntity.getVfsPath();
+
 		    for (ModuleExportPoint exportPoint : exportPoints) {
-	            String entityVfsPath = syncEntity.getVfsPath();
 			    String vfsSource = exportPoint.getVfsSource();
 	            if (entityVfsPath.startsWith(vfsSource)) {
 	                String destination = exportPoint.getRfsTarget();
 	                String relativePath = entityVfsPath.substring(vfsSource.length());
 	                ExportEntity exportEntity = new ExportEntity();
-	                exportEntity.setSourcePath(config.getLocalModuleVfsRoot(moduleName)+entityVfsPath);
+	                exportEntity.setSourcePath(localModuleVfsRoot+entityVfsPath);
 	                exportEntity.setTargetPath(config.getWebappRoot() + File.separator + destination + relativePath);
 	                exportEntity.setVfsPath(entityVfsPath);
 	                exportEntity.setDestination(destination);

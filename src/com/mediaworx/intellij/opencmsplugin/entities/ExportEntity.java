@@ -50,4 +50,15 @@ public class ExportEntity {
 	public void setToBeDeleted(boolean toBeDeleted) {
 		this.toBeDeleted = toBeDeleted;
 	}
+
+	@Override
+	public String toString() {
+		return "ExportEntity {\n" +
+				"  sourcePath:  " + sourcePath + "\n" +
+				"  targetPath:  " + targetPath + "\n" +
+				"  vfsPath:     " + vfsPath + "\n" +
+				"  destination: " + destination + "\n" +
+				"  toBeDeleted: " + toBeDeleted + "\n" +
+				"} " + super.toString();
+	}
 }

@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.cmis;
+package com.mediaworx.intellij.opencmsplugin.sync;
 
 import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
@@ -393,6 +393,12 @@ public class VfsAdapter {
 	 * @return  <code>true</code> id the adapter is connected, <code>false</code> otherwise
 	 */
 	public boolean isConnected() {
+		if (!connected) {
+			return false;
+		}
+		if (session == null) {
+			return false;
+		}
 		Folder folder = null;
 		try {
 			folder = session.getRootFolder();

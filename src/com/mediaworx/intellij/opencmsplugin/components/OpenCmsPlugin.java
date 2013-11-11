@@ -3,21 +3,27 @@ package com.mediaworx.intellij.opencmsplugin.components;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
-import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsConfiguration;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
+import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import org.jetbrains.annotations.NotNull;
 
-public class OpenCmsPluginComponent implements ProjectComponent {
+public class OpenCmsPlugin implements ProjectComponent {
 
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
 	private static final String EDITOR_POPUP_ID = "OpenCmsEditorPopupAction";
 	private static final String PROJECT_POPUP_ID = "OpenCmsProjectViewPopupAction";
+	private static final String SYNC_ALL_ID = "OpenCmsSyncAllAction";
+	private static final String SYNC_ID = "OpenCmsSyncAction";
 
     Project project;
+	OpenCmsConfiguration openCmsConfiguration;
+	OpenCmsModules openCmsModules;
     VfsAdapter vfsAdapter;
 	OpenCmsPluginConfigurationData config;
 
-    public OpenCmsPluginComponent(Project project) {
+    public OpenCmsPlugin(Project project) {
         this.project = project;
     }
 
@@ -28,9 +34,12 @@ public class OpenCmsPluginComponent implements ProjectComponent {
 	}
 
     public void initComponent() {
-	    config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getConfigurationData();
+	    config = project.getComponent(OpenCmsProjectConfigurationComponent.class).getConfigurationData();
 	    ActionManager actionManager = ActionManager.getInstance();
 	    if (config != null && config.isOpenCmsPluginActive()) {
+		    openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
+		    openCmsModules = new OpenCmsModules(this);
+
 		    AnAction openCmsMenu = actionManager.getAction(OPENCMS_MENU_ID);
 		    DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction("MainMenu");
 		    mainMenu.addAction(openCmsMenu, new Constraints(Anchor.BEFORE, "WindowMenu"));
@@ -53,10 +62,17 @@ public class OpenCmsPluginComponent implements ProjectComponent {
 		    actionManager.unregisterAction(OPENCMS_MENU_ID);
 		    actionManager.unregisterAction(EDITOR_POPUP_ID);
 		    actionManager.unregisterAction(PROJECT_POPUP_ID);
+		    actionManager.unregisterAction(SYNC_ID);
+		    actionManager.unregisterAction(SYNC_ALL_ID);
 	    }
 	}
 
 	public void disposeComponent() {
+		project = null;
+		vfsAdapter = null;
+		config = null;
+		openCmsConfiguration = null;
+		openCmsModules = null;
 	}
 
 	@NotNull
@@ -64,7 +80,23 @@ public class OpenCmsPluginComponent implements ProjectComponent {
 		return "OpenCmsPluginComponent";
 	}
 
-    public VfsAdapter getVfsAdapter() {
+	public Project getProject() {
+		return project;
+	}
+
+	public OpenCmsConfiguration getOpenCmsConfiguration() {
+		return openCmsConfiguration;
+	}
+
+	public OpenCmsPluginConfigurationData getPluginConfiguration() {
+		return config;
+	}
+
+	public OpenCmsModules getOpenCmsModules() {
+		return openCmsModules;
+	}
+
+	public VfsAdapter getVfsAdapter() {
         if (vfsAdapter == null) {
             if (config != null && config.isOpenCmsPluginActive() && config.getPassword() != null && config.getPassword().length() > 0) {
                 vfsAdapter = new VfsAdapter(config.getRepository(), config.getUsername(), config.getPassword());

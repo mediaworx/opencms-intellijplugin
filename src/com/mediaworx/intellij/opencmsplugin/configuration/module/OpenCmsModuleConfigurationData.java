@@ -58,5 +58,4 @@ public class OpenCmsModuleConfigurationData {
 	public void setSyncMode(SyncMode syncMode) {
 		this.syncMode = syncMode;
 	}
-
 }

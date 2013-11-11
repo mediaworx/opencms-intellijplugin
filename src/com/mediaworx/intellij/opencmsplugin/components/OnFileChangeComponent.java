@@ -17,12 +17,12 @@ import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
-import com.mediaworx.intellij.opencmsplugin.cmis.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
-import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
-import com.mediaworx.intellij.opencmsplugin.tools.PathTools;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
+import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
@@ -42,11 +42,11 @@ import java.util.List;
 public class OnFileChangeComponent implements ProjectComponent {
 
     private Project project;
+	private OpenCmsPlugin plugin;
     private OpenCmsPluginConfigurationData config;
 
     public OnFileChangeComponent(Project project) {
         this.project = project;
-        this.config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getConfigurationData();
     }
 
 
@@ -57,22 +57,22 @@ public class OnFileChangeComponent implements ProjectComponent {
 
     public void initComponent() {
 
-        if (config != null && config.isOpenCmsPluginActive()) {
+	    plugin = project.getComponent(OpenCmsPlugin.class);
+        config = plugin.getPluginConfiguration();
 
-	        MessageBus bus = ApplicationManager.getApplication().getMessageBus();
-            MessageBusConnection connection = bus.connect();
+	    MessageBus bus = ApplicationManager.getApplication().getMessageBus();
+        MessageBusConnection connection = bus.connect();
 
-            connection.subscribe(AppTopics.FILE_DOCUMENT_SYNC,
-                    new FileDocumentManagerAdapter() {
-                        @Override
-                        public void beforeDocumentSaving(@NotNull Document document) {
-                            System.out.println("Document was saved: "+document);
-                            // TODO: Überlegen, ob File Save Events direkt ins VFS gesynct werden sollen
-                        }
-                    });
+        connection.subscribe(AppTopics.FILE_DOCUMENT_SYNC,
+                new FileDocumentManagerAdapter() {
+                    @Override
+                    public void beforeDocumentSaving(@NotNull Document document) {
+                        System.out.println("Document was saved: "+document);
+                        // TODO: Überlegen, ob File Save Events direkt ins VFS gesynct werden sollen
+                    }
+                });
 
-            connection.subscribe(VirtualFileManager.VFS_CHANGES, fileChangeListener);
-        }
+        connection.subscribe(VirtualFileManager.VFS_CHANGES, fileChangeListener);
     }
 
     public void disposeComponent() {
@@ -91,7 +91,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 		private VfsAdapter getVfsAdapter() {
 
 			if (vfsAdapter == null) {
-				vfsAdapter = project.getComponent(OpenCmsPluginComponent.class).getVfsAdapter();
+				vfsAdapter = plugin.getVfsAdapter();
 			}
 
 			// Not connected yet (maybe OpenCms wasn't started when the project opened)
@@ -116,19 +116,23 @@ public class OnFileChangeComponent implements ProjectComponent {
 			ArrayList<VfsFileMoveInfo> vfsFilesToBeMoved = new ArrayList<VfsFileMoveInfo>();
 			ArrayList<VfsFileRenameInfo> vfsFilesToBeRenamed = new ArrayList<VfsFileRenameInfo>();
 
+			OpenCmsModules ocmsModules = plugin.getOpenCmsModules();
+
 			for (VFileEvent event : vFileEvents) {
 
 				// File is deleted
 				if (event instanceof VFileDeleteEvent) {
 
-					VirtualFile file = event.getFile();
+					VirtualFile ideaVFile = event.getFile();
 
-					if (file != null) {
-						System.out.println("The following file was deleted: " + file.getPath());
+					if (ideaVFile != null) {
+						System.out.println("The following file was deleted: " + ideaVFile.getPath());
+
+						OpenCmsModule ocmsModule = ocmsModules.getModuleForIdeaVFile(ideaVFile);
 
 						// check if the file belongs to an OpenCms module
-						if (PathTools.isFileInModulePath(config, file)) {
-							String vfsPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, file), config, file);
+						if (ocmsModule  != null) {
+							String vfsPath = ocmsModule.getVfsPathForIdeaVFile(ideaVFile);
 							if (getVfsAdapter().exists(vfsPath)) {
 								vfsFilesToBeDeleted.add(vfsPath);
 							}
@@ -143,23 +147,24 @@ public class OnFileChangeComponent implements ProjectComponent {
 					if (file != null) {
 						System.out.println("The following file was moved: " + file.getPath());
 
-						VirtualFile oldParent = ((VFileMoveEvent) event).getOldParent();
-						VirtualFile newParent = ((VFileMoveEvent) event).getNewParent();
+						VirtualFile oldParent = ((VFileMoveEvent)event).getOldParent();
+						VirtualFile newParent = ((VFileMoveEvent)event).getNewParent();
+						OpenCmsModule oldParentOcmsModule = ocmsModules.getModuleForIdeaVFile(oldParent);
+						OpenCmsModule newParentOcmsModule = ocmsModules.getModuleForIdeaVFile(newParent);
 
 						// old and new parent are in a module -> move the file in the OpenCms VFS
-						if (PathTools.isFileInModulePath(config, oldParent) && PathTools.isFileInModulePath(config, newParent)) {
-							String module = PathTools.getModuleName(config, file);
-							String oldParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, oldParent);
+						if (oldParentOcmsModule != null && newParentOcmsModule != null) {
+							String oldParentPath = oldParentOcmsModule.getVfsPathForIdeaVFile(oldParent);
 							String vfsPath = oldParentPath + "/" + file.getName();
 							if (getVfsAdapter().exists(vfsPath)) {
-								String newParentPath = PathTools.getVfsPathFromIdeaVFile(module, config, newParent);
+								String newParentPath = newParentOcmsModule.getVfsPathForIdeaVFile(newParent);
 								vfsFilesToBeMoved.add(new VfsFileMoveInfo(vfsPath, oldParentPath, newParentPath));
 							}
 						}
 
 						// if the new parent path is not inside a module, remove it
-						else if (PathTools.isFileInModulePath(config, oldParent) && !PathTools.isFileInModulePath(config, newParent)) {
-							String oldParentPath = PathTools.getVfsPathFromIdeaVFile(PathTools.getModuleName(config, oldParent), config, oldParent);
+						else if (oldParentOcmsModule != null && newParentOcmsModule == null) {
+							String oldParentPath = oldParentOcmsModule.getVfsPathForIdeaVFile(oldParent);
 							String vfsPath = oldParentPath + "/" + file.getName();
 
 							System.out.println("File was moved out of the module path, deleting " + vfsPath);
@@ -176,18 +181,21 @@ public class OnFileChangeComponent implements ProjectComponent {
 
 					String propertyName = ((VFilePropertyChangeEvent)event).getPropertyName();
 					if ("name".equals(propertyName)) {
-						VirtualFile file = event.getFile();
-						if (file != null) {
-							System.out.println("The following file was renamed: " + file.getPath());
+						VirtualFile ideaVFile = event.getFile();
+						if (ideaVFile != null) {
+							System.out.println("The following file was renamed: " + ideaVFile.getPath());
 
-							String oldName = (String) ((VFilePropertyChangeEvent) event).getOldValue();
-							String newName = (String) ((VFilePropertyChangeEvent) event).getNewValue();
-							String module = PathTools.getModuleName(config, file);
-							String newVfsPath = PathTools.getVfsPathFromIdeaVFile(module, config, file);
-							String oldVfsPath = newVfsPath.replaceFirst(newName, oldName);
+							OpenCmsModule ocmsModule = ocmsModules.getModuleForIdeaVFile(ideaVFile);
 
-							if (getVfsAdapter().exists(oldVfsPath)) {
-								vfsFilesToBeRenamed.add(new VfsFileRenameInfo(oldVfsPath, newName));
+							if (ocmsModule != null) {
+								String oldName = (String)((VFilePropertyChangeEvent) event).getOldValue();
+								String newName = (String)((VFilePropertyChangeEvent) event).getNewValue();
+								String newVfsPath = ocmsModule.getVfsPathForIdeaVFile(ideaVFile);
+								String oldVfsPath = newVfsPath.replaceFirst(newName, oldName);
+
+								if (getVfsAdapter().exists(oldVfsPath)) {
+									vfsFilesToBeRenamed.add(new VfsFileRenameInfo(oldVfsPath, newName));
+								}
 							}
 						}
 					}
@@ -198,17 +206,8 @@ public class OnFileChangeComponent implements ProjectComponent {
 			List<File> refreshFiles = null;
 
 			if (vfsFilesToBeDeleted.size() > 0 || vfsFilesToBeMoved.size() > 0 || vfsFilesToBeRenamed.size() > 0) {
-				allExportPoints = new ArrayList<ModuleExportPoint>();
 				refreshFiles = new ArrayList<File>();
-				for (OpenCmsModule module : config.getModules().values()) {
-					List<ModuleExportPoint> exportPoints = module.getExportPoints();
-					if (exportPoints != null) {
-						for (ModuleExportPoint exportPoint : exportPoints) {
-							allExportPoints.add(exportPoint);
-						}
-					}
-				}
-
+				allExportPoints = ocmsModules.getAllExportPoints();
 			}
 
 			// Delete files
@@ -255,8 +254,8 @@ public class OnFileChangeComponent implements ProjectComponent {
 					for (VfsFileMoveInfo moveInfo : vfsFilesToBeMoved) {
 						try {
 							System.out.println("Moving " + moveInfo.getVfsPath() + " to " + moveInfo.getNewParentPath());
-							Folder oldParent = (Folder) getVfsAdapter().getVfsObject(moveInfo.getOldParentPath());
-							Folder newParent = (Folder) getVfsAdapter().getVfsObject(moveInfo.getNewParentPath());
+							Folder oldParent = (Folder)getVfsAdapter().getVfsObject(moveInfo.getOldParentPath());
+							Folder newParent = (Folder)getVfsAdapter().getVfsObject(moveInfo.getNewParentPath());
 							if (newParent == null) {
 								newParent = getVfsAdapter().createFolder(moveInfo.getNewParentPath());
 							}

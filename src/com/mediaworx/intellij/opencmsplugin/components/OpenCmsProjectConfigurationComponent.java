@@ -20,7 +20,7 @@ import javax.swing.*;
         @Storage( file = "$PROJECT_CONFIG_DIR$/opencms.xml", scheme = StorageScheme.DIRECTORY_BASED)
     }
 )
-public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Configurable, PersistentStateComponent<OpenCmsPluginConfigurationData> {
+public class OpenCmsProjectConfigurationComponent implements ProjectComponent, Configurable, PersistentStateComponent<OpenCmsPluginConfigurationData> {
 
    	private OpenCmsPluginConfigurationForm form;
     private OpenCmsPluginConfigurationData configurationData;
@@ -101,7 +101,6 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 			this.configurationData = new OpenCmsPluginConfigurationData();
 		}
         XmlSerializerUtil.copyBean(configurationData, this.configurationData);
-	    this.configurationData.initModuleConfiguration();
     }
 
     public OpenCmsPluginConfigurationData getConfigurationData() {

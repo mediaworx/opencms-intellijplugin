@@ -13,10 +13,10 @@
 
     <project-components>
         <component>
-            <implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginConfigurationComponent</implementation-class>
+            <implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsProjectConfigurationComponent</implementation-class>
         </component>
         <component>
-            <implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsPluginComponent</implementation-class>
+            <implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin</implementation-class>
         </component>
         <component>
             <implementation-class>com.mediaworx.intellij.opencmsplugin.components.OnFileChangeComponent</implementation-class>
