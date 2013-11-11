@@ -54,7 +54,7 @@ public class OpenCmsModule {
 		}
 	}
 
-	public void refresh(OpenCmsPlugin plugin, OpenCmsModuleConfigurationData moduleConfig) {
+	public void refresh(OpenCmsModuleConfigurationData moduleConfig) {
 		// for now a refresh just does the same as init
 		init(moduleConfig);
 	}

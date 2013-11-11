@@ -30,7 +30,7 @@ public class OpenCmsModules {
 		OpenCmsModule ocmsModule;
 		if (OCMSMODULE_BY_IDEAMODULE.containsKey(ideaModule)) {
 			ocmsModule = OCMSMODULE_BY_IDEAMODULE.get(ideaModule);
-			ocmsModule.refresh(plugin, moduleConfig);
+			ocmsModule.refresh(moduleConfig);
 		}
 		else {
 			ocmsModule = new OpenCmsModule(plugin, ideaModule);
