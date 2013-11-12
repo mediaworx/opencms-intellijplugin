@@ -33,8 +33,9 @@ public class OpenCmsEditorPopupAction extends AnAction {
 			syncFiles[0] = event.getData(PlatformDataKeys.VIRTUAL_FILE);
 			fileSyncer.syncFiles(syncFiles);
 		}
-		catch (Exception e) {
-			System.out.println("Exception in OpenCmsEditorPopupAction.actionPerformed: " + e.getMessage());
+		catch (Throwable t) {
+			System.out.println("Exception in OpenCmsEditorPopupAction.actionPerformed: " + t.getMessage());
+			t.printStackTrace(System.out);
 		}
 	}
 }
