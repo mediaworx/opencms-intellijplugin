@@ -3,6 +3,7 @@ package com.mediaworx.intellij.opencmsplugin.entities;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,13 +69,17 @@ public class SyncEntity {
 					}
 				}
 				else {
-					if (realFile.createNewFile()) {
+					File parentFolder = realFile.getParentFile();
+					if (!parentFolder.exists()) {
+						FileUtils.forceMkdir(parentFolder);
+					}
+					if (!realFile.createNewFile()) {
 						System.out.println("The file " + getRfsPath() + " could not be created");
 					}
 				}
 			}
 			catch (IOException e) {
-				System.out.println("There was an Exception creating the local file" + getRfsPath() + ": " + e + "\n" + e.getMessage());
+				System.out.println("There was an Exception creating the local file " + getRfsPath() + ": " + e + "\n" + e.getMessage());
 			}
 		}
 		this.realFile = realFile;

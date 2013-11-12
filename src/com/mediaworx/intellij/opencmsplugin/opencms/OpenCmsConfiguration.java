@@ -20,6 +20,7 @@ public class OpenCmsConfiguration {
 	private static final String CONFIGPATH = "/WEB-INF/config/";
 	private static final String MODULECONFIGFILE = "opencms-modules.xml";
 	private static final String EXPORTPOINT_XPATH = "/opencms/modules/module/name[normalize-space(text())=\"%s\"]/../exportpoints/exportpoint";
+	private static final String MODULE_RESOURCE_XPATH = "/opencms/modules/module/name[normalize-space(text())=\"%s\"]/../resources/resource";
 
 	private String webappRoot;
 	DocumentBuilder builder;
@@ -85,6 +86,29 @@ public class OpenCmsConfiguration {
 			System.out.println("There was an Exception initializing export points for module " + moduleName + " : "+e+"\n"+e.getMessage());
 		}
 		return exportPoints;
+	}
+
+	public List<String> getModuleResourcesForModule(String moduleName) {
+		List<String> moduleResources = new ArrayList<String>();
+		try {
+			XPath xpath = xPathfactory.newXPath();
+			XPathExpression expr = xpath.compile(String.format(MODULE_RESOURCE_XPATH, moduleName));
+
+			NodeList nl = (NodeList) expr.evaluate(getParsedModuleConfigurationFile(), XPathConstants.NODESET);
+			int numExportPoints = nl.getLength();
+
+			for (int i = 0; i < numExportPoints; i++) {
+				Node n = nl.item(i);
+				NamedNodeMap attr = n.getAttributes();
+				String uri = attr.getNamedItem("uri").getNodeValue();
+				System.out.println("Module Resource " + (i + 1) + ": uri=" + uri);
+				moduleResources.add(uri);
+			}
+		}
+		catch (Exception e) {
+			System.out.println("There was an Exception initializing export points for module " + moduleName + " : "+e+"\n"+e.getMessage());
+		}
+		return moduleResources;
 	}
 
 }

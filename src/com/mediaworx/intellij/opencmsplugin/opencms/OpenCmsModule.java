@@ -17,6 +17,7 @@ public class OpenCmsModule {
 	OpenCmsModuleConfigurationData moduleConfig;
 
 	List<ModuleExportPoint> exportPoints;
+	List<String> moduleResources;
 	String localVfsRoot;
 	SyncMode syncMode;
 
@@ -28,6 +29,7 @@ public class OpenCmsModule {
 	public void init(OpenCmsModuleConfigurationData moduleConfig) {
 		this.moduleConfig = moduleConfig;
 		exportPoints = plugin.getOpenCmsConfiguration().getExportPointsForModule(moduleConfig.getModuleName());
+		moduleResources = plugin.getOpenCmsConfiguration().getModuleResourcesForModule(moduleConfig.getModuleName());
 
 		String relativeVfsRoot;
 
@@ -80,11 +82,13 @@ public class OpenCmsModule {
 		return exportPoints;
 	}
 
+	public List<String> getModuleResources() {
+		return moduleResources;
+	}
+
 	public String getVfsPathForIdeaVFile(final VirtualFile ideaVFile) {
 		String filepath = ideaVFile.getPath().replace('\\', '/');
-		OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
-		String syncRoot = ocmsModule.getLocalVfsRoot();
-		String relativeName = filepath.substring(filepath.indexOf(syncRoot) + syncRoot.length(), filepath.length());
+		String relativeName = filepath.substring(filepath.indexOf(localVfsRoot) + localVfsRoot.length(), filepath.length());
 		if (relativeName.length() == 0) {
 			relativeName = "/";
 		}

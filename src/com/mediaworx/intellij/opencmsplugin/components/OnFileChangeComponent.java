@@ -40,6 +40,7 @@ import java.util.List;
 /**
  * handles changes (edits, moves, renames, deletions) to files in the IntelliJ File System
  */
+// TODO: handle cases where moves or deletions of parents of vfs resources take place (or don't handle those cases, whatever, at least think about it)
 public class OnFileChangeComponent implements ProjectComponent {
 
 	private Project project;
