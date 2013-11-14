@@ -1,4 +1,10 @@
-.idea
-*.iml
 /out
-OpenCmsPlugin.zip
+plugin/target/
+plugin/OpenCmsPlugin.zip
+.idea/dictionaries/widmann.xml
+.idea/findbugs-idea.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/jenkinsSettings.xml
+.idea/opencms.xml
+.idea/workspace.xml

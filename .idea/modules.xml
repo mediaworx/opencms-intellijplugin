@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/connector/ConnectorModule.iml" filepath="$PROJECT_DIR$/connector/ConnectorModule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugin/OpenCmsPlugin.iml" filepath="$PROJECT_DIR$/plugin/OpenCmsPlugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/opencmsplugin-parent.iml" filepath="$PROJECT_DIR$/opencmsplugin-parent.iml" />
+    </modules>
+  </component>
+</project>
+
