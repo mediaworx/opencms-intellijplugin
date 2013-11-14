@@ -56,13 +56,13 @@ public class VfsAdapter {
 	public VfsAdapter(String atompubUrl, String user, String password) {
 
 	    if (atompubUrl == null || atompubUrl.length() == 0) {
-		    throw new RuntimeException("parameter atompubUrl must not be null or empty");
+		    throw new IllegalArgumentException("parameter atompubUrl must not be null or empty");
 	    }
 	    if (user == null || user.length() == 0) {
-		    throw new RuntimeException("parameter user must not be null or empty");
+		    throw new IllegalArgumentException("parameter user must not be null or empty");
 	    }
 	    if (password == null || password.length() == 0) {
-		    throw new RuntimeException("parameter password must not be null or empty");
+		    throw new IllegalArgumentException("parameter password must not be null or empty");
 	    }
 
 	    this.atompubUrl = atompubUrl;

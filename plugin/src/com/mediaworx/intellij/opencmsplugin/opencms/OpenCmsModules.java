@@ -50,6 +50,9 @@ public class OpenCmsModules {
 	}
 
 	public OpenCmsModule getModuleForIdeaVFile(VirtualFile ideaVFile) {
+		if (ideaVFile == null || plugin.getProject() == null) {
+			return null;
+		}
 		Module ideaModule = ModuleUtil.findModuleForFile(ideaVFile, plugin.getProject());
 		return OCMSMODULE_BY_IDEAMODULE.get(ideaModule);
 	}
