@@ -98,7 +98,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 		config = null;
 		openCmsConfiguration = null;
 		openCmsModules = null;
-		unregisterActions();
 	}
 
 	@NotNull
