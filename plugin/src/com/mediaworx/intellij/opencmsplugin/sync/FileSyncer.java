@@ -218,6 +218,9 @@ public class FileSyncer {
 	}
 
 	private void handleSyncFiles(final VirtualFile[] syncFiles, StringBuilder message, ProgressIndicatorManager progressIndicatorManager) {
+		if (syncFiles == null) {
+			return;
+		}
 		for (VirtualFile syncFile : syncFiles) {
 			if (progressIndicatorManager.isCanceled()) {
 				syncJob = null;
