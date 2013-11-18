@@ -7,7 +7,7 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 
 import java.io.File;
 
-public class SyncEntity {
+public abstract class SyncEntity {
 
 	private OpenCmsModule ocmsModule;
 	private String vfsPath;
@@ -17,15 +17,7 @@ public class SyncEntity {
 	private SyncAction syncAction;
 	private boolean replaceExistingEntity;
 
-	public Type getType() {
-		Object test = this;
-		if (test instanceof SyncFolder) {
-			return Type.FOLDER;
-		}
-		else {
-			return Type.FILE;
-		}
-	}
+	public abstract Type getType();
 
 	public OpenCmsModule getOcmsModule() {
 		return ocmsModule;

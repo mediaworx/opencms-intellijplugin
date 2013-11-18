@@ -5,6 +5,10 @@ import java.util.List;
 public class SyncFolder extends SyncEntity {
     private List<SyncEntity> children;
 
+	public Type getType() {
+		return Type.FOLDER;
+	}
+
     public List<SyncEntity> getChildren() {
         return children;
     }

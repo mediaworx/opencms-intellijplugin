@@ -6,6 +6,10 @@ public class SyncFile extends SyncEntity {
 
     private Date lastChangeDate;
 
+	public Type getType() {
+		return Type.FILE;
+	}
+
     public Date getLastChangeDate() {
         return (Date)lastChangeDate.clone();
     }
