@@ -37,7 +37,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public void initComponent() {
 		config = project.getComponent(OpenCmsProjectConfigurationComponent.class).getConfigurationData();
 		ActionManager actionManager = ActionManager.getInstance();
-		if (config != null && config.isOpenCmsPluginActive()) {
+		if (config != null && config.isOpenCmsPluginEnabled()) {
 			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
 
 			AnAction openCmsMenu = actionManager.getAction(OPENCMS_MENU_ID);
@@ -123,7 +123,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public VfsAdapter getVfsAdapter() {
 		if (vfsAdapter == null) {
-			if (config != null && config.isOpenCmsPluginActive() && config.getPassword() != null && config.getPassword().length() > 0) {
+			if (config != null && config.isOpenCmsPluginEnabled() && config.getPassword() != null && config.getPassword().length() > 0) {
 				vfsAdapter = new VfsAdapter(config.getRepository(), config.getUsername(), config.getPassword());
 				vfsAdapter.startSession();
 			}

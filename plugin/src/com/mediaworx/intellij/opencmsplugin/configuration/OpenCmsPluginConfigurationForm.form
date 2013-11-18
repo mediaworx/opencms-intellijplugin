@@ -23,7 +23,7 @@
         <properties/>
         <border type="empty"/>
         <children>
-          <component id="2fdbf" class="javax.swing.JCheckBox" binding="activeCheckBox" default-binding="true">
+          <component id="2fdbf" class="javax.swing.JCheckBox" binding="enabledCheckBox" default-binding="true">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
               <forms defaultalign-vert="false"/>
@@ -34,6 +34,10 @@
             </properties>
           </component>
           <grid id="a22aa" binding="formPanel" layout-manager="FormLayout">
+            <rowspec value="center:max(d;4px):noGrow"/>
+            <rowspec value="top:4dlu:noGrow"/>
+            <rowspec value="center:max(d;4px):noGrow"/>
+            <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
@@ -129,7 +133,7 @@
               </component>
               <component id="9f820" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                  <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="163" height="16"/>
                   </grid>
                   <forms/>
@@ -140,7 +144,7 @@
               </component>
               <component id="f07b4" class="javax.swing.JComboBox" binding="defaultSyncMode">
                 <constraints>
-                  <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -193,10 +197,49 @@
               </component>
               <hspacer id="77a22">
                 <constraints>
-                  <grid row="0" column="0" row-span="12" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="16" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false"/>
                 </constraints>
               </hspacer>
+              <component id="b8c62" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="Plugin Connector"/>
+                </properties>
+              </component>
+              <component id="afe50" class="javax.swing.JCheckBox" binding="usePluginConnectorCheckBox">
+                <constraints>
+                  <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="Use the Plugin Connector (OpenCms Module providing meta information for the module manifest)"/>
+                </properties>
+              </component>
+              <component id="45698" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="Manifest Root"/>
+                </properties>
+              </component>
+              <component id="202ad" class="javax.swing.JTextField" binding="manifestRoot">
+                <constraints>
+                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                  <forms defaultalign-horz="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="false"/>
+                  <text value="src/main/manifest"/>
+                </properties>
+              </component>
             </children>
           </grid>
         </children>

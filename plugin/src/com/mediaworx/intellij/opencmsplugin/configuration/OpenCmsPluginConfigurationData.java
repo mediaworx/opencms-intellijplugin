@@ -4,20 +4,22 @@ import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
 
 public class OpenCmsPluginConfigurationData {
 
-	private boolean openCmsPluginActive;
+	private boolean openCmsPluginEnabled = false;
     private String repository;
     private String username;
     private String password;
     private String webappRoot;
 	private String defaultLocalVfsRoot;
+	private boolean pluginConnectorEnabled;
+	private String manifestRoot;
 	private SyncMode defaultSyncMode;
 
-	public boolean isOpenCmsPluginActive() {
-		return openCmsPluginActive;
+	public boolean isOpenCmsPluginEnabled() {
+		return openCmsPluginEnabled;
 	}
 
-	public void setOpenCmsPluginActive(boolean openCmsPluginActive) {
-		this.openCmsPluginActive = openCmsPluginActive;
+	public void setOpenCmsPluginEnabled(boolean openCmsPluginEnabled) {
+		this.openCmsPluginEnabled = openCmsPluginEnabled;
 	}
 
 	public String getRepository() {
@@ -58,6 +60,22 @@ public class OpenCmsPluginConfigurationData {
 
 	public void setDefaultLocalVfsRoot(String defaultLocalVfsRoot) {
 		this.defaultLocalVfsRoot = defaultLocalVfsRoot;
+	}
+
+	public boolean isPluginConnectorEnabled() {
+		return pluginConnectorEnabled;
+	}
+
+	public void setPluginConnectorEnabled(boolean pluginConnectorEnabled) {
+		this.pluginConnectorEnabled = pluginConnectorEnabled;
+	}
+
+	public String getManifestRoot() {
+		return manifestRoot;
+	}
+
+	public void setManifestRoot(String manifestRoot) {
+		this.manifestRoot = manifestRoot;
 	}
 
 	public SyncMode getDefaultSyncMode() {

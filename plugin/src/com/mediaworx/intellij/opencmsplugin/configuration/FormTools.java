@@ -38,4 +38,14 @@ public class FormTools {
 		}
 		field.setText(fieldValue);
 	}
+
+	public static boolean isTextFieldModified(JTextField textField, String configuredText) {
+		if (textField.getText() == null) {
+			return configuredText != null;
+		}
+		else {
+			return !textField.getText().equals(configuredText);
+		}
+	}
+
 }

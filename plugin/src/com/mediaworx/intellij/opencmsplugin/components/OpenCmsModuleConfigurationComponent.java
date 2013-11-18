@@ -102,7 +102,7 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	}
 
 	private void handleOcmsModuleRegistration() {
-		if (configurationData.isOpenCmsModuleEnabled()) {
+		if (configurationData.isOpenCmsModuleEnabled() && plugin.getPluginConfiguration().isOpenCmsPluginEnabled()) {
 			plugin.getOpenCmsModules().registerModule(module, configurationData);
 		}
 		else {

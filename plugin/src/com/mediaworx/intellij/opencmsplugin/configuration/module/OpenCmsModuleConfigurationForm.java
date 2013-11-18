@@ -40,12 +40,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 
 	public void setData(OpenCmsModuleConfigurationData data) {
 		isOpenCmsModule.setSelected(data.isOpenCmsModuleEnabled());
-		if (data.isOpenCmsModuleEnabled()) {
-			formPanel.setVisible(true);
-		}
-		else {
-			formPanel.setVisible(false);
-		}
+		formPanel.setVisible(data.isOpenCmsModuleEnabled());
 		FormTools.setConfiguredOrKeepDefault(moduleName, data.getModuleName());
 
 		if (data.isUseProjectDefaultVfsRootEnabled()) {
@@ -69,15 +64,15 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 			useProjectDefaultSyncModeRadioButton.setSelected(false);
 			useModuleSpecificSyncModeRadioButton.setSelected(true);
 			syncMode.setEnabled(true);
-			if (data.getSyncMode() == SyncMode.PUSH) {
-				syncMode.setSelectedIndex(0);
-			}
-			else if (data.getSyncMode() == SyncMode.SYNC) {
-				syncMode.setSelectedIndex(1);
-			}
-			else if (data.getSyncMode() == SyncMode.PULL) {
-				syncMode.setSelectedIndex(2);
-			}
+		}
+		if (data.getSyncMode() == SyncMode.PUSH) {
+			syncMode.setSelectedIndex(0);
+		}
+		else if (data.getSyncMode() == SyncMode.SYNC) {
+			syncMode.setSelectedIndex(1);
+		}
+		else if (data.getSyncMode() == SyncMode.PULL) {
+			syncMode.setSelectedIndex(2);
 		}
 	}
 
@@ -103,13 +98,14 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 
 
 	public boolean isModified(OpenCmsModuleConfigurationData data) {
-		if (isOpenCmsModule.isSelected() != data.isOpenCmsModuleEnabled()) return true;
-		if (moduleName.getText() != null ? !moduleName.getText().equals(data.getModuleName()) : data.getModuleName() != null) return true;
-		if (useProjectDefaultVfsRootRadioButton == null || (useProjectDefaultVfsRootRadioButton.isSelected() && !data.isUseProjectDefaultVfsRootEnabled())) return true;
-		if (localVfsRoot.getText() != null ? !localVfsRoot.getText().equals(data.getLocalVfsRoot()) : data.getLocalVfsRoot() != null) return true;
-		if (useProjectDefaultSyncModeRadioButton == null || (useProjectDefaultSyncModeRadioButton.isSelected() && !data.isUseProjectDefaultSyncModeEnabled())) return true;
-		if (syncMode.getSelectedItem() != null ? !FormTools.getSyncModeFromComboBox(syncMode).equals(data.getSyncMode()) : data.getSyncMode() != null) return true;
-		return false;
+		return
+				isOpenCmsModule.isSelected() != data.isOpenCmsModuleEnabled() ||
+				FormTools.isTextFieldModified(moduleName, data.getModuleName()) ||
+				useProjectDefaultVfsRootRadioButton.isSelected() && !data.isUseProjectDefaultVfsRootEnabled() ||
+				FormTools.isTextFieldModified(localVfsRoot, data.getLocalVfsRoot()) ||
+				useProjectDefaultSyncModeRadioButton.isSelected() && !data.isUseProjectDefaultSyncModeEnabled() ||
+				!FormTools.getSyncModeFromComboBox(syncMode).equals(data.getSyncMode())
+		;
 	}
 
 	private void createUIComponents() {
@@ -118,14 +114,8 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == isOpenCmsModule) {
-			if (isOpenCmsModule.isSelected()) {
-				formPanel.setVisible(true);
-			}
-			else {
-				formPanel.setVisible(false);
-			}
+			formPanel.setVisible(isOpenCmsModule.isSelected());
 		}
-
 		if (source == useProjectDefaultVfsRootRadioButton && useProjectDefaultVfsRootRadioButton.isSelected()) {
 			localVfsRoot.setEnabled(false);
 		}
