@@ -1,6 +1,7 @@
 package com.mediaworx.intellij.opencmsplugin.entities;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.commons.io.FileUtils;
@@ -10,8 +11,8 @@ import java.io.IOException;
 
 public class SyncEntity {
 
-    private String vfsPath;
-    private String rfsPath;
+    private OpenCmsModule ocmsModule;
+	private String vfsPath;
     private VirtualFile ideaVFile;
     private File realFile;
     private CmisObject vfsObject;
@@ -28,7 +29,15 @@ public class SyncEntity {
         }
     }
 
-    public String getVfsPath() {
+	public OpenCmsModule getOcmsModule() {
+		return ocmsModule;
+	}
+
+	public void setOcmsModule(OpenCmsModule ocmsModule) {
+		this.ocmsModule = ocmsModule;
+	}
+
+	public String getVfsPath() {
         return vfsPath;
     }
 
@@ -37,11 +46,7 @@ public class SyncEntity {
     }
 
     public String getRfsPath() {
-        return rfsPath;
-    }
-
-    public void setRfsPath(String rfsPath) {
-        this.rfsPath = rfsPath;
+        return ocmsModule.getLocalVfsRoot() + vfsPath;
     }
 
     public VirtualFile getIdeaVFile() {
