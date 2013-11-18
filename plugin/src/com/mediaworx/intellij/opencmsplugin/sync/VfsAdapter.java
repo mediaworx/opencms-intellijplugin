@@ -19,6 +19,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNameConstraintViolationException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
+import org.apache.commons.io.FileUtils;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
@@ -319,7 +320,7 @@ public class VfsAdapter {
 	    System.out.println("Pulling "+syncEntity.getVfsPath()+" to "+syncEntity.getOcmsModule().getLocalVfsRoot());
 
 	    InputStream is = document.getContentStream().getStream();
-	    File rfsFile = syncEntity.createRealFile();
+	    File rfsFile = createRealFile(syncEntity);
 	    OutputStream os = null;
 	    try {
 	        os = new FileOutputStream(rfsFile);
@@ -351,6 +352,35 @@ public class VfsAdapter {
 	        }
 	    }
 	}
+
+
+	public File createRealFile(SyncEntity syncEntity) {
+		File realFile = new File(syncEntity.getRfsPath());
+		if (!realFile.exists()) {
+			try {
+				if (syncEntity.isFolder()) {
+					if (!realFile.mkdirs()) {
+						System.out.println("The directories for " + syncEntity.getRfsPath() + " could not be created");
+					}
+				}
+				else {
+					File parentFolder = realFile.getParentFile();
+					if (!parentFolder.exists()) {
+						FileUtils.forceMkdir(parentFolder);
+					}
+					if (!realFile.createNewFile()) {
+						System.out.println("The file " + syncEntity.getRfsPath() + " could not be created");
+					}
+				}
+			}
+			catch (IOException e) {
+				System.out.println("There was an Exception creating the local file " + syncEntity.getRfsPath() + ": " + e + "\n" + e.getMessage());
+			}
+		}
+		syncEntity.setRealFile(realFile);
+		return realFile;
+	}
+
 
 
 	/**
