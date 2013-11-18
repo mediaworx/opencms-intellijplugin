@@ -180,7 +180,7 @@ public class SyncJob {
             adapter.pullFile(entity);
         }
 
-		confirmation.append("PULL: ").append(entity.getRfsPath()).append(" pulled from VFS");
+		confirmation.append("PULL: ").append(entity.getVfsPath()).append(" pulled from VFS to ").append(entity.getOcmsModule().getLocalVfsRoot());
 		if (entity.replaceExistingEntity()) {
 			confirmation.append(" replacing an existing entity");
 		}
@@ -189,7 +189,7 @@ public class SyncJob {
 	}
 
 	public String doDeleteFromRfs(SyncEntity entity) {
-		StringBuilder confirmation = new StringBuilder("DELETE: ").append(entity.getRfsPath()).append(" (not in the VFS) - ");
+		StringBuilder confirmation = new StringBuilder("DELETE: ").append(entity.getVfsPath()).append(" from ").append(entity.getOcmsModule().getLocalVfsRoot()).append(" (not in the VFS) - ");
 		File rfsFile = entity.getRealFile();
 		if (FileUtils.deleteQuietly(rfsFile)) {
 			confirmation.append(" SUCCESS");

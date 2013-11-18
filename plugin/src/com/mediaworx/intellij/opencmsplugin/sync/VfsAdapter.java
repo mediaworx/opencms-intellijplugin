@@ -316,7 +316,7 @@ public class VfsAdapter {
 	    }
 	    Document document = (Document)syncEntity.getVfsObject();
 
-	    System.out.println("Pulling "+syncEntity.getVfsPath()+" to "+syncEntity.getRfsPath());
+	    System.out.println("Pulling "+syncEntity.getVfsPath()+" to "+syncEntity.getOcmsModule().getLocalVfsRoot());
 
 	    InputStream is = document.getContentStream().getStream();
 	    File rfsFile = syncEntity.createRealFile();
