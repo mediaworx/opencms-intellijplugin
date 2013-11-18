@@ -8,7 +8,7 @@ package com.mediaworx.intellij.opencmsplugin.entities;
  * exist on the RFS).
  */
 public enum FolderSyncMode {
-    AUTO,
-    PUSH,
-    PULL
+	AUTO,
+	PUSH,
+	PULL
 }

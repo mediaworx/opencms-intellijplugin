@@ -8,6 +8,7 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationForm;
+import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -92,6 +93,15 @@ public class OpenCmsProjectConfigurationComponent implements ProjectComponent, C
 				Collection<OpenCmsModule> openCmsModules = plugin.getOpenCmsModules().getAllModules();
 				for (OpenCmsModule openCmsModule : openCmsModules) {
 					openCmsModule.refresh();
+				}
+			}
+
+			if (plugin.getPluginConnector() != null) {
+				plugin.getPluginConnector().setConnectorUrl(configurationData.getConnectorUrl());
+			}
+			else {
+				if (configurationData.isPluginConnectorEnabled()) {
+					plugin.setPluginConnector(new OpenCmsPluginConnector(configurationData.getConnectorUrl(), configurationData.getUsername(), configurationData.getPassword()));
 				}
 			}
 		}

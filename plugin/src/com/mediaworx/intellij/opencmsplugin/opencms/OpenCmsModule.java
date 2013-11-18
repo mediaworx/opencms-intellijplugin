@@ -18,6 +18,7 @@ public class OpenCmsModule {
 
 	List<ModuleExportPoint> exportPoints;
 	List<String> moduleResources;
+	String intelliJModuleRoot;
 	String localVfsRoot;
 	SyncMode syncMode;
 
@@ -42,10 +43,12 @@ public class OpenCmsModule {
 
 		VirtualFile[] moduleRoots = ModuleRootManager.getInstance(ideaModule).getContentRoots();
 		if (moduleRoots.length == 0) {
+			intelliJModuleRoot = null;
 			localVfsRoot = null;
 		}
+		intelliJModuleRoot = moduleRoots[0].getPath();
 		StringBuilder vfsRootBuilder = new StringBuilder();
-		vfsRootBuilder.append(moduleRoots[0].getPath()).append("/").append(relativeVfsRoot);
+		vfsRootBuilder.append(intelliJModuleRoot).append("/").append(relativeVfsRoot);
 		localVfsRoot = vfsRootBuilder.toString();
 
 		if (moduleConfig.isUseProjectDefaultSyncModeEnabled()) {
@@ -72,6 +75,10 @@ public class OpenCmsModule {
 
 	public String getLocalVfsRoot() {
 		return localVfsRoot;
+	}
+
+	public String getManifestRoot() {
+		return intelliJModuleRoot + "/" + plugin.getPluginConfiguration().getManifestRoot();
 	}
 
 	public SyncMode getSyncMode() {

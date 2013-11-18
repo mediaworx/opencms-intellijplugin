@@ -8,6 +8,7 @@
     </JAVADOC>
     <SOURCES>
       <root url="jar://$MAVEN_REPOSITORY$/org/apache/chemistry/opencmis/chemistry-opencmis-commons-impl/0.10.0/chemistry-opencmis-commons-impl-0.10.0-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.ideaLibSources/chemistry-opencmis-commons-impl-0.10.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

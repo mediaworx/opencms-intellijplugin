@@ -11,6 +11,7 @@ public class OpenCmsPluginConfigurationData {
     private String webappRoot;
 	private String defaultLocalVfsRoot;
 	private boolean pluginConnectorEnabled;
+	private String connectorUrl;
 	private String manifestRoot;
 	private SyncMode defaultSyncMode;
 
@@ -68,6 +69,14 @@ public class OpenCmsPluginConfigurationData {
 
 	public void setPluginConnectorEnabled(boolean pluginConnectorEnabled) {
 		this.pluginConnectorEnabled = pluginConnectorEnabled;
+	}
+
+	public String getConnectorUrl() {
+		return connectorUrl;
+	}
+
+	public void setConnectorUrl(String connectorUrl) {
+		this.connectorUrl = connectorUrl;
 	}
 
 	public String getManifestRoot() {

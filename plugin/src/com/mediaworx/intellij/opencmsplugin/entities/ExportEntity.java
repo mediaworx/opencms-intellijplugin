@@ -5,10 +5,10 @@ public class ExportEntity {
 	public ExportEntity() {
 	}
 
-    String sourcePath;
+	String sourcePath;
 	String targetPath;
-    String vfsPath;
-    String destination;
+	String vfsPath;
+	String destination;
 	boolean toBeDeleted;
 
 	public String getSourcePath() {
@@ -27,21 +27,21 @@ public class ExportEntity {
 		this.targetPath = targetPath;
 	}
 
-    public String getVfsPath() {
-        return vfsPath;
-    }
+	public String getVfsPath() {
+		return vfsPath;
+	}
 
-    public void setVfsPath(String vfsPath) {
-        this.vfsPath = vfsPath;
-    }
+	public void setVfsPath(String vfsPath) {
+		this.vfsPath = vfsPath;
+	}
 
-    public String getDestination() {
-        return destination;
-    }
+	public String getDestination() {
+		return destination;
+	}
 
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
 
 	public boolean isToBeDeleted() {
 		return toBeDeleted;

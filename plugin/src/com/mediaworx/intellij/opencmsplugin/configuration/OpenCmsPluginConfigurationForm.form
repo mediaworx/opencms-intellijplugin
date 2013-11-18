@@ -50,6 +50,8 @@
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
+            <rowspec value="center:max(d;4px):noGrow"/>
+            <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <colspec value="fill:15px:noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
@@ -133,7 +135,7 @@
               </component>
               <component id="9f820" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                  <grid row="16" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="163" height="16"/>
                   </grid>
                   <forms/>
@@ -144,7 +146,7 @@
               </component>
               <component id="f07b4" class="javax.swing.JComboBox" binding="defaultSyncMode">
                 <constraints>
-                  <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="16" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -197,7 +199,7 @@
               </component>
               <hspacer id="77a22">
                 <constraints>
-                  <grid row="0" column="0" row-span="16" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="18" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false"/>
                 </constraints>
               </hspacer>
@@ -221,7 +223,7 @@
               </component>
               <component id="45698" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -230,7 +232,7 @@
               </component>
               <component id="202ad" class="javax.swing.JTextField" binding="manifestRoot">
                 <constraints>
-                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                   <forms defaultalign-horz="false"/>
@@ -238,6 +240,27 @@
                 <properties>
                   <enabled value="false"/>
                   <text value="src/main/manifest"/>
+                </properties>
+              </component>
+              <component id="7004" class="javax.swing.JTextField" binding="connectorUrl">
+                <constraints>
+                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                  <forms defaultalign-horz="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="false"/>
+                  <text value="http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.intellijconnector/connector.jsp"/>
+                </properties>
+              </component>
+              <component id="681fa" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="Connector URL"/>
                 </properties>
               </component>
             </children>

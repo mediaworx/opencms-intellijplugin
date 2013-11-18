@@ -8,13 +8,15 @@ import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
+import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
-import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SyncJob {
@@ -41,60 +43,90 @@ public class SyncJob {
 
 			public void run() {
 
-				ProgressIndicatorManager progressIndicatorManager = new ProgressIndicatorManager() {
-					ProgressIndicator indicator;
+				ProgressIndicator indicator = ProgressManager.getInstance().getProgressIndicator();
+				indicator.setIndeterminate(false);
 
-					public void init() {
-						indicator = ProgressManager.getInstance().getProgressIndicator();
-						indicator.setIndeterminate(false);
-						indicator.setText("Syncing files and folders");
-					}
-
-					public void setText(final String text) {
-						indicator.setText(text);
-					}
-
-					public void setProgress(double fraction) {
-						indicator.setFraction(fraction);
-					}
-
-					public boolean isCanceled() {
-						return indicator.isCanceled();
-					}
-				};
-
-				progressIndicatorManager.init();
 				int c = 0;
+				int step = 1;
+				int numSteps = 1;
+				if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
+					numSteps += 1;
+				}
+				if (numExportEntities() > 0) {
+					numSteps += 1;
+				}
+				indicator.setText("Step " + (step++) + "/" + numSteps + ": Syncing files and folders");
 
-				int numSyncEntities = numSyncEntities() + numExportEntities();
-				for (SyncEntity entity : getSyncList()) {
-					if (progressIndicatorManager != null) {
-						if (progressIndicatorManager.isCanceled()) {
-							return;
-						}
-
-						progressIndicatorManager.setProgress((double) c++ / numSyncEntities);
+				int numSyncEntities = syncList.size();
+				for (SyncEntity entity : syncList) {
+					if (indicator.isCanceled()) {
+						return;
 					}
 
 					String syncResult = doSync(entity);
+					indicator.setFraction((double)c++ / numSyncEntities);
 					outputBuffer.append(syncResult).append('\n');
 				}
 				outputBuffer.append("---- Sync finished ----");
 
+				if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
+
+					metaInfoHandling: {
+
+						indicator.setText("Step " + (step++) + "/" + numSteps + ": Pulling resource meta data from OpenCms");
+						indicator.setIndeterminate(true);
+
+						// build lists with all resources for which meta information is to be pulled / deleted
+						ArrayList<String> pullEntityList = new ArrayList<String>();
+						for (SyncEntity entity : syncList) {
+							if (!entity.getSyncAction().isDeleteAction()) {
+								pullEntityList.add(entity.getVfsPath());
+							}
+						}
+
+						HashMap<String, String> metaInfos;
+
+						try {
+							metaInfos = plugin.getPluginConnector().getResourceInfos(pullEntityList);
+						}
+						catch (IOException e) {
+							System.out.println("IOException while trying to retrieve meta infos");
+							e.printStackTrace(System.out);
+							outputBuffer.append("There was an error retrieving resource meta infos from OpenCms");
+							break metaInfoHandling;
+						}
+
+						indicator.setIndeterminate(false);
+						indicator.setFraction(0);
+					    c = 0;
+						int numMetaEntities = syncList.size();
+
+						if (numMetaEntities > 0) {
+							outputBuffer.append("\n\n");
+							for (SyncEntity entity : syncList) {
+								String metaResult = doMetaInfoHandling(metaInfos, entity);
+								indicator.setFraction((double)c++ / numMetaEntities);
+								outputBuffer.append(metaResult).append('\n');
+							}
+						}
+					}
+					outputBuffer.append("---- Resource meta info pull finished ----");
+				}
+
                 if (numExportEntities() > 0) {
+	                indicator.setText("Step " + step + "/" + numSteps + ": Handling export points");
+	                indicator.setFraction(0);
+	            	c = 0;
+					int numExportEntities = numExportEntities();
+
                     outputBuffer.append("\n\n");
-                    for (ExportEntity entity : getExportList()) {
-                        if (progressIndicatorManager != null) {
-                            if (progressIndicatorManager.isCanceled()) {
-                                return;
-                            }
-
-                            progressIndicatorManager.setProgress((double) c++ / numSyncEntities);
+                    for (ExportEntity entity : exportList) {
+                        if (indicator.isCanceled()) {
+                            return;
                         }
-
-                        String syncResult = doExportPointHandling(entity);
-
-                        outputBuffer.append(syncResult).append('\n');
+                        String exportPointResult = doExportPointHandling(entity);
+	                    indicator.setFraction((double)c++ / numExportEntities);
+                        outputBuffer.append(exportPointResult).append('\n');
                     }
                     outputBuffer.append("---- Copying of ExportPoints finished ----");
                 }
@@ -211,10 +243,52 @@ public class SyncJob {
 		return confirmation.toString();
 	}
 
+	private String doMetaInfoHandling(HashMap<String,String> metaInfos, SyncEntity entity) {
+		String metaInfoPath = entity.getMetaInfoPath();
+		File metaInfoFile = new File(metaInfoPath);
+
+		if (entity.getSyncAction().isDeleteAction()) {
+			FileUtils.deleteQuietly(metaInfoFile);
+			return "DELETE: " + metaInfoPath;
+		}
+
+		if (metaInfos.containsKey(entity.getVfsPath())) {
+			if (entity instanceof SyncFolder) {
+				String metaFolderPath = ((SyncFolder)entity).getMetaInfoFolderPath();
+				File metaFolder = new File(metaFolderPath);
+				if (!metaFolder.exists()) {
+					try {
+						FileUtils.forceMkdir(metaFolder);
+					}
+					catch (IOException e) {
+						String message = "ERROR: cant create meta info directory " + metaFolderPath;
+						System.out.println(message);
+						e.printStackTrace(System.out);
+						return message;
+					}
+				}
+			}
+			try {
+				FileUtils.writeStringToFile(metaInfoFile, metaInfos.get(entity.getVfsPath()), Charset.forName("UTF-8"));
+			}
+			catch (IOException e) {
+				String message = "ERROR: cant create meta info file " + metaInfoPath;
+				System.out.println(message);
+				e.printStackTrace(System.out);
+				return message;
+			}
+
+		}
+		else {
+			String message = entity.getVfsPath() + " not found in meta info map.";
+			System.out.println(message);
+			return message;
+		}
+		return "PULL: Meta info file pulled: " + metaInfoPath;
+	}
+
 	public String doExportPointHandling(ExportEntity entity) {
         StringBuilder confirmation = new StringBuilder();
-
-		System.out.println("ExportEntity: " + entity);
 
 		if (!entity.isToBeDeleted()) {
 			confirmation.append("Copy of ").append(entity.getVfsPath()).append(" to ").append(entity.getDestination()).append(" - ");
@@ -260,17 +334,6 @@ public class SyncJob {
         return confirmation.toString();
     }
 
-	public interface ProgressIndicatorManager {
-
-		void init();
-
-		void setProgress(double fraction);
-
-		boolean isCanceled();
-
-		void setText(String text);
-	}
-
 	public List<SyncEntity> getSyncList() {
 		return syncList;
 	}
@@ -279,29 +342,25 @@ public class SyncJob {
 		return refreshEntityList;
 	}
 
-	public List<ExportEntity> getExportList() {
-		return exportList;
-	}
-
-	public void addSyncEntity(OpenCmsModule ocmsModule, SyncEntity entity) {
+	public void addSyncEntity(SyncEntity entity) {
 		if (!syncList.contains(entity)) {
 			if (entity.getSyncAction() == SyncAction.PULL || entity.getSyncAction() == SyncAction.DELETE_RFS) {
 				this.refreshEntityList.add(entity);
 			}
 			if (entity.getSyncAction() != SyncAction.DELETE_VFS) {
-	            addSyncEntityToExportListIfNecessary(ocmsModule, entity);
+	            addSyncEntityToExportListIfNecessary(entity);
 			}
             syncList.add(entity);
 		}
 	}
 
-    public void addSyncEntityToExportListIfNecessary(OpenCmsModule ocmsModule, SyncEntity syncEntity) {
+    public void addSyncEntityToExportListIfNecessary(SyncEntity syncEntity) {
 
-	    List<ModuleExportPoint> exportPoints = ocmsModule.getExportPoints();
+	    List<ModuleExportPoint> exportPoints = syncEntity.getOcmsModule().getExportPoints();
 
         if (exportPoints != null) {
 
-	        String localModuleVfsRoot = ocmsModule.getLocalVfsRoot();
+	        String localModuleVfsRoot = syncEntity.getOcmsModule().getLocalVfsRoot();
 	        String entityVfsPath = syncEntity.getVfsPath();
 
 		    for (ModuleExportPoint exportPoint : exportPoints) {
@@ -343,10 +402,6 @@ public class SyncJob {
 
 	public int numExportEntities() {
 		return exportList.size();
-	}
-
-	public boolean hasExportEntities() {
-		return numExportEntities() > 0;
 	}
 
 }

@@ -21,6 +21,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	private JTextField webappRoot;
 	private JTextField defaultLocalVfsRoot;
 	private JCheckBox usePluginConnectorCheckBox;
+	private JTextField connectorUrl;
 	private JTextField manifestRoot;
 	private JComboBox defaultSyncMode;
 
@@ -46,6 +47,8 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		FormTools.setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
 		FormTools.setConfiguredOrKeepDefault(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot());
 		usePluginConnectorCheckBox.setSelected(data.isPluginConnectorEnabled());
+		connectorUrl.setEnabled(data.isPluginConnectorEnabled());
+		FormTools.setConfiguredOrKeepDefault(connectorUrl, data.getConnectorUrl());
 		manifestRoot.setEnabled(data.isPluginConnectorEnabled());
 		FormTools.setConfiguredOrKeepDefault(manifestRoot, data.getManifestRoot());
 		if (data.getDefaultSyncMode() == SyncMode.PUSH) {
@@ -68,6 +71,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		data.setWebappRoot(webappRoot.getText());
 		data.setDefaultLocalVfsRoot(defaultLocalVfsRoot.getText());
 		data.setPluginConnectorEnabled(usePluginConnectorCheckBox.isSelected());
+		data.setConnectorUrl(connectorUrl.getText());
 		data.setManifestRoot(manifestRoot.getText());
 		data.setDefaultSyncMode(FormTools.getSyncModeFromComboBox(defaultSyncMode));
 	}
@@ -82,6 +86,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			FormTools.isTextFieldModified(webappRoot, data.getWebappRoot()) ||
 			FormTools.isTextFieldModified(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot()) ||
 			usePluginConnectorCheckBox.isSelected() != data.isPluginConnectorEnabled() ||
+			FormTools.isTextFieldModified(connectorUrl, data.getConnectorUrl()) ||
 			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot()) ||
 			!FormTools.getSyncModeFromComboBox(defaultSyncMode).equals(data.getDefaultSyncMode())
 		;
@@ -96,6 +101,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			formPanel.setVisible(enabledCheckBox.isSelected());
 		}
 		else  if (source == usePluginConnectorCheckBox) {
+			connectorUrl.setEnabled(usePluginConnectorCheckBox.isSelected());
 			manifestRoot.setEnabled(usePluginConnectorCheckBox.isSelected());
 		}
 

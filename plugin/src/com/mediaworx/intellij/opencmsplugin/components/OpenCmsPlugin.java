@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsConfiguration;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
@@ -22,6 +23,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	OpenCmsModules openCmsModules;
 	VfsAdapter vfsAdapter;
 	OpenCmsPluginConfigurationData config;
+	OpenCmsPluginConnector pluginConnector;
 
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
@@ -39,6 +41,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 		ActionManager actionManager = ActionManager.getInstance();
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
+
+			if (config.isPluginConnectorEnabled()) {
+				pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword());
+			}
 
 			AnAction openCmsMenu = actionManager.getAction(OPENCMS_MENU_ID);
 			DefaultActionGroup mainMenu = (DefaultActionGroup) actionManager.getAction("MainMenu");
@@ -129,5 +135,13 @@ public class OpenCmsPlugin implements ProjectComponent {
 			}
 		}
 		return vfsAdapter;
+	}
+
+	public OpenCmsPluginConnector getPluginConnector() {
+		return pluginConnector;
+	}
+
+	public void setPluginConnector(OpenCmsPluginConnector pluginConnector) {
+		this.pluginConnector = pluginConnector;
 	}
 }

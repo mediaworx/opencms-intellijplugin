@@ -3,17 +3,32 @@ package com.mediaworx.intellij.opencmsplugin.entities;
 import java.util.List;
 
 public class SyncFolder extends SyncEntity {
-    private List<SyncEntity> children;
 
+	public static final String METAINFO_FILE_SUFFIX = ".folder.xml";
+
+	private List<SyncEntity> children;
+
+	@Override
 	public Type getType() {
 		return Type.FOLDER;
 	}
 
-    public List<SyncEntity> getChildren() {
-        return children;
-    }
+	@Override
+	public String getMetaInfoFileSuffix() {
+		return METAINFO_FILE_SUFFIX;
+	}
 
-    public void setChildren(List<SyncEntity> children) {
-        this.children = children;
-    }
+	public List<SyncEntity> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<SyncEntity> children) {
+		this.children = children;
+	}
+
+	public String getMetaInfoFolderPath() {
+		return getOcmsModule().getManifestRoot() + getVfsPath();
+	}
+
+
 }
