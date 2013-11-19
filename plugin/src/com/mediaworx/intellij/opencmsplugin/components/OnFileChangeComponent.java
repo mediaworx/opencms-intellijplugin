@@ -3,6 +3,7 @@ package com.mediaworx.intellij.opencmsplugin.components;
 import com.intellij.AppTopics;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManagerAdapter;
 import com.intellij.openapi.project.Project;
@@ -43,6 +44,8 @@ import java.util.List;
 // TODO: handle cases where moves or deletions of parents of vfs resources take place (or don't handle those cases, whatever, at least think about it)
 public class OnFileChangeComponent implements ProjectComponent {
 
+	private static final Logger LOG = Logger.getInstance(OnFileChangeComponent.class);
+
 	private Project project;
 	private OpenCmsPlugin plugin;
 	private OpenCmsPluginConfigurationData config;
@@ -71,7 +74,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 				new FileDocumentManagerAdapter() {
 					@Override
 					public void beforeDocumentSaving(@NotNull Document document) {
-						System.out.println("Document was saved: "+document);
+						LOG.info("Document was saved: "+document);
 						// TODO: Überlegen, ob File Save Events direkt ins VFS gesynct werden sollen
 					}
 				});
@@ -105,7 +108,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 
 				// Still not connected? Show an error message and stop
 				if (!vfsAdapter.isConnected()) {
-					System.out.println("VFS adapter is not connected. File change events won't be handled!");
+					LOG.warn("VFS adapter could not connected to OpenCms CMIS. File change events won't be handled!");
 				}
 			}
 			return vfsAdapter;
@@ -128,7 +131,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 					VirtualFile ideaVFile = event.getFile();
 
 					if (ideaVFile != null) {
-						System.out.println("The following file was deleted: " + ideaVFile.getPath());
+						LOG.info("The following file was deleted: " + ideaVFile.getPath());
 
 						OpenCmsModule ocmsModule = openCmsModules.getModuleForIdeaVFile(ideaVFile);
 
@@ -148,7 +151,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 
 					if (ideaVFile != null) {
 						String newRfsPath = ideaVFile.getPath();
-						System.out.println("The following file was moved: " + newRfsPath);
+						LOG.info("The following file was moved: " + newRfsPath);
 
 						VirtualFile oldParent = ((VFileMoveEvent)event).getOldParent();
 						VirtualFile newParent = ((VFileMoveEvent)event).getNewParent();
@@ -170,7 +173,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 							String oldParentPath = oldParentOcmsModule.getVfsPathForIdeaVFile(oldParent);
 							String oldVfsPath = oldParentPath + "/" + ideaVFile.getName();
 
-							System.out.println("File was moved out of the module path, deleting " + oldVfsPath);
+							LOG.info("File was moved out of the module path, deleting " + oldVfsPath);
 
 							if (getVfsAdapter().exists(oldVfsPath)) {
 								vfsFilesToBeDeleted.add(oldVfsPath);
@@ -186,7 +189,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 					if ("name".equals(propertyName)) {
 						VirtualFile ideaVFile = event.getFile();
 						if (ideaVFile != null) {
-							System.out.println("The following file was renamed: " + ideaVFile.getPath());
+							LOG.info("The following file was renamed: " + ideaVFile.getPath());
 
 							OpenCmsModule ocmsModule = openCmsModules.getModuleForIdeaVFile(ideaVFile);
 
@@ -243,7 +246,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 				if (dlgStatus == 0) {
 					for (VfsFileMoveInfo moveInfo : vfsFilesToBeMoved) {
 						try {
-							System.out.println("Moving " + moveInfo.getOldVfsPath() + " to " + moveInfo.getNewParentPath());
+							LOG.info("Moving " + moveInfo.getOldVfsPath() + " to " + moveInfo.getNewParentPath());
 							Folder oldParent = (Folder)getVfsAdapter().getVfsObject(moveInfo.getOldParentPath());
 							Folder newParent = (Folder)getVfsAdapter().getVfsObject(moveInfo.getNewParentPath());
 							if (newParent == null) {
@@ -275,7 +278,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 
 				if (dlgStatus == 0) {
 					for (VfsFileRenameInfo renameInfo : vfsFilesToBeRenamed) {
-						System.out.println("Renaming " + renameInfo.getOldVfsPath() + " to " + renameInfo.getNewName());
+						LOG.info("Renaming " + renameInfo.getOldVfsPath() + " to " + renameInfo.getNewName());
 						try {
 							CmisObject file = getVfsAdapter().getVfsObject(renameInfo.oldVfsPath);
 							HashMap<String, Object> properties = new HashMap<String, Object>();
@@ -286,7 +289,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 							handleExportPointsForMovedResources(renameInfo.getOldVfsPath(), renameInfo.getNewVfsPath(), renameInfo.getNewIdeaVFile().getPath(), refreshFiles);
 						}
 						catch (CmsPermissionDeniedException e) {
-							System.out.println("Exception moving files: " + e.getMessage());
+							LOG.error("Exception moving files - permission denied", e);
 							Messages.showDialog("Error moving files/folders. " + e.getMessage(),
 									"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 						}
@@ -332,8 +335,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 				refreshFiles.add(exportTargetFile);
 			}
 			catch (IOException e) {
-				System.out.println("Exception exporting a file for an ExportPoint");
-				e.printStackTrace(System.out);
+				LOG.error("Exception exporting a file for an ExportPoint", e);
 			}
 		}
 	}

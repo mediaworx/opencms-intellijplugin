@@ -2,6 +2,7 @@ package com.mediaworx.intellij.opencmsplugin.components;
 
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
@@ -11,6 +12,8 @@ import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenCmsPlugin implements ProjectComponent {
+
+	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
 
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
 	private static final String EDITOR_POPUP_ID = "OpenCmsEditorPopupAction";
@@ -52,7 +55,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 				mainMenu.addAction(openCmsMenu, new Constraints(Anchor.BEFORE, "WindowMenu"));
 			}
 			catch (IllegalArgumentException e) {
-				System.out.println(OPENCMS_MENU_ID + " has already been added to MainMenu. " + e.getMessage());
+				LOG.warn(OPENCMS_MENU_ID + " has already been added to MainMenu. ", e);
 			}
 
 			AnAction editorPopupAction = actionManager.getAction(EDITOR_POPUP_ID);
@@ -62,7 +65,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 				editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_ID));
 			}
 			catch (IllegalArgumentException e) {
-				System.out.println(EDITOR_POPUP_ID + " has already been added to EditorPopupMenu. " + e.getMessage());
+				LOG.warn(EDITOR_POPUP_ID + " has already been added to EditorPopupMenu. ", e);
 			}
 
 			DefaultActionGroup editorTabPopupMenu = (DefaultActionGroup) actionManager.getAction("EditorTabPopupMenu");
@@ -71,7 +74,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 				editorTabPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, EDITOR_POPUP_ID));
 			}
 			catch (IllegalArgumentException e) {
-				System.out.println(EDITOR_POPUP_ID + " has already been added to EditorPopupMenu. " + e.getMessage());
+				LOG.warn(EDITOR_POPUP_ID + " has already been added to EditorPopupMenu. ", e);
 			}
 
 			AnAction projectPopupAction = actionManager.getAction(PROJECT_POPUP_ID);
@@ -81,7 +84,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 				projectPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_ID));
 			}
 			catch(IllegalArgumentException e) {
-				System.out.println(PROJECT_POPUP_ID + " has already been added to ProjectViewPopupMenu. " + e.getMessage());
+				LOG.warn(PROJECT_POPUP_ID + " has already been added to ProjectViewPopupMenu. " + e.getMessage(), e);
 			}
 		}
 		else {
