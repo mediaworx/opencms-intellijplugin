@@ -67,7 +67,16 @@ public class OpenCmsPluginConnector {
 		}
 	}
 
-	public HashMap<String, String> getResourceInfos(List<String> resources) throws IOException {
+	public HashMap<String, String> getResourceInfos(List<String> resourcePaths) throws IOException {
+		return getActionResponseMap(resourcePaths, ACTION_RESOURCEINFOS);
+	}
+
+	public HashMap<String, String> getModuleManifests(List<String> moduleNames) throws IOException {
+		return getActionResponseMap(moduleNames, ACTION_MODULEMANIFESTS);
+	}
+
+
+	public HashMap<String, String> getActionResponseMap(List<String> identifiers, String action) throws IOException {
 
 		HashMap<String, String> resourceInfos = new HashMap<String, String>();
 
@@ -76,8 +85,8 @@ public class OpenCmsPluginConnector {
 		List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 		postParams.add(new BasicNameValuePair("user", user));
 		postParams.add(new BasicNameValuePair("password", password));
-		postParams.add(new BasicNameValuePair("action", ACTION_RESOURCEINFOS));
-		postParams.add(new BasicNameValuePair("params", getJSONArrayForStringList(resources)));
+		postParams.add(new BasicNameValuePair("action", action));
+		postParams.add(new BasicNameValuePair("params", getJSONArrayForStringList(identifiers)));
 
 		httpPost.setEntity(new UrlEncodedFormEntity(postParams, "UTF-8"));
 
@@ -100,7 +109,8 @@ public class OpenCmsPluginConnector {
 			}
 		}
 		catch (ParseException e) {
-			System.out.println("");
+			System.out.println("There was an exception parsing the JSON response for the action " + action);
+			e.printStackTrace(System.out);
 		}
 		finally {
 			response.close();
@@ -108,6 +118,7 @@ public class OpenCmsPluginConnector {
 
 		return resourceInfos;
 	}
+
 
 	@SuppressWarnings("unchecked")
 	private String getJSONArrayForStringList(List<String> list) {
