@@ -4,7 +4,6 @@ import com.intellij.openapi.components.*;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationForm;
@@ -61,10 +60,6 @@ public class OpenCmsProjectConfigurationComponent implements ProjectComponent, C
 		return "OpenCms Plugin";
 	}
 
-	public Icon getIcon() {
-		return IconLoader.getIcon("/icons/opencms.png");
-	}
-
 	public String getHelpTopic() {
 		return null;  // Do nothing
 	}
@@ -96,13 +91,18 @@ public class OpenCmsProjectConfigurationComponent implements ProjectComponent, C
 				}
 			}
 
-			if (plugin.getPluginConnector() != null) {
-				plugin.getPluginConnector().setConnectorUrl(configurationData.getConnectorUrl());
-			}
-			else {
-				if (configurationData.isPluginConnectorEnabled()) {
+			if (configurationData.isPluginConnectorEnabled()) {
+				if (plugin.getPluginConnector() != null) {
+					plugin.getPluginConnector().setConnectorUrl(configurationData.getConnectorUrl());
+					plugin.getPluginConnector().setUser(configurationData.getUsername());
+					plugin.getPluginConnector().setPassword(configurationData.getPassword());
+				}
+				else {
 					plugin.setPluginConnector(new OpenCmsPluginConnector(configurationData.getConnectorUrl(), configurationData.getUsername(), configurationData.getPassword()));
 				}
+			}
+			else {
+				plugin.setPluginConnector(null);
 			}
 		}
 	}
