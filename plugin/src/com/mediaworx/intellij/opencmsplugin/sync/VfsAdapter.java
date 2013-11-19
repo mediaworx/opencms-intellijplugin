@@ -132,6 +132,9 @@ public class VfsAdapter {
 		    System.out.println("not connected");
 		    return false;
 	    }
+		if (!path.startsWith("/")) {
+			return false;
+		}
 	    try {
 	        session.getObjectByPath(path);
 	        return true;
