@@ -1,0 +1,33 @@
+<resourceinfo>
+    <file>
+        <destination></destination>
+        <type>folder</type>
+        <uuidstructure>e81e4ca8-8af0-11e2-9f6f-210cc9a3bba6</uuidstructure>
+        <datelastmodified>Tue, 12 Mar 2013 08:43:26 GMT</datelastmodified>
+        <userlastmodified>Admin</userlastmodified>
+        <datecreated>Tue, 12 Mar 2013 08:43:26 GMT</datecreated>
+        <usercreated>Admin</usercreated>
+        <flags>0</flags>
+        <properties/>
+        <relations/>
+        <accesscontrol>
+            <accessentry>
+                <uuidprincipal>ALL_OTHERS</uuidprincipal>
+                <flags>130</flags>
+                <permissionset>
+                    <allowed>5</allowed>
+                    <denied>0</denied>
+                </permissionset>
+            </accessentry>
+            <accessentry>
+                <uuidprincipal>ROLE.ROOT_ADMIN</uuidprincipal>
+                <flags>514</flags>
+                <permissionset>
+                    <allowed>31</allowed>
+                    <denied>0</denied>
+                </permissionset>
+            </accessentry>
+        </accesscontrol>
+    </file>
+    <siblingcount>1</siblingcount>
+</resourceinfo>
