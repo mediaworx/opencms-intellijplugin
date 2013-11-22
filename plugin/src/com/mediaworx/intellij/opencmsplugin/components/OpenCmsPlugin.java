@@ -16,10 +16,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
 
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
-	private static final String EDITOR_POPUP_ID = "OpenCmsEditorPopupAction";
-	private static final String PROJECT_POPUP_ID = "OpenCmsProjectViewPopupAction";
-	private static final String SYNC_ALL_ID = "OpenCmsSyncAllAction";
-	private static final String SYNC_ID = "OpenCmsSyncAction";
+	private static final String EDITOR_POPUP_ID = "OpenCmsPlugin.EditorPopupAction";
+	private static final String PROJECT_POPUP_ID = "OpenCmsPlugin.ProjectViewPopupAction";
+	private static final String SYNC_ALL_ID = "OpenCmsPlugin.SyncAllAction";
+	private static final String SYNC_ID = "OpenCmsPlugin.SyncAction";
 
 	Project project;
 	OpenCmsConfiguration openCmsConfiguration;
