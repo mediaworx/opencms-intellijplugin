@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.sync;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.ui.Messages;
@@ -10,6 +11,7 @@ import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
+import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -22,7 +24,11 @@ import java.util.Map;
 
 public class SyncJob {
 
+	private static final Logger LOG = Logger.getInstance(SyncJob.class);
+	private static final String ERROR_PREFIX = "ERROR: ";
+
 	private OpenCmsPlugin plugin;
+	private OpenCmsToolWindowConsole console;
     private OpenCmsPluginConfigurationData config;
 	private VfsAdapter adapter;
 	private List<SyncEntity> syncList;
@@ -31,6 +37,7 @@ public class SyncJob {
 
 	public SyncJob(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
+		console = plugin.getConsole();
         config = plugin.getPluginConfiguration();
 		adapter = plugin.getVfsAdapter();
 		this.syncList = new ArrayList<SyncEntity>();
@@ -39,7 +46,7 @@ public class SyncJob {
 	}
 
 	public void execute() {
-		final StringBuilder outputBuffer = new StringBuilder(4000);
+		// final StringBuilder outputBuffer = new StringBuilder(4000);
 		Runnable deployRunner = new Runnable() {
 
 			public void run() {
@@ -64,11 +71,10 @@ public class SyncJob {
 						return;
 					}
 
-					String syncResult = doSync(entity);
+					doSync(entity);
 					indicator.setFraction((double)c++ / numSyncEntities);
-					outputBuffer.append(syncResult).append('\n');
 				}
-				outputBuffer.append("---- Sync finished ----");
+				console.info("---- Sync finished ----\n");
 
 				if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
 
@@ -91,9 +97,8 @@ public class SyncJob {
 							metaInfos = plugin.getPluginConnector().getResourceInfos(pullEntityList);
 						}
 						catch (IOException e) {
-							System.out.println("IOException while trying to retrieve meta infos");
-							e.printStackTrace(System.out);
-							outputBuffer.append("There was an error retrieving resource meta infos from OpenCms");
+							console.error("There was an error retrieving resource meta infos from OpenCms");
+							LOG.warn("IOException while trying to retrieve meta infos", e);
 							break metaInfoHandling;
 						}
 
@@ -103,15 +108,13 @@ public class SyncJob {
 						int numMetaEntities = syncList.size();
 
 						if (numMetaEntities > 0) {
-							outputBuffer.append("\n\n");
 							for (SyncEntity entity : syncList) {
-								String metaResult = doMetaInfoHandling(metaInfos, entity);
+								doMetaInfoHandling(console, metaInfos, entity);
 								indicator.setFraction((double)c++ / numMetaEntities);
-								outputBuffer.append(metaResult).append('\n');
 							}
 						}
 					}
-					outputBuffer.append("---- Resource meta info pull finished ----");
+					console.info("---- Resource meta info pull finished ----\n");
 				}
 
                 if (numExportEntities() > 0) {
@@ -120,46 +123,41 @@ public class SyncJob {
 	            	c = 0;
 					int numExportEntities = numExportEntities();
 
-                    outputBuffer.append("\n\n");
                     for (ExportEntity entity : exportList) {
                         if (indicator.isCanceled()) {
                             return;
                         }
-                        String exportPointResult = doExportPointHandling(entity);
+                        doExportPointHandling(entity);
 	                    indicator.setFraction((double)c++ / numExportEntities);
-                        outputBuffer.append(exportPointResult).append('\n');
                     }
-                    outputBuffer.append("---- Copying of ExportPoints finished ----");
+                    console.info("---- Copying of ExportPoints finished ----\n");
                 }
 			}
 		};
 
 		ProgressManager.getInstance().runProcessWithProgressSynchronously(deployRunner, "Syncing with OpenCms VFS ...", true, plugin.getProject());
 
-		String msg = outputBuffer.toString();
-		Messages.showMessageDialog(msg, "OpenCms VFS Sync", msg.contains("ERROR") ? Messages.getErrorIcon() : Messages.getInformationIcon());
+		Messages.showMessageDialog("OpenCms Sync done, see console for details", "OpenCms VFS Sync", Messages.getInformationIcon());
 	}
 
 
-	private String doSync(SyncEntity entity) {
-		String syncResult = "";
+	private void doSync(SyncEntity entity) {
 		if (entity.getSyncAction() == SyncAction.PUSH) {
-			syncResult = doPush(entity);
+			doPush(entity);
 		}
 		else if (entity.getSyncAction() == SyncAction.PULL) {
-			syncResult = doPull(entity);
+			doPull(entity);
 		}
 		else if (entity.getSyncAction() == SyncAction.DELETE_RFS) {
-			syncResult = doDeleteFromRfs(entity);
+			doDeleteFromRfs(entity);
 		}
 		else if (entity.getSyncAction() == SyncAction.DELETE_VFS) {
-			syncResult = doDeleteFromVfs(entity);
+			doDeleteFromVfs(entity);
 		}
-		return syncResult;
 	}
 
 
-	private String doPush(SyncEntity entity) {
+	private void doPush(SyncEntity entity) {
 
 		boolean success = false;
 		String errormessage = null;
@@ -183,30 +181,29 @@ public class SyncJob {
 			}
 		}
 
-		StringBuilder confirmation = new StringBuilder();
 		if (success) {
+			StringBuilder confirmation = new StringBuilder();
 			confirmation.append("PUSH: ").append(entity.getVfsPath()).append(" pushed to VFS");
 			if (entity.replaceExistingEntity()) {
 				confirmation.append(" replacing an existing entity");
 			}
+			console.info(confirmation.toString());
 		}
 		else {
-			confirmation.append("PUSH FAILED! ");
-			confirmation.append(errormessage);
+			console.error("PUSH FAILED! " + errormessage);
 		}
-
-		return confirmation.toString();
 	}
 
     // TODO: Improve error handling
-	private String doPull(SyncEntity entity) {
+	private void doPull(SyncEntity entity) {
 		StringBuilder confirmation = new StringBuilder();
 
         if (entity.isFolder()) {
             try {
 	            FileUtils.forceMkdir(new File(entity.getRfsPath()));
             } catch (IOException e) {
-                System.out.println("There was an Exception creating a local directory: " + e + "\n" + e.getMessage());
+	            console.error("ERROR: couldn't create local directory " + entity.getRfsPath());
+	            LOG.warn("There was an Exception creating a local directory", e);
            }
         }
         else {
@@ -218,39 +215,44 @@ public class SyncJob {
 			confirmation.append(" replacing an existing entity");
 		}
 
-		return confirmation.toString();
+		console.info(confirmation.toString());
 	}
 
-	private static String doDeleteFromRfs(SyncEntity entity) {
-		StringBuilder confirmation = new StringBuilder("DELETE: ").append(entity.getVfsPath()).append(" from ").append(entity.getOcmsModule().getLocalVfsRoot()).append(" (not in the VFS) - ");
+	private void doDeleteFromRfs(SyncEntity entity) {
+		StringBuilder confirmation = new StringBuilder("DELETE ").append(entity.getVfsPath()).append(" from ").append(entity.getOcmsModule().getLocalVfsRoot()).append(" (not in the VFS) - ");
 		File rfsFile = entity.getRealFile();
 		if (FileUtils.deleteQuietly(rfsFile)) {
 			confirmation.append(" SUCCESS");
+			console.info(confirmation.toString());
 		}
 		else {
+			confirmation.insert(0, "ERROR: ");
 			confirmation.append(" FAILED!");
+			console.error(confirmation.toString());
 		}
-		return confirmation.toString();
 	}
 
-	private String doDeleteFromVfs(SyncEntity entity) {
-		StringBuilder confirmation = new StringBuilder("DELETE: ").append(entity.getVfsPath()).append(" (not in the RFS) - ");
+	private void doDeleteFromVfs(SyncEntity entity) {
+		StringBuilder confirmation = new StringBuilder("DELETE ").append(entity.getVfsPath()).append(" (not in the RFS) - ");
 		if (adapter.deleteResource(entity.getVfsPath())) {
 			confirmation.append(" SUCCESS");
+			console.info(confirmation.toString());
 		}
 		else {
+			confirmation.insert(0, "ERROR: ");
 			confirmation.append(" FAILED!");
+			console.error(confirmation.toString());
 		}
-		return confirmation.toString();
 	}
 
-	public static String doMetaInfoHandling(Map<String,String> metaInfos, SyncEntity entity) {
+	public static void doMetaInfoHandling(OpenCmsToolWindowConsole console, Map<String,String> metaInfos, SyncEntity entity) {
 		String metaInfoFilePath = entity.getMetaInfoFilePath();
 		File metaInfoFile = new File(metaInfoFilePath);
 
 		if (entity.getSyncAction().isDeleteAction()) {
 			FileUtils.deleteQuietly(metaInfoFile);
-			return "DELETE: " + metaInfoFilePath;
+			console.info("DELETE: " + metaInfoFilePath);
+			return;
 		}
 
 		if (metaInfos.containsKey(entity.getVfsPath())) {
@@ -263,9 +265,9 @@ public class SyncJob {
 					}
 					catch (IOException e) {
 						String message = "ERROR: cant create meta info directory " + metaFolderPath;
-						System.out.println(message);
-						e.printStackTrace(System.out);
-						return message;
+						console.error(message);
+						LOG.warn(message, e);
+						return;
 					}
 				}
 			}
@@ -274,21 +276,21 @@ public class SyncJob {
 			}
 			catch (IOException e) {
 				String message = "ERROR: cant create meta info file " + metaInfoFilePath;
-				System.out.println(message);
-				e.printStackTrace(System.out);
-				return message;
+				console.error(message);
+				LOG.warn(message, e);
+				return;
 			}
 
 		}
 		else {
 			String message = entity.getVfsPath() + " not found in meta info map.";
-			System.out.println(message);
-			return message;
+			console.error(message);
+			return;
 		}
-		return "PULL: Meta info file pulled: " + metaInfoFilePath;
+		console.info("PULL: Meta info file pulled: " + metaInfoFilePath);
 	}
 
-	private static String doExportPointHandling(ExportEntity entity) {
+	private void doExportPointHandling(ExportEntity entity) {
         StringBuilder confirmation = new StringBuilder();
 
 		if (!entity.isToBeDeleted()) {
@@ -300,6 +302,7 @@ public class SyncJob {
 	                    FileUtils.copyFile(file, new File(entity.getTargetPath()));
 	                    confirmation.append("SUCCESS");
 	                } catch (IOException e) {
+		                confirmation.insert(0, "ERROR: ");
 	                    confirmation.append("FAILED (").append(e.getMessage()).append(")");
 	                }
 	            }
@@ -308,6 +311,7 @@ public class SyncJob {
 	                    FileUtils.copyDirectory(file, new File(entity.getTargetPath()));
 	                    confirmation.append("SUCCESS");
 	                } catch (IOException e) {
+		                confirmation.insert(0, "ERROR: ");
 	                    confirmation.append("FAILED (").append(e.getMessage()).append(")");
 	                }
 	            }
@@ -325,6 +329,7 @@ public class SyncJob {
 					confirmation.append("SUCCESS");
 				}
 				else {
+					confirmation.insert(0, "ERROR: ");
 					confirmation.append("FAILED");
 				}
 			}
@@ -332,7 +337,12 @@ public class SyncJob {
 				confirmation.append("NOT NECESSARY (doesn't exist)");
 			}
 		}
-        return confirmation.toString();
+		if (confirmation.indexOf(ERROR_PREFIX) > -1) {
+			console.error(confirmation.toString());
+		}
+		else {
+			console.info(confirmation.toString());
+		}
     }
 
 	public List<SyncEntity> getSyncList() {

@@ -289,7 +289,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 							handleExportPointsForMovedResources(renameInfo.getOldVfsPath(), renameInfo.getNewVfsPath(), renameInfo.getNewIdeaVFile().getPath(), refreshFiles);
 						}
 						catch (CmsPermissionDeniedException e) {
-							LOG.error("Exception moving files - permission denied", e);
+							LOG.warn("Exception moving files - permission denied", e);
 							Messages.showDialog("Error moving files/folders. " + e.getMessage(),
 									"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 						}
@@ -335,7 +335,7 @@ public class OnFileChangeComponent implements ProjectComponent {
 				refreshFiles.add(exportTargetFile);
 			}
 			catch (IOException e) {
-				LOG.error("Exception exporting a file for an ExportPoint", e);
+				LOG.warn("Exception exporting a file for an ExportPoint", e);
 			}
 		}
 	}

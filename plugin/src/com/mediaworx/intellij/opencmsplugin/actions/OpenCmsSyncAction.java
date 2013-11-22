@@ -28,7 +28,7 @@ public class OpenCmsSyncAction extends AnAction {
 	        fileSyncer.syncFiles(event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY));
         }
         catch (Throwable t) {
-	        LOG.error("Exception in OpenCmsSyncAction.actionPerformed: " + t.getMessage(), t);
+	        LOG.warn("Exception in OpenCmsSyncAction.actionPerformed: " + t.getMessage(), t);
         }
 	}
 

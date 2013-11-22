@@ -119,6 +119,12 @@
       <item class="javax.swing.JScrollBar" icon="/com/intellij/uiDesigner/icons/scrollbar.png" removable="false" auto-create-binding="true" can-attach-label="false">
         <default-constraints vsize-policy="6" hsize-policy="0" anchor="0" fill="2" />
       </item>
+      <item class="com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole" icon="/com/intellij/uiDesigner/icons/textPane.png" removable="true" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3" />
+      </item>
+      <item class="com.intellij.diagnostic.logging.LogConsoleImpl" icon="/com/intellij/uiDesigner/icons/panel.png" removable="true" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3" />
+      </item>
     </group>
   </component>
 </project>

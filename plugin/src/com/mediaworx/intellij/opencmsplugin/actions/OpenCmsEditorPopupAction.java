@@ -37,7 +37,7 @@ public class OpenCmsEditorPopupAction extends AnAction {
 			fileSyncer.syncFiles(syncFiles);
 		}
 		catch (Throwable t) {
-			LOG.error("Exception in OpenCmsEditorPopupAction.actionPerformed: " + t.getMessage(), t);
+			LOG.warn("Exception in OpenCmsEditorPopupAction.actionPerformed: " + t.getMessage(), t);
 		}
 	}
 }

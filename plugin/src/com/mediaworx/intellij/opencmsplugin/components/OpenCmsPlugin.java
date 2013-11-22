@@ -9,6 +9,7 @@ import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsConfiguration;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
+import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenCmsPlugin implements ProjectComponent {
@@ -27,6 +28,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	VfsAdapter vfsAdapter;
 	OpenCmsPluginConfigurationData config;
 	OpenCmsPluginConnector pluginConnector;
+	OpenCmsToolWindowConsole console;
 
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
@@ -146,5 +148,13 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public void setPluginConnector(OpenCmsPluginConnector pluginConnector) {
 		this.pluginConnector = pluginConnector;
+	}
+
+	public OpenCmsToolWindowConsole getConsole() {
+		return console;
+	}
+
+	public void setConsole(OpenCmsToolWindowConsole console) {
+		this.console = console;
 	}
 }

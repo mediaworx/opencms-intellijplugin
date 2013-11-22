@@ -8,6 +8,7 @@ import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.entities.OpenCmsModuleResource;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
+import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -20,13 +21,18 @@ public class ModuleSyncer {
 	private static final Logger LOG = Logger.getInstance(ModuleSyncer.class);
 
 	OpenCmsPlugin plugin;
+	OpenCmsToolWindowConsole console;
 	Collection<OpenCmsModule> ocmsModules;
 
 	public ModuleSyncer(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
+		console = plugin.getConsole();
 	}
 
 	public void syncAllModules() {
+		if (console != null) {
+			console.clear();
+		}
 		ocmsModules = plugin.getOpenCmsModules().getAllModules();
 		syncModules();
 	}
@@ -76,7 +82,7 @@ public class ModuleSyncer {
 			fileSyncer.syncFiles(moduleResources.toArray(new VirtualFile[moduleResources.size()]));
 		}
 		catch (Throwable t) {
-			LOG.error("Exception in OpenCmsSyncAllAction.actionPerformed: " + t.getMessage(), t);
+			LOG.warn("Exception in OpenCmsSyncAllAction.actionPerformed: " + t.getMessage(), t);
 		}
 	}
 
@@ -98,22 +104,23 @@ public class ModuleSyncer {
 					syncFolder.setOcmsModule(resourceParent.getOpenCmsModule());
 					syncFolder.setSyncAction(SyncAction.PULL);
 					syncFolder.setVfsPath(resourceParent.getResourcePath());
-
-					String syncResult = SyncJob.doMetaInfoHandling(resourceInfos, syncFolder);
-					LOG.info(syncResult);
+					SyncJob.doMetaInfoHandling(console, resourceInfos, syncFolder);
 				}
 			}
 			catch (IOException e) {
 				Messages.showDialog("There was an error pulling the meta information for module resource ancestor folders from OpenCms.\nIs the connector module installed?",
 						"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
-				LOG.error("There was an Exception pulling the meta information for module resource ancestor folders", e);
+				LOG.warn("There was an Exception pulling the meta information for module resource ancestor folders", e);
 			}
 		}
 	}
 
 	private void addParentFolderToResourcePaths(String resourcePath, OpenCmsModule ocmsModule,
 	                                            List<OpenCmsModuleResource> resourcePathParents, Set<String> handledParents) {
-		if (resourcePath.contains("/")) {
+		if (resourcePath.endsWith("/")) {
+			resourcePath = resourcePath.substring(0, resourcePath.length() - 1);
+		}
+		if (resourcePath.lastIndexOf("/") > 0) {  // > 0 is right because the "/" at position 0 has to be ignored
 			String parentPath = resourcePath.substring(0, resourcePath.lastIndexOf("/"));
 			if (!handledParents.contains(parentPath)) {
 				resourcePathParents.add(new OpenCmsModuleResource(ocmsModule, parentPath));
@@ -152,7 +159,7 @@ public class ModuleSyncer {
 			catch (IOException e) {
 				Messages.showDialog("There was an error pulling the module manifest files from OpenCms.\nIs the connector module installed?",
 						"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
-				LOG.error("There was an Exception pulling the module manifests", e);
+				LOG.warn("There was an Exception pulling the module manifests", e);
 			}
 		}
 	}
