@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SyncJob {
 
@@ -140,7 +141,7 @@ public class SyncJob {
 	}
 
 
-	public String doSync(SyncEntity entity) {
+	private String doSync(SyncEntity entity) {
 		String syncResult = "";
 		if (entity.getSyncAction() == SyncAction.PUSH) {
 			syncResult = doPush(entity);
@@ -158,7 +159,7 @@ public class SyncJob {
 	}
 
 
-	public String doPush(SyncEntity entity) {
+	private String doPush(SyncEntity entity) {
 
 		boolean success = false;
 		String errormessage = null;
@@ -198,7 +199,7 @@ public class SyncJob {
 	}
 
     // TODO: Improve error handling
-	public String doPull(SyncEntity entity) {
+	private String doPull(SyncEntity entity) {
 		StringBuilder confirmation = new StringBuilder();
 
         if (entity.isFolder()) {
@@ -220,7 +221,7 @@ public class SyncJob {
 		return confirmation.toString();
 	}
 
-	public String doDeleteFromRfs(SyncEntity entity) {
+	private static String doDeleteFromRfs(SyncEntity entity) {
 		StringBuilder confirmation = new StringBuilder("DELETE: ").append(entity.getVfsPath()).append(" from ").append(entity.getOcmsModule().getLocalVfsRoot()).append(" (not in the VFS) - ");
 		File rfsFile = entity.getRealFile();
 		if (FileUtils.deleteQuietly(rfsFile)) {
@@ -232,7 +233,7 @@ public class SyncJob {
 		return confirmation.toString();
 	}
 
-	public String doDeleteFromVfs(SyncEntity entity) {
+	private String doDeleteFromVfs(SyncEntity entity) {
 		StringBuilder confirmation = new StringBuilder("DELETE: ").append(entity.getVfsPath()).append(" (not in the RFS) - ");
 		if (adapter.deleteResource(entity.getVfsPath())) {
 			confirmation.append(" SUCCESS");
@@ -243,13 +244,13 @@ public class SyncJob {
 		return confirmation.toString();
 	}
 
-	private String doMetaInfoHandling(HashMap<String,String> metaInfos, SyncEntity entity) {
-		String metaInfoPath = entity.getMetaInfoPath();
-		File metaInfoFile = new File(metaInfoPath);
+	public static String doMetaInfoHandling(Map<String,String> metaInfos, SyncEntity entity) {
+		String metaInfoFilePath = entity.getMetaInfoFilePath();
+		File metaInfoFile = new File(metaInfoFilePath);
 
 		if (entity.getSyncAction().isDeleteAction()) {
 			FileUtils.deleteQuietly(metaInfoFile);
-			return "DELETE: " + metaInfoPath;
+			return "DELETE: " + metaInfoFilePath;
 		}
 
 		if (metaInfos.containsKey(entity.getVfsPath())) {
@@ -272,7 +273,7 @@ public class SyncJob {
 				FileUtils.writeStringToFile(metaInfoFile, metaInfos.get(entity.getVfsPath()), Charset.forName("UTF-8"));
 			}
 			catch (IOException e) {
-				String message = "ERROR: cant create meta info file " + metaInfoPath;
+				String message = "ERROR: cant create meta info file " + metaInfoFilePath;
 				System.out.println(message);
 				e.printStackTrace(System.out);
 				return message;
@@ -284,10 +285,10 @@ public class SyncJob {
 			System.out.println(message);
 			return message;
 		}
-		return "PULL: Meta info file pulled: " + metaInfoPath;
+		return "PULL: Meta info file pulled: " + metaInfoFilePath;
 	}
 
-	public String doExportPointHandling(ExportEntity entity) {
+	private static String doExportPointHandling(ExportEntity entity) {
         StringBuilder confirmation = new StringBuilder();
 
 		if (!entity.isToBeDeleted()) {
@@ -354,7 +355,7 @@ public class SyncJob {
 		}
 	}
 
-    public void addSyncEntityToExportListIfNecessary(SyncEntity syncEntity) {
+    private void addSyncEntityToExportListIfNecessary(SyncEntity syncEntity) {
 
 	    List<ModuleExportPoint> exportPoints = syncEntity.getOcmsModule().getExportPoints();
 
@@ -380,7 +381,7 @@ public class SyncJob {
         }
     }
 
-	public void addExportEntity(ExportEntity entity) {
+	private void addExportEntity(ExportEntity entity) {
 		exportList.add(entity);
 	}
 

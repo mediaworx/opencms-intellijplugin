@@ -41,7 +41,7 @@ public abstract class SyncEntity {
 		return ocmsModule.getLocalVfsRoot() + vfsPath;
 	}
 
-	public String getMetaInfoPath() {
+	public String getMetaInfoFilePath() {
 		return ocmsModule.getManifestRoot() + vfsPath + getMetaInfoFileSuffix();
 	}
 

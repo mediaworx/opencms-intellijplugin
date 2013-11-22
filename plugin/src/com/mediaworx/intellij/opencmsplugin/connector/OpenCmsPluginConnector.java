@@ -1,6 +1,7 @@
 package com.mediaworx.intellij.opencmsplugin.connector;
 
 
+import com.mediaworx.intellij.opencmsplugin.entities.OpenCmsModuleResource;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -66,6 +67,15 @@ public class OpenCmsPluginConnector {
 			resetClient();
 		}
 	}
+
+	public HashMap<String, String> getModuleResourceInfos(List<OpenCmsModuleResource> moduleResources) throws IOException {
+		List<String> resourcePaths = new ArrayList<String>(moduleResources.size());
+		for (OpenCmsModuleResource moduleResource : moduleResources) {
+			resourcePaths.add(moduleResource.getResourcePath());
+		}
+		return getActionResponseMap(resourcePaths, ACTION_RESOURCEINFOS);
+	}
+
 
 	public HashMap<String, String> getResourceInfos(List<String> resourcePaths) throws IOException {
 		return getActionResponseMap(resourcePaths, ACTION_RESOURCEINFOS);
