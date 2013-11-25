@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.opencms;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -11,6 +12,8 @@ import java.util.*;
 
 public class OpenCmsModules {
 
+	private static final Logger LOG = Logger.getInstance(OpenCmsModules.class);
+
 	OpenCmsPlugin plugin;
 	List<ModuleExportPoint> allExportPoints;
 
@@ -21,7 +24,7 @@ public class OpenCmsModules {
 	}
 
 	public void registerModule(Module ideaModule, OpenCmsModuleConfigurationData moduleConfig) {
-		System.out.println("registering module: " + moduleConfig.getModuleName());
+		LOG.info("registering module: " + moduleConfig.getModuleName());
 		allExportPoints = null;
 		if (!moduleConfig.isOpenCmsModuleEnabled()) {
 			return;
@@ -40,7 +43,7 @@ public class OpenCmsModules {
 	}
 
 	public void unregisterModule(Module ideaModule) {
-		System.out.println("unregistering module: " + ideaModule.getName());
+		LOG.info("unregistering module: " + ideaModule.getName());
 		allExportPoints = null;
 		OCMSMODULE_BY_IDEAMODULE.remove(ideaModule);
 	}
@@ -60,18 +63,18 @@ public class OpenCmsModules {
 	public boolean isIdeaVFileOpenCmsModuleResource(final VirtualFile file) {
 		OpenCmsModule ocmsModule = getModuleForIdeaVFile(file);
 		if (ocmsModule == null) {
-			System.out.println("No module configured for the file " + file.getPath());
+			LOG.info("No module configured for the file " + file.getPath());
 			return false;
 		}
-		System.out.println("moduleName:  " + ocmsModule.getModuleName());
+		LOG.info("moduleName:  " + ocmsModule.getModuleName());
 		for (String moduleResource : ocmsModule.getModuleResources()) {
 			String resourcePath = ocmsModule.getLocalVfsRoot() + moduleResource;
 			String filePath = file.getPath().replace('\\', '/');
 			if ((filePath + "/").endsWith(resourcePath)) {
 				filePath = filePath + "/";
 			}
-			System.out.println("resourcePath: " + resourcePath);
-			System.out.println("filePath:     " + filePath);
+			LOG.info("resourcePath: " + resourcePath);
+			LOG.info("filePath:     " + filePath);
 			if (filePath.startsWith(resourcePath)) {
 				return true;
 			}

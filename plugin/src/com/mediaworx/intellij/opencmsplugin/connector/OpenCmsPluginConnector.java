@@ -1,6 +1,7 @@
 package com.mediaworx.intellij.opencmsplugin.connector;
 
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.mediaworx.intellij.opencmsplugin.entities.OpenCmsModuleResource;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -22,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class OpenCmsPluginConnector {
+
+	private static final Logger LOG = Logger.getInstance(OpenCmsPluginConnector.class);
 
 	private static final String ACTION_MODULEMANIFESTS = "moduleManifests";
 	private static final String ACTION_RESOURCEINFOS = "resourceInfos";
@@ -103,7 +106,7 @@ public class OpenCmsPluginConnector {
 		CloseableHttpResponse response = httpClient.execute(httpPost);
 
 		try {
-			System.out.println(response.getStatusLine());
+			LOG.info("Status: " + response.getStatusLine().getStatusCode());
 			HttpEntity entity = response.getEntity();
 			int status = response.getStatusLine().getStatusCode();
 			if (entity != null && status >= 200 && status < 300) {
@@ -119,8 +122,7 @@ public class OpenCmsPluginConnector {
 			}
 		}
 		catch (ParseException e) {
-			System.out.println("There was an exception parsing the JSON response for the action " + action);
-			e.printStackTrace(System.out);
+			LOG.warn("There was an exception parsing the JSON response for the action " + action, e);
 		}
 		finally {
 			response.close();

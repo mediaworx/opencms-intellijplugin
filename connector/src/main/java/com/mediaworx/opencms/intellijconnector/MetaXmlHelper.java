@@ -39,8 +39,6 @@ public class MetaXmlHelper extends CmsExport {
 
 	public MetaXmlHelper(CmsObject cmsObject) {
 		this.cmsObject = cmsObject;
-
-		// TODO: login to OpenCms
 	}
 
 	public Element getExportInfoElement() {

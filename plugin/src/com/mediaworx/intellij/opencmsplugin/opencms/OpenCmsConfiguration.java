@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.opencms;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OpenCmsConfiguration {
+
+	private static final Logger LOG = Logger.getInstance(OpenCmsConfiguration.class);
 
 	private static final String CONFIGPATH = "/WEB-INF/config/";
 	private static final String MODULECONFIGFILE = "opencms-modules.xml";
@@ -42,8 +45,7 @@ public class OpenCmsConfiguration {
 			builder = documentBuilderFactory.newDocumentBuilder();
 		}
 		catch (Exception e) {
-			System.out.println("Exception during initialization of the module configuration: " + e);
-			e.printStackTrace(System.out);
+			LOG.warn("Exception during initialization of the module configuration: " + e);
 		}
 
 		xPathfactory = XPathFactory.newInstance();
@@ -54,8 +56,7 @@ public class OpenCmsConfiguration {
 			parsedModuleConfigurationFile = builder.parse(webappRoot + CONFIGPATH + MODULECONFIGFILE);
 		}
 		catch (Exception e) {
-			System.out.println("Exception parsing the module configuration: " + e);
-			e.printStackTrace(System.out);
+			LOG.warn("Exception parsing the module configuration ", e);
 		}
 	}
 
@@ -78,12 +79,12 @@ public class OpenCmsConfiguration {
 				NamedNodeMap attr = n.getAttributes();
 				String uri = attr.getNamedItem("uri").getNodeValue();
 				String destination = attr.getNamedItem("destination").getNodeValue();
-				System.out.println("Exportpoint " + (i + 1) + ": uri=" + uri + " - destination=" + destination);
+				LOG.info("Exportpoint " + (i + 1) + ": uri=" + uri + " - destination=" + destination);
 				exportPoints.add(new ModuleExportPoint(uri, destination));
 			}
 		}
 		catch (Exception e) {
-			System.out.println("There was an Exception initializing export points for module " + moduleName + " : "+e+"\n"+e.getMessage());
+			LOG.warn("There was an Exception initializing export points for module " + moduleName, e);
 		}
 		return exportPoints;
 	}
@@ -101,12 +102,12 @@ public class OpenCmsConfiguration {
 				Node n = nl.item(i);
 				NamedNodeMap attr = n.getAttributes();
 				String uri = attr.getNamedItem("uri").getNodeValue();
-				System.out.println("Module Resource " + (i + 1) + ": uri=" + uri);
+				LOG.info("Module Resource " + (i + 1) + ": uri=" + uri);
 				moduleResources.add(uri);
 			}
 		}
 		catch (Exception e) {
-			System.out.println("There was an Exception initializing export points for module " + moduleName + " : "+e+"\n"+e.getMessage());
+			LOG.warn("There was an Exception initializing export points for module " + moduleName, e);
 		}
 		return moduleResources;
 	}

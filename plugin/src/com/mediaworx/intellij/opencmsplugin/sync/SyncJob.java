@@ -159,7 +159,6 @@ public class SyncJob {
 		}
 	}
 
-    // TODO: Improve error handling
 	private void doPull(SyncEntity entity) {
 		StringBuilder confirmation = new StringBuilder();
 
@@ -348,7 +347,7 @@ public class SyncJob {
 						// put the manifest to a file
 						String manifestPath = ocmsModule.getManifestRoot() + "/manifest_stub.xml";
 						FileUtils.writeStringToFile(new File(manifestPath), manifestInfos.get(ocmsModule.getModuleName()), Charset.forName("UTF-8"));
-						// TODO: output to console
+						console.info("PULL: " + manifestPath + " pulled from OpenCms");
 					}
 					else {
 						LOG.warn("No manifest found for module " + ocmsModule.getModuleName());

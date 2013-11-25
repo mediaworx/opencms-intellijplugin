@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.sync;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
@@ -32,6 +33,8 @@ import java.util.Map;
  * @author Kai Widmann, widmann@mediaworx.com
  */
 public class VfsAdapter {
+
+	private static final Logger LOG = Logger.getInstance(VfsAdapter.class);
 
 	/** the CMIS session */
 	private Session session;
@@ -95,7 +98,7 @@ public class VfsAdapter {
 			    // find all the repositories at this URL - there should only be one.
 			    List<Repository> repositories = sessionFactory.getRepositories(sessionParams);
 			    for (Repository r : repositories) {
-				    System.out.println("Found repository: " + r.getName());
+				    LOG.info("Found repository: " + r.getName());
 			    }
 
 			    // create session with the first (and only) repository
@@ -103,7 +106,7 @@ public class VfsAdapter {
 			    sessionParams.put(SessionParameter.REPOSITORY_ID, repository.getId());
 			    sessionParams.put(SessionParameter.CONNECT_TIMEOUT, "500");
 
-			    System.out.println("Starting CMIS session using repository " + atompubUrl);
+			    LOG.info("Starting CMIS session using repository " + atompubUrl);
 			    this.session = sessionFactory.createSession(sessionParams);
 
 			    if (this.session != null) {
@@ -111,11 +114,11 @@ public class VfsAdapter {
 			    }
 			    else {
 				    connected = false;
-				    System.out.println("Error: CMIS session is null");
+				    LOG.info("Error: CMIS session is null");
 			    }
 		    }
 		    catch (Exception e) {
-			    System.out.println("Exception connecting to VFS: " + e.getMessage());
+			    LOG.info("Exception connecting to VFS", e);
 			    connected = false;
 		    }
 		}
@@ -129,7 +132,7 @@ public class VfsAdapter {
 	 */
 	public boolean exists(String path) {
 	    if (!connected) {
-		    System.out.println("not connected");
+		    LOG.warn("not connected");
 		    return false;
 	    }
 		if (!path.startsWith("/")) {
@@ -152,7 +155,7 @@ public class VfsAdapter {
 	 */
 	public CmisObject getVfsObject(String path) throws CmsPermissionDeniedException {
 	    if (!connected) {
-		    System.out.println("not connected");
+		    LOG.warn("not connected");
 		    return null;
 	    }
 	    try {
@@ -162,13 +165,13 @@ public class VfsAdapter {
 	        return null;
 	    }
 	    catch (CmisPermissionDeniedException e) {
-		    e.printStackTrace(System.out);
+		    LOG.warn("Permission denied, can't access "+path, e);
 		    throw new CmsPermissionDeniedException("Permission denied, can't access "+path, e);
 	    }
 		catch (CmisConnectionException e) {
 			Messages.showDialog("Error connecting to the VFS" + e.getMessage() + "\nIs OpenCms running?",
 								"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
-			e.printStackTrace(System.out);
+			LOG.warn("Error connecting to the VFS", e);
 			connected = false;
 			return null;
 		}
@@ -181,7 +184,7 @@ public class VfsAdapter {
 	 */
 	private Folder getOrCreateFolder(String path) {
 	    if (!connected) {
-		    System.out.println("not connected");
+		    LOG.warn("not connected");
 		    return null;
 	    }
 
@@ -193,9 +196,9 @@ public class VfsAdapter {
 	    catch (CmisObjectNotFoundException e) {
 	        String parentPath = path.substring(0, path.lastIndexOf("/"));
 	        String foldername = path.substring(path.lastIndexOf("/") + 1, path.length());
-	        System.out.println("creating folder "+path);
-	        System.out.println("parent path "+parentPath);
-	        System.out.println("foldername "+foldername);
+	        LOG.info("creating folder "+path);
+	        LOG.info("parent path "+parentPath);
+	        LOG.info("foldername "+foldername);
 
 	        Folder parent;
 
@@ -231,7 +234,7 @@ public class VfsAdapter {
 	 */
 	public Document pushFile(SyncEntity entity) throws CmsPushException {
 		if (!connected) {
-			System.out.println("not connected");
+			LOG.info("not connected");
 			return null;
 		}
 
@@ -280,7 +283,7 @@ public class VfsAdapter {
 			vfsFileModifiedTime = vfsFile.getLastModificationDate().getTimeInMillis();
 		}
 		catch (FileNotFoundException e) {
-			System.out.println("File not found.");
+			LOG.info("File not found.");
 		}
 		catch(CmisNameConstraintViolationException e) {
 			throw new CmsPushException("Could not push entity "+entity.getVfsPath()+".\n"+e.getMessage(), e);
@@ -294,10 +297,10 @@ public class VfsAdapter {
 				if (vfsFileModifiedTime > 0) {
 					// Since setting the modification Date on the VFS file ain't possible, set the date for the RFS file
 					if (rfsFile.setLastModified(vfsFileModifiedTime)) {
-						System.out.println("Setting lastModificationDate successful");
+						LOG.info("Setting lastModificationDate successful");
 					}
 					else {
-						System.out.println("Setting lastModificationDate NOT successful");
+						LOG.info("Setting lastModificationDate NOT successful");
 					}
 				}
 			}
@@ -315,12 +318,12 @@ public class VfsAdapter {
 	 */
 	public void pullFile(SyncEntity syncEntity) {
 	    if (!connected) {
-		    System.out.println("not connected");
+		    LOG.info("not connected");
 		    return;
 	    }
 	    Document document = (Document)syncEntity.getVfsObject();
 
-	    System.out.println("Pulling "+syncEntity.getVfsPath()+" to "+syncEntity.getOcmsModule().getLocalVfsRoot());
+	    LOG.info("Pulling "+syncEntity.getVfsPath()+" to "+syncEntity.getOcmsModule().getLocalVfsRoot());
 
 	    InputStream is = document.getContentStream().getStream();
 	    File rfsFile = createRealFile(syncEntity);
@@ -333,7 +336,7 @@ public class VfsAdapter {
 	        }
 	    }
 	    catch (IOException e) {
-	        System.out.println("There was an Exception writing to the local file " + syncEntity.getRfsPath() + ": " + e + "\n" + e.getMessage());
+	        LOG.info("There was an Exception writing to the local file " + syncEntity.getRfsPath() + ": " + e + "\n" + e.getMessage());
 	    }
 	    finally {
 	        try {
@@ -351,7 +354,7 @@ public class VfsAdapter {
 			    }
 		    }
 	        if (!rfsFile.setLastModified(document.getLastModificationDate().getTimeInMillis())) {
-		        System.out.println("there was an error setting the modification date for " + syncEntity.getRfsPath());
+		        LOG.info("there was an error setting the modification date for " + syncEntity.getRfsPath());
 	        }
 	    }
 	}
@@ -363,7 +366,7 @@ public class VfsAdapter {
 			try {
 				if (syncEntity.isFolder()) {
 					if (!realFile.mkdirs()) {
-						System.out.println("The directories for " + syncEntity.getRfsPath() + " could not be created");
+						LOG.warn("The directories for " + syncEntity.getRfsPath() + " could not be created");
 					}
 				}
 				else {
@@ -372,12 +375,12 @@ public class VfsAdapter {
 						FileUtils.forceMkdir(parentFolder);
 					}
 					if (!realFile.createNewFile()) {
-						System.out.println("The file " + syncEntity.getRfsPath() + " could not be created");
+						LOG.warn("The file " + syncEntity.getRfsPath() + " could not be created");
 					}
 				}
 			}
 			catch (IOException e) {
-				System.out.println("There was an Exception creating the local file " + syncEntity.getRfsPath() + ": " + e + "\n" + e.getMessage());
+				LOG.warn("There was an Exception creating the local file " + syncEntity.getRfsPath(), e);
 			}
 		}
 		syncEntity.setRealFile(realFile);
@@ -393,7 +396,7 @@ public class VfsAdapter {
 	 */
 	public boolean deleteResource(String vfsPath) {
 	    if (!connected) {
-		    System.out.println("not connected");
+		    LOG.warn("not connected");
 		    return false;
 	    }
 		boolean success = false;
@@ -402,18 +405,18 @@ public class VfsAdapter {
 		    vfsFile = getVfsObject(vfsPath);
 	    }
 	    catch (CmsPermissionDeniedException e) {
-		    e.printStackTrace(System.out);
+		    LOG.warn("Can't delete " + vfsPath + ", permission denied", e);
 	    }
 	    if (vfsFile != null) {
 		    // Folders
 	        if (vfsFile instanceof Folder) {
-	            System.out.println("Deleting the following folder from the VFS: "+vfsPath);
+	            LOG.info("Deleting the following folder from the VFS: "+vfsPath);
 	            List<String> failedResourcePaths = ((Folder)vfsFile).deleteTree(true, UnfileObject.DELETE, true);
 		        success = failedResourcePaths == null || failedResourcePaths.size() <= 0;
 	        }
 	        // Files
 	        else {
-	            System.out.println("Deleting the following file from the VFS: "+vfsPath);
+	            LOG.info("Deleting the following file from the VFS: "+vfsPath);
 	            vfsFile.delete();
 		        success = true;
 	        }
@@ -437,7 +440,7 @@ public class VfsAdapter {
 			folder = session.getRootFolder();
 		}
 		catch (CmisConnectionException e) {
-			e.printStackTrace(System.out);
+			LOG.info("Can't read CMIS repository root folder, not connected", e);
 			connected = false;
 		}
 	    return folder != null && connected;
@@ -455,36 +458,36 @@ public class VfsAdapter {
 	 * logs the CMIS capabilities, for debugging purposes
 	 */
 	public void logCapabilities() {
-		System.out.println("Printing repository capabilities...");
+		LOG.info("Printing repository capabilities...");
 		final RepositoryInfo repInfo = session.getRepositoryInfo();
 		RepositoryCapabilities cap = repInfo.getCapabilities();
-		System.out.println("\nNavigation Capabilities");
-		System.out.println("-----------------------");
-		System.out.println("Get descendants supported: " + (cap.isGetDescendantsSupported() ? "true" : "false"));
-		System.out.println("Get folder tree supported: " + (cap.isGetFolderTreeSupported() ? "true" : "false"));
-		System.out.println("\nObject Capabilities");
-		System.out.println("-----------------------");
-		System.out.println("Content Stream: " + cap.getContentStreamUpdatesCapability().value());
-		System.out.println("Changes: " + cap.getChangesCapability().value());
-		System.out.println("Renditions: " + cap.getRenditionsCapability().value());
-		System.out.println("\nFiling Capabilities");
-		System.out.println("-----------------------");
-		System.out.println("Multifiling supported: " + (cap.isMultifilingSupported() ? "true" : "false"));
-		System.out.println("Unfiling supported: " + (cap.isUnfilingSupported() ? "true" : "false"));
-		System.out.println("Version specific filing supported: " + (cap.isVersionSpecificFilingSupported() ? "true" : "false"));
-		System.out.println("\nVersioning Capabilities");
-		System.out.println("-----------------------");
-		System.out.println("PWC searchable: " + (cap.isPwcSearchableSupported() ? "true" : "false"));
-		System.out.println("PWC updatable: " + (cap.isPwcUpdatableSupported() ? "true" : "false"));
-		System.out.println("All versions searchable: " + (cap.isAllVersionsSearchableSupported() ? "true" : "false"));
-		System.out.println("\nQuery Capabilities");
-		System.out.println("-----------------------");
-		System.out.println("Query: " + cap.getQueryCapability().value());
-		System.out.println("Join: " + cap.getJoinCapability().value());
-		System.out.println("\nACL Capabilities");
-		System.out.println("-----------------------");
-		System.out.println("ACL: " + cap.getAclCapability().value());
-		System.out.println("End of  repository capabilities");
+		LOG.info("\nNavigation Capabilities");
+		LOG.info("-----------------------");
+		LOG.info("Get descendants supported: " + (cap.isGetDescendantsSupported() ? "true" : "false"));
+		LOG.info("Get folder tree supported: " + (cap.isGetFolderTreeSupported() ? "true" : "false"));
+		LOG.info("\nObject Capabilities");
+		LOG.info("-----------------------");
+		LOG.info("Content Stream: " + cap.getContentStreamUpdatesCapability().value());
+		LOG.info("Changes: " + cap.getChangesCapability().value());
+		LOG.info("Renditions: " + cap.getRenditionsCapability().value());
+		LOG.info("\nFiling Capabilities");
+		LOG.info("-----------------------");
+		LOG.info("Multifiling supported: " + (cap.isMultifilingSupported() ? "true" : "false"));
+		LOG.info("Unfiling supported: " + (cap.isUnfilingSupported() ? "true" : "false"));
+		LOG.info("Version specific filing supported: " + (cap.isVersionSpecificFilingSupported() ? "true" : "false"));
+		LOG.info("\nVersioning Capabilities");
+		LOG.info("-----------------------");
+		LOG.info("PWC searchable: " + (cap.isPwcSearchableSupported() ? "true" : "false"));
+		LOG.info("PWC updatable: " + (cap.isPwcUpdatableSupported() ? "true" : "false"));
+		LOG.info("All versions searchable: " + (cap.isAllVersionsSearchableSupported() ? "true" : "false"));
+		LOG.info("\nQuery Capabilities");
+		LOG.info("-----------------------");
+		LOG.info("Query: " + cap.getQueryCapability().value());
+		LOG.info("Join: " + cap.getJoinCapability().value());
+		LOG.info("\nACL Capabilities");
+		LOG.info("-----------------------");
+		LOG.info("ACL: " + cap.getAclCapability().value());
+		LOG.info("End of  repository capabilities");
 	}
 
 	/**
@@ -493,7 +496,7 @@ public class VfsAdapter {
 	public void logCmisObjectProperties(CmisObject object) {
 		List<Property<?>> properties = object.getProperties();
 		for (Property<?> property : properties) {
-			System.out.println("Property: "+property.getDisplayName()+" ("+property.getLocalName()+") - "+property.getValue().toString());
+			LOG.info("Property: "+property.getDisplayName()+" ("+property.getLocalName()+") - "+property.getValue().toString());
 		}
 	}
 }
