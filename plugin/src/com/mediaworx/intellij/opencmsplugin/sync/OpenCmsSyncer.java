@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.sync;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -20,7 +21,10 @@ import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import java.io.File;
 import java.util.*;
 
-public class FileSyncer {
+public class OpenCmsSyncer {
+
+	private static final Logger LOG = Logger.getInstance(OpenCmsSyncer.class);
+
 
 	OpenCmsPlugin plugin;
 	OpenCmsPluginConfigurationData config;
@@ -28,51 +32,14 @@ public class FileSyncer {
 	private SyncJob syncJob;
 
 	List<OpenCmsModuleResource> moduleResourcesToBePulled;
+	boolean skipConfirmDialog = false;
+	boolean executeSync = true;
 
-	public FileSyncer(OpenCmsPlugin plugin) {
+	public OpenCmsSyncer(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
 		config = plugin.getPluginConfiguration();
 		vfsAdapter = plugin.getVfsAdapter();
 
-		FileDocumentManager.getInstance().saveAllDocuments();
-		FileDocumentManager.getInstance().reloadFiles();
-	}
-
-	public void setModuleResourcesToBePulled(List<OpenCmsModuleResource> moduleResourcesToBePulled) {
-		this.moduleResourcesToBePulled = moduleResourcesToBePulled;
-	}
-
-	private SyncAction getRfsOnlySyncAction(SyncMode syncMode) {
-		SyncAction syncAction;
-		switch (syncMode) {
-			case PULL:
-				syncAction = SyncAction.DELETE_RFS;
-				break;
-			case PUSH:
-			case SYNC:
-			default:
-				syncAction = SyncAction.PUSH;
-				break;
-		}
-		return syncAction;
-	}
-
-	private SyncAction getVfsOnlySyncAction(SyncMode syncMode) {
-		SyncAction syncAction;
-		switch (syncMode) {
-			case PUSH:
-				syncAction = SyncAction.DELETE_VFS;
-				break;
-			case PULL:
-			case SYNC:
-			default:
-				syncAction = SyncAction.PULL;
-				break;
-		}
-		return syncAction;
-	}
-
-	public boolean syncFiles(VirtualFile[] syncFiles) {
 		// Not connected yet (maybe OpenCms wasn't started when the project opened)
 		if (!vfsAdapter.isConnected()) {
 			// Try again to connect
@@ -84,20 +51,74 @@ public class FileSyncer {
 						"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 
 				// Get the hell out of here
-				return false;
+				executeSync = false;
+				return;
 			}
 		}
 
+		FileDocumentManager.getInstance().saveAllDocuments();
+		FileDocumentManager.getInstance().reloadFiles();
 		this.vfsAdapter.clearCache();
 
 		this.syncJob = new SyncJob(plugin);
+	}
+
+
+	public void syncAllModules() {
+
+		if (!executeSync) {
+			return;
+		}
+
+		skipConfirmDialog = true;
+
+		Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
+
+		// First put all valid module paths in a List
+		List<VirtualFile> moduleResources = new ArrayList<VirtualFile>();
+		moduleResourcesToBePulled = new ArrayList<OpenCmsModuleResource>();
+
+		for (OpenCmsModule ocmsModule : ocmsModules) {
+
+			for (String resourcePath : ocmsModule.getModuleResources()) {
+				LOG.info("resource path: " + ocmsModule.getLocalVfsRoot() + resourcePath);
+				VirtualFile resourceFile = LocalFileSystem.getInstance().findFileByIoFile(new File(ocmsModule.getLocalVfsRoot() + resourcePath));
+				if (resourceFile != null) {
+					LOG.info("vFolder path: " + resourceFile.getPath());
+					moduleResources.add(resourceFile);
+				}
+				else {
+					LOG.info("Resource path doesn't exist in the FS, it has to be pulled from the VFS");
+					moduleResourcesToBePulled.add(new OpenCmsModuleResource(ocmsModule, resourcePath));
+				}
+			}
+		}
+
+		// then sync all valid modules
+		try {
+			syncJob.setSyncModuleMetaInformation(true);
+			syncJob.setOcmsModules(ocmsModules);
+			syncFiles(moduleResources.toArray(new VirtualFile[moduleResources.size()]));
+		}
+		catch (Throwable t) {
+			LOG.warn("Exception in OpenCmsSyncAllAction.actionPerformed: " + t.getMessage(), t);
+		}
+	}
+
+	public void syncFiles(VirtualFile[] syncFiles) {
+
+		if (!executeSync) {
+			return;
+		}
 
 		StringBuilder message = new StringBuilder();
 
 		executeFileAnalysis(syncFiles, message);
-		if (syncJob == null) {
-			return true;
+
+		if (!executeSync) {
+			return;
 		}
+
 		int numSyncEntities = syncJob.numSyncEntities();
 
 		boolean proceed = syncJob.hasSyncEntities();
@@ -111,37 +132,10 @@ public class FileSyncer {
 			message.append("Nothing to sync");
 			Messages.showMessageDialog(message.toString(), "OpenCms VFS Sync", Messages.getInformationIcon());
 		}
-		else if ((numSyncEntities == 1 && message.length() > 0) || numSyncEntities > 1) {
-			if (message.length() > 0) {
-				message.append("\n");
-			}
-			message.append("The following ").append(numSyncEntities).append(" syncFiles or folders will be synced to or from OpenCms VFS:\n\n");
-			List<SyncEntity> syncEntities = syncJob.getSyncList();
-			for (SyncEntity syncEntity : syncEntities) {
-				message.append(syncEntity.getSyncAction().getDescription()).append(" ");
-				message.append(syncEntity.getVfsPath());
-				if (!syncEntity.replaceExistingEntity()) {
-					if (!syncEntity.getSyncAction().isDeleteAction()) {
-						message.append(" (new)");
-					}
-					else {
-						message.append(" (obsolete)");
-					}
-				}
-				else {
-					message.append(" (changed)");
-				}
-				message.append("\n");
-			}
-			message.append("\nProceed?");
-			try {
-				int dlgStatus = Messages.showOkCancelDialog(message.toString(), "Start OpenCms VFS Sync?", Messages.getQuestionIcon());
-				proceed = dlgStatus == 0;
-			}
-			catch (Exception e) {
-				System.out.println("There was an exception showing a dialog: ");
-				e.printStackTrace(System.out);
-			}
+		else if (!skipConfirmDialog && ((numSyncEntities == 1 && message.length() > 0) || numSyncEntities > 1)) {
+			assembleConfirmMessage(message);
+			int dlgStatus = Messages.showOkCancelDialog(plugin.getProject(), message.toString(), "Start OpenCms VFS Sync?", Messages.getQuestionIcon());
+			proceed = dlgStatus == 0;
 		}
 
 		if (proceed) {
@@ -162,7 +156,20 @@ public class FileSyncer {
 				}
 			}
 		}
-		return false;
+	}
+
+	private void assembleConfirmMessage(StringBuilder message) {
+		List<SyncEntity> syncEntities = syncJob.getSyncList();
+		int numSyncEntities = syncEntities.size();
+		if (message.length() > 0) {
+			message.append("\n");
+		}
+		message.append("The following ").append(numSyncEntities).append(" syncFiles or folders will be synced to or from OpenCms VFS:\n\n");
+		for (SyncEntity syncEntity : syncEntities) {
+			String suffix = syncEntity.replaceExistingEntity() ? "(changed)" : syncEntity.getSyncAction().isDeleteAction() ? "(obsolete)" : "(new)";
+			message.append(syncEntity.getSyncAction().getDescription()).append(" ").append(syncEntity.getVfsPath()).append(" ").append(suffix).append("\n");
+		}
+		message.append("\nProceed?");
 	}
 
 	private void executeFileAnalysis(final VirtualFile[] syncFiles, final StringBuilder message) {
@@ -179,7 +186,7 @@ public class FileSyncer {
 					handleModuleResourcesToBePulled(moduleResourcesToBePulled, message, indicator);
 				}
 				if (indicator.isCanceled()) {
-					syncJob = null;
+					executeSync = false;
 				}
 			}
 		};
@@ -187,7 +194,7 @@ public class FileSyncer {
 		ProgressManager.getInstance().runProcessWithProgressSynchronously(deployRunner, "Analyzing local and VFS syncFiles and folders ...", true, plugin.getProject());
 	}
 
-	private boolean fileOrPathIsIgnored(final VirtualFile virtualFile) {
+	public static boolean fileOrPathIsIgnored(final VirtualFile virtualFile) {
 		final String pathLC = virtualFile.getPath().toLowerCase();
 		return pathLC.contains(".git")
 				|| pathLC.contains(".svn")
@@ -207,7 +214,7 @@ public class FileSyncer {
 		}
 		for (VirtualFile syncFile : syncFiles) {
 			if (progressIndicator.isCanceled()) {
-				syncJob = null;
+				executeSync = false;
 				return;
 			}
 
@@ -233,7 +240,7 @@ public class FileSyncer {
 	private void handleSyncFile(final VirtualFile file, FolderSyncMode folderSyncMode, ProgressIndicator progressIndicator, StringBuilder message) {
 
 		if (progressIndicator.isCanceled()) {
-			syncJob = null;
+			executeSync = false;
 			return;
 		}
 		System.out.println("Handle file/folder " + file.getPath());
@@ -247,7 +254,7 @@ public class FileSyncer {
 	private void walkFileTree(OpenCmsModule ocmsModule, VirtualFile ideaVFile, FolderSyncMode folderSyncMode, ProgressIndicator progressIndicator, StringBuilder message) {
 
 		if (progressIndicator.isCanceled()) {
-			syncJob = null;
+			executeSync = false;
 			return;
 		}
 		if (ocmsModule == null) {
@@ -399,7 +406,7 @@ public class FileSyncer {
 	private void handleModuleResourcesToBePulled(List<OpenCmsModuleResource> moduleResourcesToBePulled, StringBuilder message, ProgressIndicator progressIndicator) {
 		for (OpenCmsModuleResource moduleResourceToBePulled : moduleResourcesToBePulled) {
 			if (progressIndicator.isCanceled()) {
-				syncJob = null;
+				executeSync = false;
 				return;
 			}
 
@@ -534,6 +541,34 @@ public class FileSyncer {
 		}
 	}
 
+	private SyncAction getRfsOnlySyncAction(SyncMode syncMode) {
+		SyncAction syncAction;
+		switch (syncMode) {
+			case PULL:
+				syncAction = SyncAction.DELETE_RFS;
+				break;
+			case PUSH:
+			case SYNC:
+			default:
+				syncAction = SyncAction.PUSH;
+				break;
+		}
+		return syncAction;
+	}
 
+	private SyncAction getVfsOnlySyncAction(SyncMode syncMode) {
+		SyncAction syncAction;
+		switch (syncMode) {
+			case PUSH:
+				syncAction = SyncAction.DELETE_VFS;
+				break;
+			case PULL:
+			case SYNC:
+			default:
+				syncAction = SyncAction.PULL;
+				break;
+		}
+		return syncAction;
+	}
 
 }

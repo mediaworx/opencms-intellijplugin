@@ -4,17 +4,25 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowAnchor;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsConfiguration;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
+import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 
 public class OpenCmsPlugin implements ProjectComponent {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
+
+	public static final String TOOLWINDOW_ID = "OpenCms";
 
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
 	private static final String EDITOR_POPUP_ID = "OpenCmsPlugin.EditorPopupAction";
@@ -28,6 +36,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	VfsAdapter vfsAdapter;
 	OpenCmsPluginConfigurationData config;
 	OpenCmsPluginConnector pluginConnector;
+	ToolWindow toolWindow;
 	OpenCmsToolWindowConsole console;
 
 	public OpenCmsPlugin(Project project) {
@@ -52,7 +61,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			}
 
 			AnAction openCmsMenu = actionManager.getAction(OPENCMS_MENU_ID);
-			DefaultActionGroup mainMenu = (DefaultActionGroup) actionManager.getAction("MainMenu");
+			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction("MainMenu");
 			try {
 				mainMenu.addAction(openCmsMenu, new Constraints(Anchor.BEFORE, "WindowMenu"));
 			}
@@ -61,7 +70,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			}
 
 			AnAction editorPopupAction = actionManager.getAction(EDITOR_POPUP_ID);
-			DefaultActionGroup editorPopupMenu = (DefaultActionGroup) actionManager.getAction("EditorPopupMenu");
+			DefaultActionGroup editorPopupMenu = (DefaultActionGroup)actionManager.getAction("EditorPopupMenu");
 			try {
 				editorPopupMenu.addAction(editorPopupAction, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
 				editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_ID));
@@ -70,7 +79,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 				LOG.warn(EDITOR_POPUP_ID + " has already been added to EditorPopupMenu. ", e);
 			}
 
-			DefaultActionGroup editorTabPopupMenu = (DefaultActionGroup) actionManager.getAction("EditorTabPopupMenu");
+			DefaultActionGroup editorTabPopupMenu = (DefaultActionGroup)actionManager.getAction("EditorTabPopupMenu");
 			try {
 				editorTabPopupMenu.addAction(editorPopupAction);
 				editorTabPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, EDITOR_POPUP_ID));
@@ -80,7 +89,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			}
 
 			AnAction projectPopupAction = actionManager.getAction(PROJECT_POPUP_ID);
-			DefaultActionGroup projectPopupMenu = (DefaultActionGroup) actionManager.getAction("ProjectViewPopupMenu");
+			DefaultActionGroup projectPopupMenu = (DefaultActionGroup)actionManager.getAction("ProjectViewPopupMenu");
 			try {
 				projectPopupMenu.addAction(projectPopupAction, new Constraints(Anchor.BEFORE, "RevealIn"));
 				projectPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_ID));
@@ -148,6 +157,20 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public void setPluginConnector(OpenCmsPluginConnector pluginConnector) {
 		this.pluginConnector = pluginConnector;
+	}
+
+	public ToolWindow getToolWindow() {
+		if (toolWindow == null) {
+			toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, true, ToolWindowAnchor.BOTTOM);
+			toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
+			OpenCmsPluginToolWindowFactory toolWindowFactory = new OpenCmsPluginToolWindowFactory();
+			toolWindowFactory.createToolWindowContent(project, toolWindow);
+		}
+		return toolWindow;
+	}
+
+	public void setToolWindow(ToolWindow toolWindow) {
+		this.toolWindow = toolWindow;
 	}
 
 	public OpenCmsToolWindowConsole getConsole() {

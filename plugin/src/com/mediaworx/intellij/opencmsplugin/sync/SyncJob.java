@@ -1,26 +1,23 @@
 package com.mediaworx.intellij.opencmsplugin.sync;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
+import com.mediaworx.intellij.opencmsplugin.entities.OpenCmsModuleResource;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SyncJob {
 
@@ -31,13 +28,16 @@ public class SyncJob {
 	private OpenCmsToolWindowConsole console;
     private OpenCmsPluginConfigurationData config;
 	private VfsAdapter adapter;
+
+	private boolean syncModuleMetaInformation = false;
+	private Collection<OpenCmsModule> ocmsModules;
+
 	private List<SyncEntity> syncList;
 	private List<SyncEntity> refreshEntityList;
 	private List<ExportEntity> exportList;
 
 	public SyncJob(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
-		console = plugin.getConsole();
         config = plugin.getPluginConfiguration();
 		adapter = plugin.getVfsAdapter();
 		this.syncList = new ArrayList<SyncEntity>();
@@ -46,15 +46,14 @@ public class SyncJob {
 	}
 
 	public void execute() {
-		// final StringBuilder outputBuffer = new StringBuilder(4000);
+
 		Runnable deployRunner = new Runnable() {
 
 			public void run() {
 
-				ProgressIndicator indicator = ProgressManager.getInstance().getProgressIndicator();
-				indicator.setIndeterminate(false);
+				console = plugin.getConsole();
+				console.clear();
 
-				int c = 0;
 				int step = 1;
 				int numSteps = 1;
 				if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
@@ -63,83 +62,49 @@ public class SyncJob {
 				if (numExportEntities() > 0) {
 					numSteps += 1;
 				}
-				indicator.setText("Step " + (step++) + "/" + numSteps + ": Syncing files and folders");
-
-				int numSyncEntities = syncList.size();
+				if (syncModuleMetaInformation) {
+					numSteps += 2;
+				}
+				// ######## SYNC FILES / FOLDERS ################################
+				console.info("Step " + (step++) + "/" + numSteps + ": Syncing files and folders");
 				for (SyncEntity entity : syncList) {
-					if (indicator.isCanceled()) {
-						return;
-					}
-
 					doSync(entity);
-					indicator.setFraction((double)c++ / numSyncEntities);
 				}
 				console.info("---- Sync finished ----\n");
 
+				if (syncModuleMetaInformation) {
+					// ######## PULL MODULE MANIFESTS ################################
+					console.info("Step " + (step++) + "/" + numSteps + ": Pull module manifests");
+					pullModuleManifests();
+					console.info("---- Module manifest pull finished ----\n");
+
+					// ######## PULL META INFOS FOR MODULE RESOURCE PARENTS ################################
+					console.info("Step " + (step++) + "/" + numSteps + ": Pulling resource meta data for module resource path ancestors from OpenCms");
+					pullModuleResourcePathAncestorMetaInfos();
+					console.info("---- Pull of meta data for module resource path ancestors finished ----\n");
+				}
+
+				// ######## PULL RESOURCE VFS META INFORMATION ################################
 				if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
-
-					metaInfoHandling: {
-
-						indicator.setText("Step " + (step++) + "/" + numSteps + ": Pulling resource meta data from OpenCms");
-						indicator.setIndeterminate(true);
-
-						// build lists with all resources for which meta information is to be pulled / deleted
-						ArrayList<String> pullEntityList = new ArrayList<String>();
-						for (SyncEntity entity : syncList) {
-							if (!entity.getSyncAction().isDeleteAction()) {
-								pullEntityList.add(entity.getVfsPath());
-							}
-						}
-
-						HashMap<String, String> metaInfos;
-
-						try {
-							metaInfos = plugin.getPluginConnector().getResourceInfos(pullEntityList);
-						}
-						catch (IOException e) {
-							console.error("There was an error retrieving resource meta infos from OpenCms");
-							LOG.warn("IOException while trying to retrieve meta infos", e);
-							break metaInfoHandling;
-						}
-
-						indicator.setIndeterminate(false);
-						indicator.setFraction(0);
-					    c = 0;
-						int numMetaEntities = syncList.size();
-
-						if (numMetaEntities > 0) {
-							for (SyncEntity entity : syncList) {
-								doMetaInfoHandling(console, metaInfos, entity);
-								indicator.setFraction((double)c++ / numMetaEntities);
-							}
-						}
-					}
+					console.info("Step " + (step++) + "/" + numSteps + ": Pulling resource meta data from OpenCms");
+					pullResourceMetaInfos();
 					console.info("---- Resource meta info pull finished ----\n");
 				}
 
+				// ######## EXPORT POINT HANDLING ################################
                 if (numExportEntities() > 0) {
-	                indicator.setText("Step " + step + "/" + numSteps + ": Handling export points");
-	                indicator.setFraction(0);
-	            	c = 0;
-					int numExportEntities = numExportEntities();
+	                console.info("Step " + step + "/" + numSteps + ": Handling export points");
 
                     for (ExportEntity entity : exportList) {
-                        if (indicator.isCanceled()) {
-                            return;
-                        }
                         doExportPointHandling(entity);
-	                    indicator.setFraction((double)c++ / numExportEntities);
                     }
                     console.info("---- Copying of ExportPoints finished ----\n");
                 }
 			}
 		};
 
-		ProgressManager.getInstance().runProcessWithProgressSynchronously(deployRunner, "Syncing with OpenCms VFS ...", true, plugin.getProject());
-
-		Messages.showMessageDialog("OpenCms Sync done, see console for details", "OpenCms VFS Sync", Messages.getInformationIcon());
+		plugin.getToolWindow().activate(deployRunner);
 	}
-
 
 	private void doSync(SyncEntity entity) {
 		if (entity.getSyncAction() == SyncAction.PUSH) {
@@ -245,6 +210,35 @@ public class SyncJob {
 		}
 	}
 
+	private void pullResourceMetaInfos() {
+		// build lists with all resources for which meta information is to be pulled / deleted
+		ArrayList<String> pullEntityList = new ArrayList<String>();
+		for (SyncEntity entity : syncList) {
+			if (!entity.getSyncAction().isDeleteAction()) {
+				pullEntityList.add(entity.getVfsPath());
+			}
+		}
+
+		HashMap<String, String> metaInfos;
+
+		try {
+			metaInfos = plugin.getPluginConnector().getResourceInfos(pullEntityList);
+		}
+		catch (IOException e) {
+			console.error("There was an error retrieving resource meta infos from OpenCms");
+			LOG.warn("IOException while trying to retrieve meta infos", e);
+			return;
+		}
+
+		int numMetaEntities = syncList.size();
+
+		if (numMetaEntities > 0) {
+			for (SyncEntity entity : syncList) {
+				doMetaInfoHandling(console, metaInfos, entity);
+			}
+		}
+	}
+
 	public static void doMetaInfoHandling(OpenCmsToolWindowConsole console, Map<String,String> metaInfos, SyncEntity entity) {
 		String metaInfoFilePath = entity.getMetaInfoFilePath();
 		File metaInfoFile = new File(metaInfoFilePath);
@@ -288,6 +282,85 @@ public class SyncJob {
 			return;
 		}
 		console.info("PULL: Meta info file pulled: " + metaInfoFilePath);
+	}
+
+	private void pullModuleResourcePathAncestorMetaInfos() {
+		List<OpenCmsModuleResource> resourcePathParents = new ArrayList<OpenCmsModuleResource>();
+		for (OpenCmsModule ocmsModule : ocmsModules) {
+			Set<String> handledParents = new HashSet<String>();
+			for (String resourcePath : ocmsModule.getModuleResources()) {
+				addParentFolderToResourcePaths(resourcePath, ocmsModule, resourcePathParents, handledParents);
+			}
+		}
+
+		if (resourcePathParents.size() > 0) {
+			try {
+				Map<String,String> resourceInfos = plugin.getPluginConnector().getModuleResourceInfos(resourcePathParents);
+
+				for (OpenCmsModuleResource resourceParent : resourcePathParents) {
+					SyncFolder syncFolder = new SyncFolder();
+					syncFolder.setOcmsModule(resourceParent.getOpenCmsModule());
+					syncFolder.setSyncAction(SyncAction.PULL);
+					syncFolder.setVfsPath(resourceParent.getResourcePath());
+					SyncJob.doMetaInfoHandling(console, resourceInfos, syncFolder);
+				}
+			}
+			catch (IOException e) {
+				Messages.showDialog("There was an error pulling the meta information for module resource ancestor folders from OpenCms.\nIs the connector module installed?",
+						"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+				LOG.warn("There was an Exception pulling the meta information for module resource ancestor folders", e);
+			}
+		}
+	}
+
+	private void addParentFolderToResourcePaths(String resourcePath, OpenCmsModule ocmsModule,
+	                                            List<OpenCmsModuleResource> resourcePathParents, Set<String> handledParents) {
+		if (resourcePath.endsWith("/")) {
+			resourcePath = resourcePath.substring(0, resourcePath.length() - 1);
+		}
+		if (resourcePath.lastIndexOf("/") > 0) {  // > 0 is right because the "/" at position 0 has to be ignored
+			String parentPath = resourcePath.substring(0, resourcePath.lastIndexOf("/"));
+			if (!handledParents.contains(parentPath)) {
+				resourcePathParents.add(new OpenCmsModuleResource(ocmsModule, parentPath));
+				handledParents.add(parentPath);
+				if (parentPath.contains("/")) {
+					addParentFolderToResourcePaths(parentPath, ocmsModule, resourcePathParents, handledParents);
+				}
+			}
+		}
+	}
+
+	private void pullModuleManifests() {
+
+		// collect the module names in a List
+		List<String> moduleNames = new ArrayList<String>(ocmsModules.size());
+		for (OpenCmsModule ocmsModule : ocmsModules) {
+			moduleNames.add(ocmsModule.getModuleName());
+		}
+
+		if (moduleNames.size() > 0) {
+			try {
+				// pull the module manifests
+				Map<String,String> manifestInfos = plugin.getPluginConnector().getModuleManifests(moduleNames);
+
+				for (OpenCmsModule ocmsModule : ocmsModules) {
+					if (manifestInfos.containsKey(ocmsModule.getModuleName())) {
+						// put the manifest to a file
+						String manifestPath = ocmsModule.getManifestRoot() + "/manifest_stub.xml";
+						FileUtils.writeStringToFile(new File(manifestPath), manifestInfos.get(ocmsModule.getModuleName()), Charset.forName("UTF-8"));
+						// TODO: output to console
+					}
+					else {
+						LOG.warn("No manifest found for module " + ocmsModule.getModuleName());
+					}
+				}
+			}
+			catch (IOException e) {
+				Messages.showDialog("There was an error pulling the module manifest files from OpenCms.\nIs the connector module installed?",
+						"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+				LOG.warn("There was an Exception pulling the module manifests", e);
+			}
+		}
 	}
 
 	private void doExportPointHandling(ExportEntity entity) {
@@ -344,6 +417,7 @@ public class SyncJob {
 			console.info(confirmation.toString());
 		}
     }
+
 
 	public List<SyncEntity> getSyncList() {
 		return syncList;
@@ -415,4 +489,11 @@ public class SyncJob {
 		return exportList.size();
 	}
 
+	public void setSyncModuleMetaInformation(boolean syncModuleMetaInformation) {
+		this.syncModuleMetaInformation = syncModuleMetaInformation;
+	}
+
+	public void setOcmsModules(Collection<OpenCmsModule> ocmsModules) {
+		this.ocmsModules = ocmsModules;
+	}
 }

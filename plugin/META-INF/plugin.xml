@@ -49,7 +49,5 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<toolWindow id="OpenCms" icon="/icons/opencms_13.png" anchor="bottom" factoryClass="com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory">
-		</toolWindow>
 	</extensions>
 </idea-plugin>
