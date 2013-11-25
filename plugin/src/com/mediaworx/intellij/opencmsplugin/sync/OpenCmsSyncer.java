@@ -47,8 +47,7 @@ public class OpenCmsSyncer {
 
 			// Still not connected? Show an error message and stop
 			if (!vfsAdapter.isConnected()) {
-				Messages.showDialog("Connection to OpenCms VFS failed. Is OpenCms running?",
-						"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+				Messages.showDialog("Connection to OpenCms VFS failed. Is OpenCms running?", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 
 				// Get the hell out of here
 				executeSync = false;

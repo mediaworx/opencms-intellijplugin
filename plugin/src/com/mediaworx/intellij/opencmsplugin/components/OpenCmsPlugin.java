@@ -28,6 +28,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private static final String EDITOR_POPUP_ID = "OpenCmsPlugin.EditorPopupAction";
 	private static final String PROJECT_POPUP_ID = "OpenCmsPlugin.ProjectViewPopupAction";
 	private static final String SYNC_ALL_ID = "OpenCmsPlugin.SyncAllAction";
+	private static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
 	private static final String SYNC_ID = "OpenCmsPlugin.SyncAction";
 
 	Project project;
@@ -60,10 +61,12 @@ public class OpenCmsPlugin implements ProjectComponent {
 				pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword());
 			}
 
-			AnAction openCmsMenu = actionManager.getAction(OPENCMS_MENU_ID);
+			DefaultActionGroup openCmsMenu = (DefaultActionGroup)actionManager.getAction(OPENCMS_MENU_ID);
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction("MainMenu");
+			AnAction editorTabsSyncAllAction = actionManager.getAction(SYNC_OPEN_TABS_ID);
 			try {
 				mainMenu.addAction(openCmsMenu, new Constraints(Anchor.BEFORE, "WindowMenu"));
+				openCmsMenu.addAction(editorTabsSyncAllAction, new Constraints(Anchor.BEFORE, SYNC_ALL_ID));
 			}
 			catch (IllegalArgumentException e) {
 				LOG.warn(OPENCMS_MENU_ID + " has already been added to MainMenu. ", e);
@@ -82,6 +85,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			DefaultActionGroup editorTabPopupMenu = (DefaultActionGroup)actionManager.getAction("EditorTabPopupMenu");
 			try {
 				editorTabPopupMenu.addAction(editorPopupAction);
+				editorTabPopupMenu.addAction(editorTabsSyncAllAction);
 				editorTabPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, EDITOR_POPUP_ID));
 			}
 			catch (IllegalArgumentException e) {
@@ -110,6 +114,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		actionManager.unregisterAction(PROJECT_POPUP_ID);
 		actionManager.unregisterAction(SYNC_ID);
 		actionManager.unregisterAction(SYNC_ALL_ID);
+		actionManager.unregisterAction(SYNC_OPEN_TABS_ID);
 	}
 
 	public void disposeComponent() {

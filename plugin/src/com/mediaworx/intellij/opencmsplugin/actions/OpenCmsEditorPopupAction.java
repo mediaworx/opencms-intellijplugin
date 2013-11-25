@@ -6,15 +6,14 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 
-/**
- * defines the action for the editor popup menu
- */
+/** defines the action for the editor popup menu */
 public class OpenCmsEditorPopupAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsEditorPopupAction.class);
 
 	/**
 	 * syncs the file in the editor with OpenCms
+	 *
 	 * @param event the event, provided by IntelliJ
 	 */
 	public void actionPerformed(AnActionEvent event) {

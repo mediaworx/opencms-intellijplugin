@@ -13,7 +13,12 @@ public class OpenCmsSyncAllAction extends OpenCmsPluginAction {
 		super.actionPerformed(event);
 		LOG.info("actionPerformed - event: " + event);
 
-		OpenCmsSyncer ocmsSyncer = new OpenCmsSyncer(plugin);
-		ocmsSyncer.syncAllModules();
+		try {
+			OpenCmsSyncer ocmsSyncer = new OpenCmsSyncer(plugin);
+			ocmsSyncer.syncAllModules();
+		}
+		catch (Throwable t) {
+			LOG.warn("Exception in OpenCmsSyncAllAction.actionPerformed: " + t.getMessage(), t);
+		}
 	}
 }
