@@ -63,7 +63,7 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 					}
 				}
 				// if we know that there are multiple modules, multiple folders and multiple files, then there's no reason to go on
-				if (numModules + numFolders + numFiles == 6) {
+				if (numModules > 1 && numFolders > 1 && numFiles > 1) {
 					break;
 				}
 			}
@@ -95,7 +95,7 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 			textElements.add(numFiles > 1 ? "Files" : "File");
 		}
 
-		StringBuilder actionText = new StringBuilder("OpenCms: Sync selected ");
+		StringBuilder actionText = new StringBuilder("OpenCms: _Sync selected ");
 		for (int i = 0; i < textElements.size(); i++) {
 			if (i > 0) {
 				actionText.append("/");

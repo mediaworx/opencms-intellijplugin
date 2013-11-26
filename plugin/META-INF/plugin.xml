@@ -40,7 +40,7 @@
 				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="S"/>
 				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl D"/>
 			</action>
-			<action id="OpenCmsPlugin.SyncAllAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAllAction" text="OpenCms: Sync all _Modules"
+			<action id="OpenCmsPlugin.SyncAllAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAllAction" text="OpenCms: Sync _All Modules"
 			        description="Sync all modules with OpenCms" icon="/icons/opencms_menu.png">
 				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="A"/>
 			</action>
