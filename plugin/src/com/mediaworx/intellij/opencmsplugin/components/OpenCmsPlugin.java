@@ -94,6 +94,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 			AnAction projectPopupAction = actionManager.getAction(PROJECT_POPUP_ID);
 			DefaultActionGroup projectPopupMenu = (DefaultActionGroup)actionManager.getAction("ProjectViewPopupMenu");
+
 			try {
 				projectPopupMenu.addAction(projectPopupAction, new Constraints(Anchor.BEFORE, "RevealIn"));
 				projectPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_ID));

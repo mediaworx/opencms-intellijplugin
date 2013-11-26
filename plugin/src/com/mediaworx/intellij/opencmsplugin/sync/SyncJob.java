@@ -297,10 +297,7 @@ public class SyncJob {
 				Map<String,String> resourceInfos = plugin.getPluginConnector().getModuleResourceInfos(resourcePathParents);
 
 				for (OpenCmsModuleResource resourceParent : resourcePathParents) {
-					SyncFolder syncFolder = new SyncFolder();
-					syncFolder.setOcmsModule(resourceParent.getOpenCmsModule());
-					syncFolder.setSyncAction(SyncAction.PULL);
-					syncFolder.setVfsPath(resourceParent.getResourcePath());
+					SyncFolder syncFolder = new SyncFolder(resourceParent.getOpenCmsModule(), resourceParent.getResourcePath(), null, null, SyncAction.PULL, false);
 					SyncJob.doMetaInfoHandling(console, resourceInfos, syncFolder);
 				}
 			}
@@ -492,7 +489,12 @@ public class SyncJob {
 		this.syncModuleMetaInformation = syncModuleMetaInformation;
 	}
 
-	public void setOcmsModules(Collection<OpenCmsModule> ocmsModules) {
-		this.ocmsModules = ocmsModules;
+	public void addOcmsModule(OpenCmsModule ocmsModule) {
+		if (ocmsModules == null) {
+			ocmsModules = new ArrayList<OpenCmsModule>();
+		}
+		if (!ocmsModules.contains(ocmsModule)) {
+			ocmsModules.add(ocmsModule);
+		}
 	}
 }

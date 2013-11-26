@@ -1,12 +1,17 @@
 package com.mediaworx.intellij.opencmsplugin.entities;
 
-import java.util.List;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
+import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
+import org.apache.chemistry.opencmis.client.api.CmisObject;
 
 public class SyncFolder extends SyncEntity {
 
 	public static final String METAINFO_FILE_SUFFIX = ".folder.xml";
 
-	private List<SyncEntity> children;
+	public SyncFolder(OpenCmsModule ocmsModule, String vfsPath, VirtualFile ideaVFile, CmisObject vfsObject, SyncAction syncAction, boolean replaceExistingEntity) {
+		super(ocmsModule, vfsPath, ideaVFile, vfsObject, syncAction, replaceExistingEntity);
+	}
 
 	@Override
 	public Type getType() {
@@ -16,14 +21,6 @@ public class SyncFolder extends SyncEntity {
 	@Override
 	public String getMetaInfoFileSuffix() {
 		return METAINFO_FILE_SUFFIX;
-	}
-
-	public List<SyncEntity> getChildren() {
-		return children;
-	}
-
-	public void setChildren(List<SyncEntity> children) {
-		this.children = children;
 	}
 
 	public String getMetaInfoFolderPath() {

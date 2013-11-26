@@ -1,19 +1,22 @@
 package com.mediaworx.intellij.opencmsplugin.opencms;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.configuration.module.OpenCmsModuleConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
+import com.mediaworx.intellij.opencmsplugin.tools.ModuleTools;
 
 import java.util.List;
 
 public class OpenCmsModule {
 
+	private static final Logger LOG = Logger.getInstance(OpenCmsModule.class);
+
 	OpenCmsPlugin plugin;
-	Module ideaModule;
+	Module intelliJModule;
 	OpenCmsModuleConfigurationData moduleConfig;
 
 	List<ModuleExportPoint> exportPoints;
@@ -22,9 +25,9 @@ public class OpenCmsModule {
 	String localVfsRoot;
 	SyncMode syncMode;
 
-	public OpenCmsModule(OpenCmsPlugin plugin, Module ideaModule) {
+	public OpenCmsModule(OpenCmsPlugin plugin, Module intelliJModule) {
 		this.plugin = plugin;
-		this.ideaModule = ideaModule;
+		this.intelliJModule = intelliJModule;
 	}
 
 	public void init(OpenCmsModuleConfigurationData moduleConfig) {
@@ -41,15 +44,17 @@ public class OpenCmsModule {
 			relativeVfsRoot = moduleConfig.getLocalVfsRoot();
 		}
 
-		VirtualFile[] moduleRoots = ModuleRootManager.getInstance(ideaModule).getContentRoots();
-		if (moduleRoots.length == 0) {
-			intelliJModuleRoot = null;
+		String intelliJModuleRoot = ModuleTools.getModuleContentRoot(intelliJModule);
+		if (intelliJModuleRoot == null || intelliJModuleRoot.length() == 0) {
+			this.intelliJModuleRoot = null;
 			localVfsRoot = null;
 		}
-		intelliJModuleRoot = moduleRoots[0].getPath();
-		StringBuilder vfsRootBuilder = new StringBuilder();
-		vfsRootBuilder.append(intelliJModuleRoot).append("/").append(relativeVfsRoot);
-		localVfsRoot = vfsRootBuilder.toString();
+		else {
+			this.intelliJModuleRoot = intelliJModuleRoot;
+			StringBuilder vfsRootBuilder = new StringBuilder();
+			vfsRootBuilder.append(this.intelliJModuleRoot).append("/").append(relativeVfsRoot);
+			localVfsRoot = vfsRootBuilder.toString();
+		}
 
 		if (moduleConfig.isUseProjectDefaultSyncModeEnabled()) {
 			syncMode = plugin.getPluginConfiguration().getDefaultSyncMode();
@@ -73,6 +78,10 @@ public class OpenCmsModule {
 		return moduleConfig.getModuleName();
 	}
 
+	public String getIntelliJModuleRoot() {
+		return intelliJModuleRoot;
+	}
+
 	public String getLocalVfsRoot() {
 		return localVfsRoot;
 	}
@@ -92,6 +101,36 @@ public class OpenCmsModule {
 	public List<String> getModuleResources() {
 		return moduleResources;
 	}
+
+	public boolean isIdeaVFileModuleResource(VirtualFile ideaVFile) {
+		for (String moduleResource : getModuleResources()) {
+			String resourcePath = getLocalVfsRoot() + moduleResource;
+			String filePath = ideaVFile.getPath().replace('\\', '/');
+			if ((filePath + "/").endsWith(resourcePath)) {
+				filePath = filePath + "/";
+			}
+			LOG.info("resourcePath: " + resourcePath);
+			LOG.info("filePath:     " + filePath);
+			if (filePath.startsWith(resourcePath)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isIdeaVFileModuleRoot(VirtualFile ideaVFile) {
+		if (!ideaVFile.isDirectory()) {
+			return false;
+		}
+		String filePath = ideaVFile.getPath();
+		return filePath.equals(intelliJModuleRoot);
+	}
+
+	public boolean isIdeaVFileInVFSPath(VirtualFile ideaVFile) {
+		String filePath = ideaVFile.getPath();
+		return filePath.startsWith(localVfsRoot);
+	}
+
 
 	public String getVfsPathForIdeaVFile(final VirtualFile ideaVFile) {
 		String filepath = ideaVFile.getPath().replace('\\', '/');

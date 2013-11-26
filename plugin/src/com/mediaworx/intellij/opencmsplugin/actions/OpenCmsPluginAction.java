@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class OpenCmsPluginAction extends AnAction {
 
@@ -13,6 +14,21 @@ public abstract class OpenCmsPluginAction extends AnAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
+		init(event);
+	}
+
+	@Override
+	public void beforeActionPerformedUpdate(@NotNull AnActionEvent e) {
+		// Do nothing to avoid calling update() twice (default behaviour for AnAction)
+	}
+
+	@Override
+	public void update(@NotNull AnActionEvent event) {
+		init(event);
+		super.update(event);
+	}
+
+	private void init(AnActionEvent event) {
 		project = DataKeys.PROJECT.getData(event.getDataContext());
 		if (project == null) {
 			return;

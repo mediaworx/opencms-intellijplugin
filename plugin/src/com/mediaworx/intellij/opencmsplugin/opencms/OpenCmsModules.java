@@ -66,20 +66,7 @@ public class OpenCmsModules {
 			LOG.info("No module configured for the file " + file.getPath());
 			return false;
 		}
-		LOG.info("moduleName:  " + ocmsModule.getModuleName());
-		for (String moduleResource : ocmsModule.getModuleResources()) {
-			String resourcePath = ocmsModule.getLocalVfsRoot() + moduleResource;
-			String filePath = file.getPath().replace('\\', '/');
-			if ((filePath + "/").endsWith(resourcePath)) {
-				filePath = filePath + "/";
-			}
-			LOG.info("resourcePath: " + resourcePath);
-			LOG.info("filePath:     " + filePath);
-			if (filePath.startsWith(resourcePath)) {
-				return true;
-			}
-		}
-		return false;
+		return ocmsModule.isIdeaVFileModuleResource(file);
 	}
 
 	public ModuleExportPoint getExportPointForVfsResource(String resourcePath) {

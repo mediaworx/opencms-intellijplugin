@@ -17,6 +17,15 @@ public abstract class SyncEntity {
 	private SyncAction syncAction;
 	private boolean replaceExistingEntity;
 
+	public SyncEntity(OpenCmsModule ocmsModule, String vfsPath, VirtualFile ideaVFile, CmisObject vfsObject, SyncAction syncAction, boolean replaceExistingEntity) {
+		setOcmsModule(ocmsModule);
+		setVfsPath(vfsPath);
+		setIdeaVFile(ideaVFile);
+		setVfsObject(vfsObject);
+		setSyncAction(syncAction);
+		setReplaceExistingEntity(replaceExistingEntity);
+	}
+
 	public abstract Type getType();
 
 	public abstract String getMetaInfoFileSuffix();
