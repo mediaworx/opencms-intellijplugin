@@ -36,12 +36,13 @@ public class SyncJob {
 
 	public SyncJob(OpenCmsPlugin plugin, SyncList syncList) {
 		this.plugin = plugin;
-		setSyncList(syncList);
-		this.pullMetadataOnly = syncList.isPullMetaDataOnly();
-        config = plugin.getPluginConfiguration();
+		config = plugin.getPluginConfiguration();
 		adapter = plugin.getVfsAdapter();
 		this.refreshEntityList = new ArrayList<SyncEntity>();
 		this.exportList = new ArrayList<ExportEntity>();
+
+		setSyncList(syncList);
+		this.pullMetadataOnly = syncList.isPullMetaDataOnly();
 	}
 
 	public void execute() {
