@@ -12,7 +12,6 @@ import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -84,37 +83,23 @@ public class OpenCmsSyncer {
 		LOG.info("proceed? " + proceed);
 
 		StringBuilder message = new StringBuilder();
-		if (numSyncEntities == 0) {
-			proceed = false;
-			if (analyzer.hasWarnings()) {
-				message.append("Infos/Warnings during file analysis:\n").append(analyzer.getWarnings().append("\n"));
+		if (analyzer.hasWarnings()) {
+			message.append("Infos/Warnings during file analysis:\n").append(analyzer.getWarnings().append("\n"));
+		}
+		if (proceed) {
+			if (!skipConfirmDialog && ((numSyncEntities == 1 && message.length() > 0) || numSyncEntities > 1)) {
+				assembleConfirmMessage(message, syncJob.getSyncList());
+				int dlgStatus = Messages.showOkCancelDialog(plugin.getProject(), message.toString(), "Start OpenCms VFS Sync?", Messages.getQuestionIcon());
+				proceed = dlgStatus == 0;
 			}
+			if (proceed) {
+				plugin.getToolWindow().activate(null);
+				new Thread(syncJob).start();
+			}
+		}
+		else {
 			message.append("Nothing to sync");
 			Messages.showMessageDialog(message.toString(), "OpenCms VFS Sync", Messages.getInformationIcon());
-		}
-		else if (!skipConfirmDialog && ((numSyncEntities == 1 && message.length() > 0) || numSyncEntities > 1)) {
-			assembleConfirmMessage(message, syncJob.getSyncList());
-			int dlgStatus = Messages.showOkCancelDialog(plugin.getProject(), message.toString(), "Start OpenCms VFS Sync?", Messages.getQuestionIcon());
-			proceed = dlgStatus == 0;
-		}
-
-		if (proceed) {
-			syncJob.execute();
-			if (syncJob.hasRefreshEntities()) {
-				List<SyncEntity> pullEntityList = syncJob.getRefreshEntityList();
-				List<File> refreshFiles = new ArrayList<File>(pullEntityList.size());
-
-				for (SyncEntity entity : pullEntityList) {
-					refreshFiles.add(entity.getRealFile());
-				}
-
-				try {
-					LocalFileSystem.getInstance().refreshIoFiles(refreshFiles);
-				}
-				catch (Exception e) {
-					// if there's an exception then the file was not found.
-				}
-			}
 		}
 	}
 
@@ -148,4 +133,5 @@ public class OpenCmsSyncer {
 	public void setPullMetaDataOnly(boolean pullMetaDataOnly) {
 		this.pullMetaDataOnly = pullMetaDataOnly;
 	}
+
 }

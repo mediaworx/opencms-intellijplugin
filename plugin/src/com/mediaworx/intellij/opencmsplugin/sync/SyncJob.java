@@ -2,6 +2,7 @@ package com.mediaworx.intellij.opencmsplugin.sync;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
@@ -19,7 +20,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 
-public class SyncJob {
+public class SyncJob implements Runnable {
 
 	private static final Logger LOG = Logger.getInstance(SyncJob.class);
 	private static final String ERROR_PREFIX = "ERROR: ";
@@ -40,77 +41,159 @@ public class SyncJob {
 		adapter = plugin.getVfsAdapter();
 		this.refreshEntityList = new ArrayList<SyncEntity>();
 		this.exportList = new ArrayList<ExportEntity>();
-
 		setSyncList(syncList);
 		this.pullMetadataOnly = syncList.isPullMetaDataOnly();
 	}
 
-	public void execute() {
+	public void run() {
+		console = plugin.getConsole();
+		console.clear();
 
-		Runnable deployRunner = new Runnable() {
+		int step = 1;
+		int numSteps = 0;
+		if (!pullMetadataOnly) {
+			numSteps += 1;
+		}
+		if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
+			numSteps += 1;
+		}
+		if (syncList.isSyncModuleMetaData()) {
+			numSteps += 2;
+		}
+		if (!pullMetadataOnly && numExportEntities() > 0) {
+			numSteps += 1;
+		}
 
-			public void run() {
-
-				console = plugin.getConsole();
-				console.clear();
-
-				int step = 1;
-				int numSteps = 0;
-				if (!pullMetadataOnly) {
-					numSteps += 1;
-				}
-				if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
-					numSteps += 1;
-				}
-				if (syncList.isSyncModuleMetaData()) {
-					numSteps += 2;
-				}
-				if (!pullMetadataOnly && numExportEntities() > 0) {
-					numSteps += 1;
-				}
-
-				// ######## SYNC FILES / FOLDERS ################################
-				if (!pullMetadataOnly) {
-					console.info("Step " + (step++) + "/" + numSteps + ": Syncing files and folders");
-					for (SyncEntity entity : syncList) {
-						doSync(entity);
-					}
-					console.info("---- Sync finished ----\n");
-				}
-
-				if (syncList.isSyncModuleMetaData()) {
-					// ######## PULL MODULE MANIFESTS ################################
-					console.info("Step " + (step++) + "/" + numSteps + ": Pull module manifests");
-					pullModuleManifests();
-					console.info("---- Module manifest pull finished ----\n");
-
-					// ######## PULL META INFOS FOR MODULE RESOURCE PARENTS ################################
-					console.info("Step " + (step++) + "/" + numSteps + ": Pulling resource meta data for module resource path ancestors from OpenCms");
-					pullModuleResourcePathAncestorMetaInfos();
-					console.info("---- Pull of meta data for module resource path ancestors finished ----\n");
-				}
-
-				// ######## PULL RESOURCE VFS META INFORMATION ################################
-				if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
-					console.info("Step " + (step++) + "/" + numSteps + ": Pulling resource meta data from OpenCms");
-					pullResourceMetaInfos();
-					console.info("---- Resource meta info pull finished ----\n");
-				}
-
-				// ######## EXPORT POINT HANDLING ################################
-                if (!pullMetadataOnly && numExportEntities() > 0) {
-	                console.info("Step " + step + "/" + numSteps + ": Handling export points");
-
-                    for (ExportEntity entity : exportList) {
-                        doExportPointHandling(entity);
-                    }
-                    console.info("---- Copying of ExportPoints finished ----\n");
-                }
+		// ######## SYNC FILES / FOLDERS ################################
+		if (!pullMetadataOnly) {
+			console.info("Step " + (step++) + "/" + numSteps + ": Syncing files and folders");
+			for (SyncEntity entity : syncList) {
+				doSync(entity);
 			}
-		};
+			console.info("---- Sync finished ----\n");
+		}
 
-		plugin.getToolWindow().activate(deployRunner);
+		if (syncList.isSyncModuleMetaData()) {
+			// ######## PULL MODULE MANIFESTS ################################
+			console.info("Step " + (step++) + "/" + numSteps + ": Pull module manifests");
+			pullModuleManifests();
+			console.info("---- Module manifest pull finished ----\n");
+
+			// ######## PULL META INFOS FOR MODULE RESOURCE PARENTS ################################
+			console.info("Step " + (step++) + "/" + numSteps + ": Pulling resource meta data for module resource path ancestors from OpenCms");
+			pullModuleResourcePathAncestorMetaInfos();
+			console.info("---- Pull of meta data for module resource path ancestors finished ----\n");
+		}
+
+		// ######## PULL RESOURCE VFS META INFORMATION ################################
+		if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
+			console.info("Step " + (step++) + "/" + numSteps + ": Pulling resource meta data from OpenCms");
+			pullResourceMetaInfos();
+			console.info("---- Resource meta info pull finished ----\n");
+		}
+
+		// ######## EXPORT POINT HANDLING ################################
+              if (!pullMetadataOnly && numExportEntities() > 0) {
+               console.info("Step " + step + "/" + numSteps + ": Handling export points");
+
+                  for (ExportEntity entity : exportList) {
+                      doExportPointHandling(entity);
+                  }
+                  console.info("---- Copying of ExportPoints finished ----\n");
+              }
+
+		// ######## REFRESH IDEA FILESYSTEM ##############################
+		if (hasRefreshEntities()) {
+			List<SyncEntity> pullEntityList = getRefreshEntityList();
+			List<File> refreshFiles = new ArrayList<File>(pullEntityList.size());
+
+			for (SyncEntity entity : pullEntityList) {
+				refreshFiles.add(entity.getRealFile());
+			}
+
+			try {
+				LocalFileSystem.getInstance().refreshIoFiles(refreshFiles);
+			}
+			catch (Exception e) {
+				// if there's an exception then the file was not found.
+			}
+		}
+		console.info("#### SYNC FINISHED ####");
 	}
+
+	public void setSyncList(SyncList syncList) {
+		this.syncList = syncList;
+
+		if (!syncList.isPullMetaDataOnly()) {
+			for (SyncEntity entity : syncList) {
+				if (entity.getSyncAction() == SyncAction.PULL || entity.getSyncAction() == SyncAction.DELETE_RFS) {
+					this.refreshEntityList.add(entity);
+				}
+				if (entity.getSyncAction() != SyncAction.DELETE_VFS) {
+		            addSyncEntityToExportListIfNecessary(entity);
+				}
+			}
+		}
+	}
+
+	public List<SyncEntity> getSyncList() {
+		return syncList;
+	}
+
+    private void addSyncEntityToExportListIfNecessary(SyncEntity syncEntity) {
+
+	    List<ModuleExportPoint> exportPoints = syncEntity.getOcmsModule().getExportPoints();
+
+        if (exportPoints != null) {
+
+	        String localModuleVfsRoot = syncEntity.getOcmsModule().getLocalVfsRoot();
+	        String entityVfsPath = syncEntity.getVfsPath();
+
+		    for (ModuleExportPoint exportPoint : exportPoints) {
+			    String vfsSource = exportPoint.getVfsSource();
+	            if (entityVfsPath.startsWith(vfsSource)) {
+	                String destination = exportPoint.getRfsTarget();
+	                String relativePath = entityVfsPath.substring(vfsSource.length());
+	                ExportEntity exportEntity = new ExportEntity();
+	                exportEntity.setSourcePath(localModuleVfsRoot+entityVfsPath);
+	                exportEntity.setTargetPath(config.getWebappRoot() + "/" + destination + relativePath);
+	                exportEntity.setVfsPath(entityVfsPath);
+	                exportEntity.setDestination(destination);
+		            exportEntity.setToBeDeleted(syncEntity.getSyncAction() == SyncAction.DELETE_RFS);
+	                addExportEntity(exportEntity);
+	            }
+	        }
+        }
+    }
+
+	private void addExportEntity(ExportEntity entity) {
+		exportList.add(entity);
+	}
+
+	public int numSyncEntities() {
+		return syncList.size();
+	}
+
+	public boolean hasSyncEntities() {
+		return numSyncEntities() > 0;
+	}
+
+	public List<SyncEntity> getRefreshEntityList() {
+		return refreshEntityList;
+	}
+
+	public int getNumRefreshEntities() {
+		return refreshEntityList.size();
+	}
+
+	public boolean hasRefreshEntities() {
+		return getNumRefreshEntities() > 0;
+	}
+
+	public int numExportEntities() {
+		return exportList.size();
+	}
+
 
 	private void doSync(SyncEntity entity) {
 		if (entity.getSyncAction() == SyncAction.PUSH) {
@@ -126,7 +209,6 @@ public class SyncJob {
 			doDeleteFromVfs(entity);
 		}
 	}
-
 
 	private void doPush(SyncEntity entity) {
 
@@ -244,7 +326,7 @@ public class SyncJob {
 		}
 	}
 
-	public static void doMetaInfoHandling(OpenCmsToolWindowConsole console, Map<String,String> metaInfos, SyncEntity entity) {
+	public void doMetaInfoHandling(OpenCmsToolWindowConsole console, Map<String,String> metaInfos, SyncEntity entity) {
 		String metaInfoFilePath = entity.getMetaInfoFilePath();
 		File metaInfoFile = new File(metaInfoFilePath);
 
@@ -304,7 +386,7 @@ public class SyncJob {
 
 				for (OpenCmsModuleResource resourceParent : resourcePathParents) {
 					SyncFolder syncFolder = new SyncFolder(resourceParent.getOpenCmsModule(), resourceParent.getResourcePath(), null, null, SyncAction.PULL, false);
-					SyncJob.doMetaInfoHandling(console, resourceInfos, syncFolder);
+					doMetaInfoHandling(console, resourceInfos, syncFolder);
 				}
 			}
 			catch (IOException e) {
@@ -420,77 +502,4 @@ public class SyncJob {
 		}
     }
 
-
-	public List<SyncEntity> getSyncList() {
-		return syncList;
-	}
-
-	public List<SyncEntity> getRefreshEntityList() {
-		return refreshEntityList;
-	}
-
-    private void addSyncEntityToExportListIfNecessary(SyncEntity syncEntity) {
-
-	    List<ModuleExportPoint> exportPoints = syncEntity.getOcmsModule().getExportPoints();
-
-        if (exportPoints != null) {
-
-	        String localModuleVfsRoot = syncEntity.getOcmsModule().getLocalVfsRoot();
-	        String entityVfsPath = syncEntity.getVfsPath();
-
-		    for (ModuleExportPoint exportPoint : exportPoints) {
-			    String vfsSource = exportPoint.getVfsSource();
-	            if (entityVfsPath.startsWith(vfsSource)) {
-	                String destination = exportPoint.getRfsTarget();
-	                String relativePath = entityVfsPath.substring(vfsSource.length());
-	                ExportEntity exportEntity = new ExportEntity();
-	                exportEntity.setSourcePath(localModuleVfsRoot+entityVfsPath);
-	                exportEntity.setTargetPath(config.getWebappRoot() + "/" + destination + relativePath);
-	                exportEntity.setVfsPath(entityVfsPath);
-	                exportEntity.setDestination(destination);
-		            exportEntity.setToBeDeleted(syncEntity.getSyncAction() == SyncAction.DELETE_RFS);
-	                addExportEntity(exportEntity);
-	            }
-	        }
-        }
-    }
-
-	private void addExportEntity(ExportEntity entity) {
-		exportList.add(entity);
-	}
-
-	public int numSyncEntities() {
-		return syncList.size();
-	}
-
-	public boolean hasSyncEntities() {
-		return numSyncEntities() > 0;
-	}
-
-	public int getNumRefreshEntities() {
-		return refreshEntityList.size();
-	}
-
-	public boolean hasRefreshEntities() {
-		return getNumRefreshEntities() > 0;
-	}
-
-	public int numExportEntities() {
-		return exportList.size();
-	}
-
-	public void setSyncList(SyncList syncList) {
-		this.syncList = syncList;
-
-		if (!syncList.isPullMetaDataOnly()) {
-			for (SyncEntity entity : syncList) {
-				if (entity.getSyncAction() == SyncAction.PULL || entity.getSyncAction() == SyncAction.DELETE_RFS) {
-					this.refreshEntityList.add(entity);
-				}
-				if (entity.getSyncAction() != SyncAction.DELETE_VFS) {
-		            addSyncEntityToExportListIfNecessary(entity);
-				}
-			}
-		}
-	}
 }

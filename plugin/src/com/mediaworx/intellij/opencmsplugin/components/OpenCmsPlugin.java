@@ -175,7 +175,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public ToolWindow getToolWindow() {
 		if (toolWindow == null) {
-			toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, true, ToolWindowAnchor.BOTTOM);
+			toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
 			toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
 			OpenCmsPluginToolWindowFactory toolWindowFactory = new OpenCmsPluginToolWindowFactory();
 			toolWindowFactory.createToolWindowContent(project, toolWindow);
