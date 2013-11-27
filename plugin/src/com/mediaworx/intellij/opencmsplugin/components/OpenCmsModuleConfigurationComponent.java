@@ -47,7 +47,7 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 
 	@NotNull
 	public String getComponentName() {
-		return "OpenCmsModuleConfigurationComponent";
+		return "OpenCmsPlugin.ModuleConfigurationComponent";
 	}
 
 	public void projectOpened() {

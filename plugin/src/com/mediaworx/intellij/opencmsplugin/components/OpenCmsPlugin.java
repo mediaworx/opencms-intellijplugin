@@ -130,7 +130,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	@NotNull
 	public String getComponentName() {
-		return "OpenCmsPluginComponent";
+		return "OpenCmsPlugin.MainComponent";
 	}
 
 	public Project getProject() {

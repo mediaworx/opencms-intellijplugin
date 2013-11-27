@@ -52,7 +52,7 @@ public class OpenCmsProjectConfigurationComponent implements ProjectComponent, C
 
 	@NotNull
 	public String getComponentName() {
-		return "OpenCmsPluginConfigurationComponent";
+		return "OpenCmsPlugin.ConfigurationComponent";
 	}
 
 	@Nls
