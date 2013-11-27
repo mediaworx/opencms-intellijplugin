@@ -29,18 +29,17 @@ public class SyncJob {
     private OpenCmsPluginConfigurationData config;
 	private VfsAdapter adapter;
 
-	private boolean syncModuleMetaInformation = false;
-	private Collection<OpenCmsModule> ocmsModules;
-
-	private List<SyncEntity> syncList;
+	private SyncList syncList;
+	private boolean pullMetadataOnly;
 	private List<SyncEntity> refreshEntityList;
 	private List<ExportEntity> exportList;
 
-	public SyncJob(OpenCmsPlugin plugin) {
+	public SyncJob(OpenCmsPlugin plugin, SyncList syncList) {
 		this.plugin = plugin;
+		setSyncList(syncList);
+		this.pullMetadataOnly = syncList.isPullMetaDataOnly();
         config = plugin.getPluginConfiguration();
 		adapter = plugin.getVfsAdapter();
-		this.syncList = new ArrayList<SyncEntity>();
 		this.refreshEntityList = new ArrayList<SyncEntity>();
 		this.exportList = new ArrayList<ExportEntity>();
 	}
@@ -55,24 +54,30 @@ public class SyncJob {
 				console.clear();
 
 				int step = 1;
-				int numSteps = 1;
+				int numSteps = 0;
+				if (!pullMetadataOnly) {
+					numSteps += 1;
+				}
 				if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
 					numSteps += 1;
 				}
-				if (numExportEntities() > 0) {
-					numSteps += 1;
-				}
-				if (syncModuleMetaInformation) {
+				if (syncList.isSyncModuleMetaData()) {
 					numSteps += 2;
 				}
-				// ######## SYNC FILES / FOLDERS ################################
-				console.info("Step " + (step++) + "/" + numSteps + ": Syncing files and folders");
-				for (SyncEntity entity : syncList) {
-					doSync(entity);
+				if (!pullMetadataOnly && numExportEntities() > 0) {
+					numSteps += 1;
 				}
-				console.info("---- Sync finished ----\n");
 
-				if (syncModuleMetaInformation) {
+				// ######## SYNC FILES / FOLDERS ################################
+				if (!pullMetadataOnly) {
+					console.info("Step " + (step++) + "/" + numSteps + ": Syncing files and folders");
+					for (SyncEntity entity : syncList) {
+						doSync(entity);
+					}
+					console.info("---- Sync finished ----\n");
+				}
+
+				if (syncList.isSyncModuleMetaData()) {
 					// ######## PULL MODULE MANIFESTS ################################
 					console.info("Step " + (step++) + "/" + numSteps + ": Pull module manifests");
 					pullModuleManifests();
@@ -92,7 +97,7 @@ public class SyncJob {
 				}
 
 				// ######## EXPORT POINT HANDLING ################################
-                if (numExportEntities() > 0) {
+                if (!pullMetadataOnly && numExportEntities() > 0) {
 	                console.info("Step " + step + "/" + numSteps + ": Handling export points");
 
                     for (ExportEntity entity : exportList) {
@@ -285,7 +290,7 @@ public class SyncJob {
 
 	private void pullModuleResourcePathAncestorMetaInfos() {
 		List<OpenCmsModuleResource> resourcePathParents = new ArrayList<OpenCmsModuleResource>();
-		for (OpenCmsModule ocmsModule : ocmsModules) {
+		for (OpenCmsModule ocmsModule : syncList.getOcmsModules()) {
 			Set<String> handledParents = new HashSet<String>();
 			for (String resourcePath : ocmsModule.getModuleResources()) {
 				addParentFolderToResourcePaths(resourcePath, ocmsModule, resourcePathParents, handledParents);
@@ -329,8 +334,8 @@ public class SyncJob {
 	private void pullModuleManifests() {
 
 		// collect the module names in a List
-		List<String> moduleNames = new ArrayList<String>(ocmsModules.size());
-		for (OpenCmsModule ocmsModule : ocmsModules) {
+		List<String> moduleNames = new ArrayList<String>(syncList.getOcmsModules().size());
+		for (OpenCmsModule ocmsModule : syncList.getOcmsModules()) {
 			moduleNames.add(ocmsModule.getModuleName());
 		}
 
@@ -339,7 +344,7 @@ public class SyncJob {
 				// pull the module manifests
 				Map<String,String> manifestInfos = plugin.getPluginConnector().getModuleManifests(moduleNames);
 
-				for (OpenCmsModule ocmsModule : ocmsModules) {
+				for (OpenCmsModule ocmsModule : syncList.getOcmsModules()) {
 					if (manifestInfos.containsKey(ocmsModule.getModuleName())) {
 						// put the manifest to a file
 						String manifestPath = ocmsModule.getManifestRoot() + "/manifest_stub.xml";
@@ -423,18 +428,6 @@ public class SyncJob {
 		return refreshEntityList;
 	}
 
-	public void addSyncEntity(SyncEntity entity) {
-		if (!syncList.contains(entity)) {
-			if (entity.getSyncAction() == SyncAction.PULL || entity.getSyncAction() == SyncAction.DELETE_RFS) {
-				this.refreshEntityList.add(entity);
-			}
-			if (entity.getSyncAction() != SyncAction.DELETE_VFS) {
-	            addSyncEntityToExportListIfNecessary(entity);
-			}
-            syncList.add(entity);
-		}
-	}
-
     private void addSyncEntityToExportListIfNecessary(SyncEntity syncEntity) {
 
 	    List<ModuleExportPoint> exportPoints = syncEntity.getOcmsModule().getExportPoints();
@@ -485,16 +478,18 @@ public class SyncJob {
 		return exportList.size();
 	}
 
-	public void setSyncModuleMetaInformation(boolean syncModuleMetaInformation) {
-		this.syncModuleMetaInformation = syncModuleMetaInformation;
-	}
+	public void setSyncList(SyncList syncList) {
+		this.syncList = syncList;
 
-	public void addOcmsModule(OpenCmsModule ocmsModule) {
-		if (ocmsModules == null) {
-			ocmsModules = new ArrayList<OpenCmsModule>();
-		}
-		if (!ocmsModules.contains(ocmsModule)) {
-			ocmsModules.add(ocmsModule);
+		if (!syncList.isPullMetaDataOnly()) {
+			for (SyncEntity entity : syncList) {
+				if (entity.getSyncAction() == SyncAction.PULL || entity.getSyncAction() == SyncAction.DELETE_RFS) {
+					this.refreshEntityList.add(entity);
+				}
+				if (entity.getSyncAction() != SyncAction.DELETE_VFS) {
+		            addSyncEntityToExportListIfNecessary(entity);
+				}
+			}
 		}
 	}
 }

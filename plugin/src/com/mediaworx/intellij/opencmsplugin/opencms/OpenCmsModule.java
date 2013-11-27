@@ -133,11 +133,8 @@ public class OpenCmsModule {
 
 
 	public String getVfsPathForIdeaVFile(final VirtualFile ideaVFile) {
-		String filepath = ideaVFile.getPath().replace('\\', '/');
-		if (!filepath.contains(localVfsRoot)) {
-			return "";
-		}
-		String relativeName = filepath.substring(filepath.indexOf(localVfsRoot) + localVfsRoot.length(), filepath.length());
+		String filepath = ideaVFile.getPath();
+		String relativeName = filepath.substring(localVfsRoot.length());
 		if (relativeName.length() == 0) {
 			relativeName = "/";
 		}

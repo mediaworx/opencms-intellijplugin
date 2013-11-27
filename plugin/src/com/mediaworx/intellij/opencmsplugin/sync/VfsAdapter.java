@@ -3,6 +3,7 @@ package com.mediaworx.intellij.opencmsplugin.sync;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
+import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
 import org.apache.chemistry.opencmis.client.api.*;
@@ -77,7 +78,7 @@ public class VfsAdapter {
 	/**
 	 * starts the CMIS session that is used to push or pull files/folders
 	 */
-	public void startSession() {
+	public void startSession() throws CmsConnectionException {
 
 	    if (password != null && password.length() > 0) {
 
@@ -120,6 +121,7 @@ public class VfsAdapter {
 		    catch (Exception e) {
 			    LOG.info("Exception connecting to VFS", e);
 			    connected = false;
+			    throw new CmsConnectionException("Connection to OpenCms VFS failed. Is OpenCms running?");
 		    }
 		}
 	}

@@ -25,6 +25,7 @@ public class OpenCmsSyncer {
 	OpenCmsPluginConfigurationData config;
 
 	boolean skipConfirmDialog = false;
+	boolean pullAllMetaData = false;
 
 	public OpenCmsSyncer(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
@@ -58,14 +59,17 @@ public class OpenCmsSyncer {
 		}
 	}
 
+	public void pullAllMetaData() {
+		pullAllMetaData = true;
+		syncAllModules();
+	}
+
 	public void syncFiles(VirtualFile[] syncFiles) {
 
-		SyncJob syncJob = new SyncJob(plugin);
-		StringBuilder message = new StringBuilder();
 		SyncFileAnalyzer analyzer;
 
 		try {
-			analyzer = new SyncFileAnalyzer(plugin, syncJob, syncFiles, message);
+			analyzer = new SyncFileAnalyzer(plugin, syncFiles, pullAllMetaData);
 		}
 		catch (CmsConnectionException e) {
 			Messages.showDialog(e.getMessage(), "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
@@ -78,15 +82,17 @@ public class OpenCmsSyncer {
 			return;
 		}
 
+		SyncJob syncJob = new SyncJob(plugin, analyzer.getSyncList());
 		int numSyncEntities = syncJob.numSyncEntities();
 
 		boolean proceed = syncJob.hasSyncEntities();
 		LOG.info("proceed? " + proceed);
 
+		StringBuilder message = new StringBuilder();
 		if (numSyncEntities == 0) {
 			proceed = false;
-			if (message.length() > 0) {
-				message.append("\n");
+			if (analyzer.hasWarnings()) {
+				message.append("Infos/Warnings during file analysis:\n").append(analyzer.getWarnings().append("\n"));
 			}
 			message.append("Nothing to sync");
 			Messages.showMessageDialog(message.toString(), "OpenCms VFS Sync", Messages.getInformationIcon());

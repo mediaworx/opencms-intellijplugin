@@ -35,21 +35,25 @@
 
 	<actions>
 		<group id="OpenCmsPlugin.ActionMenu" text="_OpenCms" description="OpenCms Plugin Actions">
-			<action id="OpenCmsPlugin.SyncAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="OpenCms: _Sync selected Files/Folders/Modules"
+			<action id="OpenCmsPlugin.SyncAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="_Sync selected Files/Folders/Modules"
 			        description="Sync file, folder or module with OpenCms" icon="/icons/opencms_menu.png">
 				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="S"/>
 				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl D"/>
 			</action>
-			<action id="OpenCmsPlugin.SyncAllAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAllAction" text="OpenCms: Sync _All Modules"
+			<action id="OpenCmsPlugin.SyncAllAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAllAction" text="Sync _All Modules"
 			        description="Sync all modules with OpenCms" icon="/icons/opencms_menu.png">
 				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="A"/>
 			</action>
+			<action id="OpenCmsPlugin.PullAllMetaDataAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPullAllMetaDataAction" text="Pull All _Meta Data"
+			        description="Sync all modules with OpenCms" icon="/icons/opencms_menu.png">
+				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="M"/>
+			</action>
 		</group>
-		<action id="OpenCmsPlugin.EditorPopupAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsEditorPopupAction" text="OpenCms: Sync File" description="OpenCms: Sync the file in the Editor to OpenCms" icon="/icons/opencms_menu.png"/>
-		<action id="OpenCmsPlugin.SyncOpenTabsAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncOpenTabsAction" text="OpenCms: Sync all open Editor _Tabs" description="OpenCms: Sync all files open in editor tabs to OpenCms" icon="/icons/opencms_menu.png">
+		<action id="OpenCmsPlugin.EditorPopupAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsEditorPopupAction" text="Sync File" description="OpenCms: Sync the file in the Editor to OpenCms" icon="/icons/opencms_menu.png"/>
+		<action id="OpenCmsPlugin.SyncOpenTabsAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncOpenTabsAction" text="Sync all open Editor _Tabs" description="OpenCms: Sync all files open in editor tabs to OpenCms" icon="/icons/opencms_menu.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="T"/>
 		</action>
-		<action id="OpenCmsPlugin.ProjectViewPopupAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="OpenCms: Sync selected Files/Folders" description="OpenCms: Sync all selected Files/Folders to OpenCms" icon="/icons/opencms_menu.png"/>
+		<action id="OpenCmsPlugin.ProjectViewPopupAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="Sync selected Files/Folders" description="OpenCms: Sync all selected Files/Folders to OpenCms" icon="/icons/opencms_menu.png"/>
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">

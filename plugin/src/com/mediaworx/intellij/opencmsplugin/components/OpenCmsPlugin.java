@@ -27,18 +27,19 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
 	private static final String EDITOR_POPUP_ID = "OpenCmsPlugin.EditorPopupAction";
 	private static final String PROJECT_POPUP_ID = "OpenCmsPlugin.ProjectViewPopupAction";
+	private static final String SYNC_ID = "OpenCmsPlugin.SyncAction";
 	private static final String SYNC_ALL_ID = "OpenCmsPlugin.SyncAllAction";
 	private static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
-	private static final String SYNC_ID = "OpenCmsPlugin.SyncAction";
+	private static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
 
-	Project project;
-	OpenCmsConfiguration openCmsConfiguration;
-	OpenCmsModules openCmsModules;
-	VfsAdapter vfsAdapter;
-	OpenCmsPluginConfigurationData config;
-	OpenCmsPluginConnector pluginConnector;
-	ToolWindow toolWindow;
-	OpenCmsToolWindowConsole console;
+	private Project project;
+	private OpenCmsConfiguration openCmsConfiguration;
+	private OpenCmsModules openCmsModules;
+	private VfsAdapter vfsAdapter;
+	private OpenCmsPluginConfigurationData config;
+	private OpenCmsPluginConnector pluginConnector;
+	private ToolWindow toolWindow;
+	private OpenCmsToolWindowConsole console;
 
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
@@ -116,6 +117,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		actionManager.unregisterAction(SYNC_ID);
 		actionManager.unregisterAction(SYNC_ALL_ID);
 		actionManager.unregisterAction(SYNC_OPEN_TABS_ID);
+		actionManager.unregisterAction(PULL_ALL_METADATA_ID);
 	}
 
 	public void disposeComponent() {
@@ -151,7 +153,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 		if (vfsAdapter == null) {
 			if (config != null && config.isOpenCmsPluginEnabled() && config.getPassword() != null && config.getPassword().length() > 0) {
 				vfsAdapter = new VfsAdapter(config.getRepository(), config.getUsername(), config.getPassword());
-				vfsAdapter.startSession();
 			}
 		}
 		return vfsAdapter;

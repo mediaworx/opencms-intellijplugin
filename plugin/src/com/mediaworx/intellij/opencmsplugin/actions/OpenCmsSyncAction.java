@@ -35,6 +35,7 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 	public void update(@NotNull AnActionEvent event) {
 
 		super.update(event);
+
 		VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 
 		if (selectedFiles != null && selectedFiles.length > 0) {
@@ -95,7 +96,7 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 			textElements.add(numFiles > 1 ? "Files" : "File");
 		}
 
-		StringBuilder actionText = new StringBuilder("OpenCms: _Sync selected ");
+		StringBuilder actionText = new StringBuilder("_Sync selected ");
 		for (int i = 0; i < textElements.size(); i++) {
 			if (i > 0) {
 				actionText.append("/");
