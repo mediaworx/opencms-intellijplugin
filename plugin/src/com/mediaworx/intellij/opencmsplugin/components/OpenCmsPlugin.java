@@ -25,12 +25,13 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public static final String TOOLWINDOW_ID = "OpenCms";
 
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
-	private static final String EDITOR_POPUP_ID = "OpenCmsPlugin.EditorPopupAction";
-	private static final String PROJECT_POPUP_ID = "OpenCmsPlugin.ProjectViewPopupAction";
+	private static final String EDITOR_POPUP_ID = "OpenCmsPlugin.EditorPopupSyncAction";
+	private static final String PROJECT_POPUP_SYNC_ID = "OpenCmsPlugin.ProjectViewPopupSyncAction";
 	private static final String SYNC_ID = "OpenCmsPlugin.SyncAction";
 	private static final String SYNC_ALL_ID = "OpenCmsPlugin.SyncAllAction";
-	private static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
+	private static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.TabPopupSyncOpenTabsAction";
 	private static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
+	private static final String PROJECT_POPUP_PULL_METADATA_ID = "OpenCmsPlugin.ProjectViewPopupPullModuleMetaDataAction";
 
 	private Project project;
 	private OpenCmsConfiguration openCmsConfiguration;
@@ -54,58 +55,63 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public void initComponent() {
 		config = project.getComponent(OpenCmsProjectConfigurationComponent.class).getConfigurationData();
-		ActionManager actionManager = ActionManager.getInstance();
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
 
 			if (config.isPluginConnectorEnabled()) {
 				pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword());
 			}
-
-			DefaultActionGroup openCmsMenu = (DefaultActionGroup)actionManager.getAction(OPENCMS_MENU_ID);
-			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction("MainMenu");
-			AnAction editorTabsSyncAllAction = actionManager.getAction(SYNC_OPEN_TABS_ID);
-			try {
-				mainMenu.addAction(openCmsMenu, new Constraints(Anchor.BEFORE, "WindowMenu"));
-				openCmsMenu.addAction(editorTabsSyncAllAction, new Constraints(Anchor.BEFORE, SYNC_ALL_ID));
-			}
-			catch (IllegalArgumentException e) {
-				LOG.warn(OPENCMS_MENU_ID + " has already been added to MainMenu. ", e);
-			}
-
-			AnAction editorPopupAction = actionManager.getAction(EDITOR_POPUP_ID);
-			DefaultActionGroup editorPopupMenu = (DefaultActionGroup)actionManager.getAction("EditorPopupMenu");
-			try {
-				editorPopupMenu.addAction(editorPopupAction, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
-				editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_ID));
-			}
-			catch (IllegalArgumentException e) {
-				LOG.warn(EDITOR_POPUP_ID + " has already been added to EditorPopupMenu. ", e);
-			}
-
-			DefaultActionGroup editorTabPopupMenu = (DefaultActionGroup)actionManager.getAction("EditorTabPopupMenu");
-			try {
-				editorTabPopupMenu.addAction(editorPopupAction);
-				editorTabPopupMenu.addAction(editorTabsSyncAllAction);
-				editorTabPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, EDITOR_POPUP_ID));
-			}
-			catch (IllegalArgumentException e) {
-				LOG.warn(EDITOR_POPUP_ID + " has already been added to EditorPopupMenu. ", e);
-			}
-
-			AnAction projectPopupAction = actionManager.getAction(PROJECT_POPUP_ID);
-			DefaultActionGroup projectPopupMenu = (DefaultActionGroup)actionManager.getAction("ProjectViewPopupMenu");
-
-			try {
-				projectPopupMenu.addAction(projectPopupAction, new Constraints(Anchor.BEFORE, "RevealIn"));
-				projectPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_ID));
-			}
-			catch(IllegalArgumentException e) {
-				LOG.warn(PROJECT_POPUP_ID + " has already been added to ProjectViewPopupMenu. " + e.getMessage(), e);
-			}
+			registerActions();
 		}
 		else {
 			unregisterActions();
+		}
+	}
+
+	private void registerActions() {
+		ActionManager actionManager = ActionManager.getInstance();
+
+		DefaultActionGroup openCmsMenu = (DefaultActionGroup)actionManager.getAction(OPENCMS_MENU_ID);
+		DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction("MainMenu");
+		try {
+			mainMenu.addAction(openCmsMenu, new Constraints(Anchor.BEFORE, "WindowMenu"));
+		}
+		catch (IllegalArgumentException e) {
+			LOG.warn(OPENCMS_MENU_ID + " has already been added to MainMenu. ", e);
+		}
+
+		AnAction editorPopupSyncAction = actionManager.getAction(EDITOR_POPUP_ID);
+		DefaultActionGroup editorPopupMenu = (DefaultActionGroup)actionManager.getAction("EditorPopupMenu");
+		try {
+			editorPopupMenu.addAction(editorPopupSyncAction, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
+			editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_ID));
+		}
+		catch (IllegalArgumentException e) {
+			LOG.warn(EDITOR_POPUP_ID + " has already been added to EditorPopupMenu. ", e);
+		}
+
+		DefaultActionGroup editorTabPopupMenu = (DefaultActionGroup)actionManager.getAction("EditorTabPopupMenu");
+		AnAction editorTabsSyncAllAction = actionManager.getAction(SYNC_OPEN_TABS_ID);
+		try {
+			editorTabPopupMenu.addAction(editorPopupSyncAction);
+			editorTabPopupMenu.addAction(editorTabsSyncAllAction);
+			editorTabPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, EDITOR_POPUP_ID));
+		}
+		catch (IllegalArgumentException e) {
+			LOG.warn(EDITOR_POPUP_ID + " has already been added to EditorPopupMenu. ", e);
+		}
+
+		AnAction projectPopupSyncAction = actionManager.getAction(PROJECT_POPUP_SYNC_ID);
+		AnAction projectPopupPullMetaDataAction = actionManager.getAction(PROJECT_POPUP_PULL_METADATA_ID);
+		DefaultActionGroup projectPopupMenu = (DefaultActionGroup)actionManager.getAction("ProjectViewPopupMenu");
+
+		try {
+			projectPopupMenu.addAction(projectPopupSyncAction, new Constraints(Anchor.BEFORE, "RevealIn"));
+			projectPopupMenu.addAction(projectPopupPullMetaDataAction, new Constraints(Anchor.AFTER, PROJECT_POPUP_SYNC_ID));
+			projectPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_PULL_METADATA_ID));
+		}
+		catch(IllegalArgumentException e) {
+			LOG.warn(PROJECT_POPUP_SYNC_ID + " has already been added to ProjectViewPopupMenu. " + e.getMessage(), e);
 		}
 	}
 
@@ -113,11 +119,12 @@ public class OpenCmsPlugin implements ProjectComponent {
 		ActionManager actionManager = ActionManager.getInstance();
 		actionManager.unregisterAction(OPENCMS_MENU_ID);
 		actionManager.unregisterAction(EDITOR_POPUP_ID);
-		actionManager.unregisterAction(PROJECT_POPUP_ID);
+		actionManager.unregisterAction(PROJECT_POPUP_SYNC_ID);
 		actionManager.unregisterAction(SYNC_ID);
 		actionManager.unregisterAction(SYNC_ALL_ID);
 		actionManager.unregisterAction(SYNC_OPEN_TABS_ID);
 		actionManager.unregisterAction(PULL_ALL_METADATA_ID);
+		actionManager.unregisterAction(PROJECT_POPUP_PULL_METADATA_ID);
 	}
 
 	public void disposeComponent() {

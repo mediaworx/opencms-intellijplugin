@@ -23,8 +23,8 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 
 		try {
 			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
-			OpenCmsSyncer fileSyncer = new OpenCmsSyncer(plugin);
-			fileSyncer.syncFiles(selectedFiles);
+			OpenCmsSyncer ocmsSyncer = new OpenCmsSyncer(plugin);
+			ocmsSyncer.syncFiles(selectedFiles);
 		}
 		catch (Throwable t) {
 			LOG.warn("Exception in OpenCmsSyncAction.actionPerformed: " + t.getMessage(), t);
@@ -36,12 +36,14 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 
 		super.update(event);
 
+		boolean enableAction = false;
 		VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 
+		int numFiles = 0;
+		int numFolders = 0;
+		int numModules = 0;
+
 		if (selectedFiles != null && selectedFiles.length > 0) {
-			int numFiles = 0;
-			int numFolders = 0;
-			int numModules = 0;
 
 			// calculate the number of selected modules, folders and files
 			for (VirtualFile ideaVFile : selectedFiles) {
@@ -70,39 +72,52 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 			}
 
 			if (numModules + numFolders + numFiles > 0) {
-				String actionText = getActionText(numFiles, numFolders, numModules);
-				event.getPresentation().setText(actionText);
-				event.getPresentation().setVisible(true);
-			}
-			else {
-				event.getPresentation().setVisible(false);
+				enableAction = true;
 			}
 		}
+
+		String actionText = getActionText(event, numFiles, numFolders, numModules);
+		event.getPresentation().setText(actionText);
+		if (enableAction) {
+			event.getPresentation().setEnabled(true);
+		}
 		else {
-			event.getPresentation().setVisible(false);
+			event.getPresentation().setEnabled(false);
 		}
 
 	}
 
-	private String getActionText(int numFiles, int numFolders, int numModules) {
+	private String getActionText(@NotNull AnActionEvent event, int numFiles, int numFolders, int numModules) {
 		ArrayList<String> textElements = new ArrayList<String>(3);
-		if (numModules > 0) {
-			textElements.add(numModules > 1 ? "Modules" : "Module");
+
+		StringBuilder actionText = new StringBuilder();
+		if (event.getPlace().equals("ProjectViewPopup")) {
+			actionText.append("OpenCms: ");
 		}
-		if (numFolders > 0) {
-			textElements.add(numFolders > 1 ? "Folders" : "Folder");
+		actionText.append("_Sync selected ");
+
+		if (numModules + numFolders + numFiles > 0) {
+			if (numModules > 0) {
+				textElements.add(numModules > 1 ? "Modules" : "Module");
+			}
+			if (numFolders > 0) {
+				textElements.add(numFolders > 1 ? "Folders" : "Folder");
+			}
+			if (numFiles > 0) {
+				textElements.add(numFiles > 1 ? "Files" : "File");
+			}
+
+			for (int i = 0; i < textElements.size(); i++) {
+				if (i > 0) {
+					actionText.append("/");
+				}
+				actionText.append(textElements.get(i));
+			}
 		}
-		if (numFiles > 0) {
-			textElements.add(numFiles > 1 ? "Files" : "File");
+		else {
+			actionText.append("Modules/Files/Folders");
 		}
 
-		StringBuilder actionText = new StringBuilder("_Sync selected ");
-		for (int i = 0; i < textElements.size(); i++) {
-			if (i > 0) {
-				actionText.append("/");
-			}
-			actionText.append(textElements.get(i));
-		}
 		return actionText.toString();
 	}
 

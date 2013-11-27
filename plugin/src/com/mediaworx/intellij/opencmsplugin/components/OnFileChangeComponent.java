@@ -25,12 +25,11 @@ public class OnFileChangeComponent implements ProjectComponent {
 	}
 
 	public void initComponent() {
-		OpenCmsPlugin plugin = project.getComponent(OpenCmsPlugin.class);
-		OpenCmsModuleFileChangeListener fileChangeListener = new OpenCmsModuleFileChangeListener(plugin);
-
 		MessageBus bus = ApplicationManager.getApplication().getMessageBus();
 		MessageBusConnection connection = bus.connect();
 
+		OpenCmsPlugin plugin = project.getComponent(OpenCmsPlugin.class);
+		OpenCmsModuleFileChangeListener fileChangeListener = new OpenCmsModuleFileChangeListener(plugin);
 		connection.subscribe(VirtualFileManager.VFS_CHANGES, fileChangeListener);
 
 		// TODO: think about automatically syncing file save events of module files straight to the VFS

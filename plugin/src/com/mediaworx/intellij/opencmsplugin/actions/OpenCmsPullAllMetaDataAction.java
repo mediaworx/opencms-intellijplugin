@@ -3,6 +3,7 @@ package com.mediaworx.intellij.opencmsplugin.actions;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
+import org.jetbrains.annotations.NotNull;
 
 public class OpenCmsPullAllMetaDataAction extends OpenCmsPluginAction {
 
@@ -15,10 +16,23 @@ public class OpenCmsPullAllMetaDataAction extends OpenCmsPluginAction {
 
 		try {
 			OpenCmsSyncer ocmsSyncer = new OpenCmsSyncer(plugin);
-			ocmsSyncer.pullAllMetaData();
+			ocmsSyncer.setPullMetaDataOnly(true);
+			ocmsSyncer.syncAllModules();
 		}
 		catch (Throwable t) {
 			LOG.warn("Exception in OpenCmsSyncAllAction.actionPerformed: " + t.getMessage(), t);
+		}
+	}
+
+	@Override
+	public void update(@NotNull AnActionEvent event) {
+		super.update(event);
+
+		if (!plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
+			event.getPresentation().setVisible(false);
+		}
+		else {
+			event.getPresentation().setVisible(true);
 		}
 	}
 }

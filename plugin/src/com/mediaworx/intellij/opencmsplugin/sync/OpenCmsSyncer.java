@@ -25,7 +25,7 @@ public class OpenCmsSyncer {
 	OpenCmsPluginConfigurationData config;
 
 	boolean skipConfirmDialog = false;
-	boolean pullAllMetaData = false;
+	boolean pullMetaDataOnly = false;
 
 	public OpenCmsSyncer(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
@@ -59,17 +59,12 @@ public class OpenCmsSyncer {
 		}
 	}
 
-	public void pullAllMetaData() {
-		pullAllMetaData = true;
-		syncAllModules();
-	}
-
 	public void syncFiles(VirtualFile[] syncFiles) {
 
 		SyncFileAnalyzer analyzer;
 
 		try {
-			analyzer = new SyncFileAnalyzer(plugin, syncFiles, pullAllMetaData);
+			analyzer = new SyncFileAnalyzer(plugin, syncFiles, pullMetaDataOnly);
 		}
 		catch (CmsConnectionException e) {
 			Messages.showDialog(e.getMessage(), "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
@@ -150,4 +145,7 @@ public class OpenCmsSyncer {
 				|| virtualFile.getName().equals(".gitignore");
 	}
 
+	public void setPullMetaDataOnly(boolean pullMetaDataOnly) {
+		this.pullMetaDataOnly = pullMetaDataOnly;
+	}
 }

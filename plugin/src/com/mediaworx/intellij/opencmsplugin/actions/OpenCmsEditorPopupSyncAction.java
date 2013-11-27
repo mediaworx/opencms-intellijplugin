@@ -7,9 +7,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 
 /** defines the action for the editor popup menu */
-public class OpenCmsEditorPopupAction extends OpenCmsPluginAction {
+public class OpenCmsEditorPopupSyncAction extends OpenCmsPluginAction {
 
-	private static final Logger LOG = Logger.getInstance(OpenCmsEditorPopupAction.class);
+	private static final Logger LOG = Logger.getInstance(OpenCmsEditorPopupSyncAction.class);
 
 	/**
 	 * syncs the file in the editor with OpenCms
@@ -27,7 +27,7 @@ public class OpenCmsEditorPopupAction extends OpenCmsPluginAction {
 			fileSyncer.syncFiles(syncFiles);
 		}
 		catch (Throwable t) {
-			LOG.warn("Exception in OpenCmsEditorPopupAction.actionPerformed: " + t.getMessage(), t);
+			LOG.warn("Exception in OpenCmsEditorPopupSyncAction.actionPerformed: " + t.getMessage(), t);
 		}
 	}
 }

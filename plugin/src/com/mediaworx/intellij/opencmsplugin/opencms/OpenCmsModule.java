@@ -103,15 +103,18 @@ public class OpenCmsModule {
 	}
 
 	public boolean isIdeaVFileModuleResource(VirtualFile ideaVFile) {
-		for (String moduleResource : getModuleResources()) {
-			String resourcePath = getLocalVfsRoot() + moduleResource;
-			String filePath = ideaVFile.getPath().replace('\\', '/');
-			if ((filePath + "/").endsWith(resourcePath)) {
-				filePath = filePath + "/";
+		return isPathModuleResource(ideaVFile.getPath());
+	}
+
+	public boolean isPathModuleResource(String resourcePath) {
+		for (String moduleResourcePath : getModuleResources()) {
+			String localModuleResourcePath = getLocalVfsRoot() + moduleResourcePath;
+			if ((resourcePath + "/").endsWith(localModuleResourcePath)) {
+				resourcePath = resourcePath + "/";
 			}
-			LOG.info("resourcePath: " + resourcePath);
-			LOG.info("filePath:     " + filePath);
-			if (filePath.startsWith(resourcePath)) {
+			LOG.info("localModuleResourcePath: " + localModuleResourcePath);
+			LOG.info("resourcePath:     " + resourcePath);
+			if (resourcePath.startsWith(localModuleResourcePath)) {
 				return true;
 			}
 		}
