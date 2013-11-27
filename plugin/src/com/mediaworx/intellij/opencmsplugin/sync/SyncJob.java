@@ -47,7 +47,6 @@ public class SyncJob implements Runnable {
 
 	public void run() {
 		console = plugin.getConsole();
-		console.clear();
 
 		int step = 1;
 		int numSteps = 0;

@@ -34,5 +34,6 @@ public abstract class OpenCmsPluginAction extends AnAction {
 			return;
 		}
 		plugin = project.getComponent(OpenCmsPlugin.class);
+		plugin.getConsole().clear();
 	}
 }
