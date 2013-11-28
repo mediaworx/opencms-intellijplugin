@@ -32,34 +32,7 @@
 		</component>
 	</module-components>
 
-
 	<actions>
-		<group id="OpenCmsPlugin.ActionMenu" text="_OpenCms" description="OpenCms Plugin Actions">
-			<action id="OpenCmsPlugin.SyncAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="_Sync selected Files/Folders/Modules"
-			        description="Sync file, folder or module with OpenCms">
-				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="S"/>
-				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl D"/>
-			</action>
-			<action id="OpenCmsPlugin.SyncOpenTabsAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncOpenTabsAction" text="Sync all open Editor _Tabs" description="Sync all files open in editor tabs to OpenCms">
-				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="T"/>
-			</action>
-			<action id="OpenCmsPlugin.SyncAllAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAllAction" text="Sync _all Modules"
-			        description="Sync all modules with OpenCms">
-				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="A"/>
-			</action>
-			<separator/>
-			<action id="OpenCmsPlugin.PullModuleMetaDataAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPullModuleMetaDataAction" text="_Pull Meta Data for selected Modules" description="Pull the meta data (manifest, resource infos) for the selected modules">
-				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="P"/>
-			</action>
-			<action id="OpenCmsPlugin.PullAllMetaDataAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPullAllMetaDataAction" text="Pull all _Meta Data"
-			        description="Pull the meta data (manifest, resource infos) for all modules">
-				<keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O" second-keystroke="M"/>
-			</action>
-		</group>
-		<action id="OpenCmsPlugin.EditorPopupSyncAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsEditorPopupSyncAction" text="OpenCms: Sync File" description="Sync the file in the Editor to OpenCms" icon="/icons/opencms_menu.png"/>
-		<action id="OpenCmsPlugin.TabPopupSyncOpenTabsAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncOpenTabsAction" text="OpenCms: Sync all open Editor _Tabs" description="Sync all files open in editor tabs to OpenCms" icon="/icons/opencms_menu.png"/>
-		<action id="OpenCmsPlugin.ProjectViewPopupSyncAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsSyncAction" text="OpenCms: Sync selected Files/Folders" description="Sync all selected Files/Folders to OpenCms" icon="/icons/opencms_menu.png"/>
-		<action id="OpenCmsPlugin.ProjectViewPopupPullModuleMetaDataAction" class="com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPullModuleMetaDataAction" text="OpenCms: Pull meta data for selected modules" description="Pull all meta data for selected modules" icon="/icons/opencms_menu.png"/>
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">

@@ -14,8 +14,6 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsSyncAction.class);
 
-
-
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		LOG.info("actionPerformed - event: " + event);
@@ -115,7 +113,7 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 			}
 		}
 		else {
-			actionText.append("Modules/Files/Folders");
+			actionText.append("Modules/Folders/Files");
 		}
 
 		return actionText.toString();
