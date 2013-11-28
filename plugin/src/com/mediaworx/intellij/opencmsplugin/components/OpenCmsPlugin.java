@@ -176,7 +176,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		if (editorTabsSyncAction == null) {
 			addAction(tabPopupMenu, TABS_POPUP_SYNC_ID, new OpenCmsSyncAction(), "OpenCms: Sync File", MENU_ICON, null);
 			addAction(tabPopupMenu, TABS_POPUP_SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenTabsAction(), "OpenCms: Sync all open Tabs", MENU_ICON, null);
-			tabPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, EDITOR_POPUP_SYNC_ID));
+			tabPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, TABS_POPUP_SYNC_ID));
 		}
 	}
 
