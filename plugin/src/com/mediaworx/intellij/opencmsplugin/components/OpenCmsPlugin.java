@@ -2,6 +2,7 @@ package com.mediaworx.intellij.opencmsplugin.components;
 
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.project.Project;
@@ -20,10 +21,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 public class OpenCmsPlugin implements ProjectComponent {
 
-	// private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
+	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
 
 	public static final String TOOLWINDOW_ID = "OpenCms";
 
@@ -43,7 +45,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private static final String TABS_POPUP_SYNC_ID = "OpenCmsPlugin.TabsPopupSyncAction";
 	private static final String TABS_POPUP_SYNC_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupSyncOpenTabsAction";
 
-	private static final KeyStroke COMMON_FIRST_KEYSTROKE = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK + KeyEvent.ALT_MASK);
+	public static final KeyStroke COMMON_FIRST_KEYSTROKE = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK + KeyEvent.ALT_MASK);
 	private static final Shortcut MENU_SYNC_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0));
 	private static final Shortcut MENU_SYNC_SHORTCUT2 = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK + KeyEvent.ALT_MASK), null);
 	private static final Shortcut MENU_SYNC_OPEN_TABS_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_T, 0));
@@ -51,6 +53,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private static final Shortcut MENU_PULL_MODULE_METADATA_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_P, 0));
 	private static final Shortcut MENU_PULL_ALL_METADATA_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_M, 0));
 
+	private final ArrayList<String> shortcutActionIds = new ArrayList<String>();
 	private static final Icon MENU_ICON = new ImageIcon(OpenCmsPlugin.class.getResource("/icons/opencms_menu.png"));
 
 	private Project project;
@@ -58,11 +61,12 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private OpenCmsModules openCmsModules;
 	private VfsAdapter vfsAdapter;
 	private OpenCmsPluginConfigurationData config;
+	private Keymap keymap;
 	private OpenCmsPluginConnector pluginConnector;
 	private ToolWindow toolWindow;
 	private OpenCmsToolWindowConsole console;
 	private ActionManager actionManager;
-
+	private OpenCmsMenu openCmsMenu;
 
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
@@ -76,7 +80,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	public void initComponent() {
+		LOG.warn("initComponent called, project: " + project.getName());
 		config = project.getComponent(OpenCmsProjectConfigurationComponent.class).getConfigurationData();
+		keymap = KeymapManager.getInstance().getActiveKeymap();
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
 
@@ -87,21 +93,28 @@ public class OpenCmsPlugin implements ProjectComponent {
 			registerActions();
 		}
 		else {
+			unregisterShortcuts();
 			unregisterActions();
 		}
 	}
 
 	private void registerKeyboardShortcuts() {
-		Keymap keymap = KeymapManager.getInstance().getActiveKeymap();
 		if (keymap.getShortcuts(MENU_SYNC_ID).length == 0) {
-			keymap.addShortcut(MENU_SYNC_ID, MENU_SYNC_SHORTCUT);
-			keymap.addShortcut(MENU_SYNC_ID, MENU_SYNC_SHORTCUT2);
-			keymap.addShortcut(MENU_SYNC_OPEN_TABS_ID, MENU_SYNC_OPEN_TABS_SHORTCUT);
-			keymap.addShortcut(MENU_SYNC_ALL_ID, MENU_SYNC_ALL_SHORTCUT);
+			registerShortcut(MENU_SYNC_ID, MENU_SYNC_SHORTCUT);
+			registerShortcut(MENU_SYNC_ID, MENU_SYNC_SHORTCUT2);
+			registerShortcut(MENU_SYNC_OPEN_TABS_ID, MENU_SYNC_OPEN_TABS_SHORTCUT);
+			registerShortcut(MENU_SYNC_ALL_ID, MENU_SYNC_ALL_SHORTCUT);
 		}
 		if (config.isPluginConnectorEnabled() && keymap.getShortcuts(MENU_PULL_MODULE_METADATA_ID).length == 0) {
-			keymap.addShortcut(MENU_PULL_MODULE_METADATA_ID, MENU_PULL_MODULE_METADATA_SHORTCUT);
-			keymap.addShortcut(MENU_PULL_ALL_METADATA_ID, MENU_PULL_ALL_METADATA_SHORTCUT);
+			registerShortcut(MENU_PULL_MODULE_METADATA_ID, MENU_PULL_MODULE_METADATA_SHORTCUT);
+			registerShortcut(MENU_PULL_ALL_METADATA_ID, MENU_PULL_ALL_METADATA_SHORTCUT);
+		}
+	}
+
+	private void registerShortcut(String actionId, Shortcut shortcut) {
+		keymap.addShortcut(actionId, shortcut);
+		if (!shortcutActionIds.contains(actionId)) {
+			shortcutActionIds.add(actionId);
 		}
 	}
 
@@ -113,7 +126,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		registerEditorTabPopupActions();
 	}
 
-	private void addAction(DefaultActionGroup group, String id, AnAction action, String text) {
+	public void addAction(DefaultActionGroup group, String id, AnAction action, String text) {
 		addAction(group, id, action, text, null, null);
 	}
 
@@ -136,11 +149,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerMainMenuActions() {
-		DefaultActionGroup openCmsMenu = (DefaultActionGroup)actionManager.getAction(OPENCMS_MENU_ID);
-
+		openCmsMenu = (OpenCmsMenu)actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
-			openCmsMenu = new DefaultActionGroup("_OpenCms", false);
+			openCmsMenu = new OpenCmsMenu("_OpenCms", false);
 			actionManager.registerAction(OPENCMS_MENU_ID, openCmsMenu);
 			mainMenu.addAction(openCmsMenu, new Constraints(Anchor.BEFORE, "HelpMenu"));
 
@@ -153,6 +165,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 				addAction(openCmsMenu, MENU_PULL_MODULE_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
 				addAction(openCmsMenu, MENU_PULL_ALL_METADATA_ID, new OpenCmsPullAllMetaDataAction(), "Pull all _Meta Data");
 			}
+			openCmsMenu.add(Separator.getInstance());
 		}
 	}
 
@@ -189,6 +202,13 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
+	private void unregisterShortcuts() {
+		for (String actionId : shortcutActionIds) {
+			keymap.removeAllActionShortcuts(actionId);
+		}
+		shortcutActionIds.clear();
+	}
+
 	private void unregisterActions() {
 		ActionManager actionManager = ActionManager.getInstance();
 		actionManager.unregisterAction(MENU_SYNC_ID);
@@ -197,6 +217,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 		actionManager.unregisterAction(MENU_PULL_MODULE_METADATA_ID);
 		actionManager.unregisterAction(MENU_PULL_ALL_METADATA_ID);
 		actionManager.unregisterAction(OPENCMS_MENU_ID);
+
+		for (String menuSyncModuleId : shortcutActionIds) {
+			actionManager.unregisterAction(menuSyncModuleId);
+		}
 
 		actionManager.unregisterAction(PROJECT_POPUP_SYNC_ID);
 		actionManager.unregisterAction(PROJECT_POPUP_PULL_METADATA_ID);
@@ -236,6 +260,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 		return openCmsModules;
 	}
 
+	public OpenCmsMenu getOpenCmsMenu() {
+		return openCmsMenu;
+	}
+
 	public VfsAdapter getVfsAdapter() {
 		if (vfsAdapter == null) {
 			if (config != null && config.isOpenCmsPluginEnabled() && config.getPassword() != null && config.getPassword().length() > 0) {
@@ -252,6 +280,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public void setPluginConnector(OpenCmsPluginConnector pluginConnector) {
 		this.pluginConnector = pluginConnector;
 	}
+
+
 
 	public ToolWindow getToolWindow() {
 		if (toolWindow == null) {

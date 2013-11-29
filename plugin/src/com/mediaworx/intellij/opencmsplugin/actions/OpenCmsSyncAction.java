@@ -3,6 +3,7 @@ package com.mediaworx.intellij.opencmsplugin.actions;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
@@ -20,9 +21,21 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 		super.actionPerformed(event);
 
 		try {
-			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+			String actionId = event.getActionManager().getId(this);
+
+			VirtualFile[] syncFiles;
+
+			if (!actionId.startsWith(OpenCmsMenu.SYNC_MODULE_ID_PREFIX)) {
+				syncFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+			}
+			else {
+				syncFiles = new VirtualFile[1];
+				String moduleRoot = actionId.substring(OpenCmsMenu.SYNC_MODULE_ID_PREFIX.length());
+				syncFiles[0] = LocalFileSystem.getInstance().findFileByPath(moduleRoot);
+			}
+
 			OpenCmsSyncer ocmsSyncer = new OpenCmsSyncer(plugin);
-			ocmsSyncer.syncFiles(selectedFiles);
+			ocmsSyncer.syncFiles(syncFiles);
 		}
 		catch (Throwable t) {
 			LOG.warn("Exception in OpenCmsSyncAction.actionPerformed: " + t.getMessage(), t);
@@ -34,55 +47,62 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 
 		super.update(event);
 
-		boolean enableAction = false;
-		VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+		String actionId = event.getActionManager().getId(this);
 
-		int numFiles = 0;
-		int numFolders = 0;
-		int numModules = 0;
+		if (actionId == null) {
+			return;
+		}
 
-		if (selectedFiles != null && selectedFiles.length > 0) {
+		if (!actionId.startsWith(OpenCmsMenu.SYNC_MODULE_ID_PREFIX)) {
+			boolean enableAction = false;
+			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 
-			// calculate the number of selected modules, folders and files
-			for (VirtualFile ideaVFile : selectedFiles) {
+			int numFiles = 0;
+			int numFolders = 0;
+			int numModules = 0;
 
-				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
+			if (selectedFiles != null && selectedFiles.length > 0) {
 
-				if (ocmsModule == null) {
-					continue;
-				}
+				// calculate the number of selected modules, folders and files
+				for (VirtualFile ideaVFile : selectedFiles) {
 
-				if (ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
-					numModules += 1;
-				}
-				else if (ocmsModule.isIdeaVFileInVFSPath(ideaVFile)) {
-					if (ideaVFile.isDirectory()) {
-						numFolders += 1;
+					OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
+
+					if (ocmsModule == null) {
+						continue;
 					}
-					else {
-						numFiles += 1;
+
+					if (ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
+						numModules += 1;
+					}
+					else if (ocmsModule.isIdeaVFileInVFSPath(ideaVFile)) {
+						if (ideaVFile.isDirectory()) {
+							numFolders += 1;
+						}
+						else {
+							numFiles += 1;
+						}
+					}
+					// if we know that there are multiple modules, multiple folders and multiple files, then there's no reason to go on
+					if (numModules > 1 && numFolders > 1 && numFiles > 1) {
+						break;
 					}
 				}
-				// if we know that there are multiple modules, multiple folders and multiple files, then there's no reason to go on
-				if (numModules > 1 && numFolders > 1 && numFiles > 1) {
-					break;
+
+				if (numModules + numFolders + numFiles > 0) {
+					enableAction = true;
 				}
 			}
 
-			if (numModules + numFolders + numFiles > 0) {
-				enableAction = true;
+			String actionText = getActionText(event, numFiles, numFolders, numModules);
+			event.getPresentation().setText(actionText);
+			if (enableAction) {
+				event.getPresentation().setEnabled(true);
+			}
+			else {
+				event.getPresentation().setEnabled(false);
 			}
 		}
-
-		String actionText = getActionText(event, numFiles, numFolders, numModules);
-		event.getPresentation().setText(actionText);
-		if (enableAction) {
-			event.getPresentation().setEnabled(true);
-		}
-		else {
-			event.getPresentation().setEnabled(false);
-		}
-
 	}
 
 	private String getActionText(@NotNull AnActionEvent event, int numFiles, int numFolders, int numModules) {

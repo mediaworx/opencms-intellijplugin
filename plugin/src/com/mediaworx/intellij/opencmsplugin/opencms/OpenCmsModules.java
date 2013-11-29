@@ -39,7 +39,6 @@ public class OpenCmsModules {
 			ocmsModule.init(moduleConfig);
 			OCMSMODULE_BY_IDEAMODULE.put(ideaModule, ocmsModule);
 		}
-
 	}
 
 	public void unregisterModule(Module ideaModule) {
