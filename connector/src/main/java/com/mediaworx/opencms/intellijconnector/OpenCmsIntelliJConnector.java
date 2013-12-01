@@ -6,15 +6,24 @@ import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.opencms.db.CmsPublishList;
 import org.opencms.file.CmsObject;
 import org.opencms.file.CmsProject;
+import org.opencms.file.CmsResource;
 import org.opencms.flex.CmsFlexController;
 import org.opencms.main.CmsException;
+import org.opencms.main.OpenCms;
+import org.opencms.publish.CmsPublishManager;
+import org.opencms.report.CmsLogReport;
+import org.opencms.report.I_CmsReport;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 public class OpenCmsIntelliJConnector {
 
@@ -22,6 +31,7 @@ public class OpenCmsIntelliJConnector {
 
 	private static final String ACTION_MODULEMANIFESTS = "moduleManifests";
 	private static final String ACTION_RESOURCEINFOS = "resourceInfos";
+	private static final String ACTION_PUBLISH = "publishResources";
 
 	private ServletOutputStream out;
 	private CmsObject cmsObject;
@@ -73,6 +83,9 @@ public class OpenCmsIntelliJConnector {
 		else if (ACTION_RESOURCEINFOS.equals(action)) {
 			streamModuleManifestsOrResourceInfos(false);
 		}
+		else if (ACTION_PUBLISH.equals(action)) {
+			publishResources();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -108,6 +121,63 @@ public class OpenCmsIntelliJConnector {
 		println(out.toJSONString());
 	}
 
+	private void publishResources() {
+		String[] resourcePaths = getStringArrayFromJSON(params);
+
+		List<CmsResource> publishResources = new ArrayList<CmsResource>(resourcePaths.length);
+		boolean hasWarnings = false;
+		StringBuilder warnings = new StringBuilder();
+
+		for (String resourcePath : resourcePaths) {
+			if (cmsObject.existsResource(resourcePath)) {
+				CmsResource resource;
+				try {
+					resource = cmsObject.readResource(resourcePath);
+				}
+				catch (CmsException e) {
+					String message = resourcePath + " could not be read from the VFS";
+					warnings.append(message).append("\n");
+					LOG.warn(message, e);
+					hasWarnings = true;
+					continue;
+				}
+				publishResources.add(resource);
+			}
+		}
+		if (publishResources.size() > 0) {
+			publish: {
+				CmsPublishManager publishManager = OpenCms.getPublishManager();
+				CmsPublishList publishList;
+				try {
+					publishList = publishManager.getPublishList(cmsObject, publishResources, false, false);
+				}
+				catch (CmsException e) {
+					String message = "Error retrieving CmsPublishList from OpenCms";
+					warnings.append(message).append("\n");
+					LOG.warn(message, e);
+					hasWarnings = true;
+					break publish;
+				}
+				I_CmsReport report = new CmsLogReport(Locale.ENGLISH, OpenCmsIntelliJConnector.class);
+				try {
+					publishManager.publishProject(cmsObject, report, publishList);
+				}
+				catch (CmsException e) {
+					String message = "Error publishing the resources";
+					warnings.append(message).append("\n");
+					LOG.warn(message, e);
+					hasWarnings = true;
+				}
+			}
+		}
+		if (!hasWarnings) {
+			println("OK");
+		}
+		else {
+			println(warnings.toString());
+		}
+	}
+
 	private String[] getStringArrayFromJSON(String json) {
 		JSONArray jsonArray;
 		try {
@@ -129,7 +199,6 @@ public class OpenCmsIntelliJConnector {
 		}
 		return arr;
 	}
-
 
 	private void println(String str) {
 		try {
