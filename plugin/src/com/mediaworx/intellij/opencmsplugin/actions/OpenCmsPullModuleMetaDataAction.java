@@ -7,6 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
+import com.mediaworx.intellij.opencmsplugin.sync.SyncJob;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenCmsPullModuleMetaDataAction extends OpenCmsPluginAction {
@@ -20,12 +21,24 @@ public class OpenCmsPullModuleMetaDataAction extends OpenCmsPluginAction {
 
 		try {
 			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+
+			cleanupMetaFolders(selectedFiles);
+
 			OpenCmsSyncer ocmsSyncer = new OpenCmsSyncer(plugin);
 			ocmsSyncer.setPullMetaDataOnly(true);
 			ocmsSyncer.syncFiles(selectedFiles);
 		}
 		catch (Throwable t) {
 			LOG.warn("Exception in OpenCmsSyncAction.actionPerformed: " + t.getMessage(), t);
+		}
+	}
+
+	private void cleanupMetaFolders(VirtualFile[] moduleFiles) {
+		for (VirtualFile moduleFile : moduleFiles) {
+			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(moduleFile);
+			if (ocmsModule != null) {
+				SyncJob.cleanupModuleMetaFolder(ocmsModule);
+			}
 		}
 	}
 

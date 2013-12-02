@@ -501,4 +501,17 @@ public class SyncJob implements Runnable {
 		}
     }
 
+	public static void cleanupModuleMetaFolder(OpenCmsModule ocmsModule) {
+		if (ocmsModule != null) {
+			File metaFolder = new File(ocmsModule.getManifestRoot());
+			if (!metaFolder.isDirectory()) {
+				return;
+			}
+			File[] metaFiles = metaFolder.listFiles();
+			for (File metaFile : metaFiles) {
+				FileUtils.deleteQuietly(metaFile);
+			}
+		}
+	}
+
 }

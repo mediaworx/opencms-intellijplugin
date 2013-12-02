@@ -3,8 +3,12 @@ package com.mediaworx.intellij.opencmsplugin.actions;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
+import com.mediaworx.intellij.opencmsplugin.sync.SyncJob;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
 
 public class OpenCmsPullAllMetaDataAction extends OpenCmsPluginAction {
 
@@ -16,12 +20,21 @@ public class OpenCmsPullAllMetaDataAction extends OpenCmsPluginAction {
 		LOG.info("actionPerformed - event: " + event);
 
 		try {
+			cleanupMetaFolders();
+
 			OpenCmsSyncer ocmsSyncer = new OpenCmsSyncer(plugin);
 			ocmsSyncer.setPullMetaDataOnly(true);
 			ocmsSyncer.syncAllModules();
 		}
 		catch (Throwable t) {
 			LOG.warn("Exception in OpenCmsSyncAllAction.actionPerformed: " + t.getMessage(), t);
+		}
+	}
+
+	private void cleanupMetaFolders() {
+		Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
+		for (OpenCmsModule ocmsModule : ocmsModules) {
+			SyncJob.cleanupModuleMetaFolder(ocmsModule);
 		}
 	}
 
