@@ -24,6 +24,8 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	private JTextField connectorUrl;
 	private JTextField manifestRoot;
 	private JComboBox defaultSyncMode;
+	private JPanel connectorOptionsPanel;
+	private JCheckBox pullMetaDataCheckbox;
 
 	public OpenCmsPluginConfigurationForm() {
 		formPanel.setVisible(false);
@@ -31,6 +33,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		webappRoot.addFocusListener(this);
 		defaultLocalVfsRoot.addFocusListener(this);
 		usePluginConnectorCheckBox.addActionListener(this);
+		pullMetaDataCheckbox.addActionListener(this);
 	}
 
 	// Method returns the root component of the form
@@ -46,11 +49,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		FormTools.setConfiguredOrKeepDefault(password, data.getPassword());
 		FormTools.setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
 		FormTools.setConfiguredOrKeepDefault(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot());
-		usePluginConnectorCheckBox.setSelected(data.isPluginConnectorEnabled());
-		connectorUrl.setEnabled(data.isPluginConnectorEnabled());
-		FormTools.setConfiguredOrKeepDefault(connectorUrl, data.getConnectorUrl());
-		manifestRoot.setEnabled(data.isPluginConnectorEnabled());
-		FormTools.setConfiguredOrKeepDefault(manifestRoot, data.getManifestRoot());
+
 		if (data.getDefaultSyncMode() == SyncMode.PUSH) {
 			defaultSyncMode.setSelectedIndex(0);
 		}
@@ -60,6 +59,13 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		else if (data.getDefaultSyncMode() == SyncMode.PULL) {
 			defaultSyncMode.setSelectedIndex(2);
 		}
+
+		usePluginConnectorCheckBox.setSelected(data.isPluginConnectorEnabled());
+		connectorOptionsPanel.setVisible(data.isPluginConnectorEnabled());
+		FormTools.setConfiguredOrKeepDefault(connectorUrl, data.getConnectorUrl());
+		pullMetaDataCheckbox.setSelected(data.isPullMetadataEnabled());
+		manifestRoot.setEnabled(data.isPullMetadataEnabled());
+		FormTools.setConfiguredOrKeepDefault(manifestRoot, data.getManifestRoot());
 	}
 
 
@@ -70,10 +76,11 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		data.setPassword(password.getText());
 		data.setWebappRoot(webappRoot.getText());
 		data.setDefaultLocalVfsRoot(defaultLocalVfsRoot.getText());
+		data.setDefaultSyncMode(FormTools.getSyncModeFromComboBox(defaultSyncMode));
 		data.setPluginConnectorEnabled(usePluginConnectorCheckBox.isSelected());
 		data.setConnectorUrl(connectorUrl.getText());
+		data.setPullMetadataEnabled(pullMetaDataCheckbox.isSelected());
 		data.setManifestRoot(manifestRoot.getText());
-		data.setDefaultSyncMode(FormTools.getSyncModeFromComboBox(defaultSyncMode));
 	}
 
 
@@ -85,10 +92,11 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			FormTools.isTextFieldModified(password, data.getPassword()) ||
 			FormTools.isTextFieldModified(webappRoot, data.getWebappRoot()) ||
 			FormTools.isTextFieldModified(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot()) ||
+			!FormTools.getSyncModeFromComboBox(defaultSyncMode).equals(data.getDefaultSyncMode()) ||
 			usePluginConnectorCheckBox.isSelected() != data.isPluginConnectorEnabled() ||
 			FormTools.isTextFieldModified(connectorUrl, data.getConnectorUrl()) ||
-			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot()) ||
-			!FormTools.getSyncModeFromComboBox(defaultSyncMode).equals(data.getDefaultSyncMode())
+			pullMetaDataCheckbox.isSelected() != data.isPullMetadataEnabled() ||
+			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot())
 		;
 	}
 
@@ -100,11 +108,12 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		if (source == enabledCheckBox) {
 			formPanel.setVisible(enabledCheckBox.isSelected());
 		}
-		else  if (source == usePluginConnectorCheckBox) {
-			connectorUrl.setEnabled(usePluginConnectorCheckBox.isSelected());
-			manifestRoot.setEnabled(usePluginConnectorCheckBox.isSelected());
+		else if (source == usePluginConnectorCheckBox) {
+			connectorOptionsPanel.setVisible(usePluginConnectorCheckBox.isSelected());
 		}
-
+		else  if (source == pullMetaDataCheckbox) {
+			manifestRoot.setEnabled(pullMetaDataCheckbox.isSelected());
+		}
 	}
 
 	public void focusGained(FocusEvent e) {

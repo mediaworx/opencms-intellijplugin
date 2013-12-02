@@ -2,6 +2,7 @@ package com.mediaworx.intellij.opencmsplugin.connector;
 
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.entities.OpenCmsModuleResource;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -28,6 +29,7 @@ public class OpenCmsPluginConnector {
 
 	private static final String ACTION_MODULEMANIFESTS = "moduleManifests";
 	private static final String ACTION_RESOURCEINFOS = "resourceInfos";
+	private static final String ACTION_PUBLISH = "publishResources";
 
 	private String connectorUrl;
 	private String user;
@@ -88,10 +90,25 @@ public class OpenCmsPluginConnector {
 		return getActionResponseMap(moduleNames, ACTION_MODULEMANIFESTS);
 	}
 
+	public void publishResource(String resourcePath) throws IOException {
+		List<String> resourcePaths = new ArrayList<String>(1);
+		resourcePaths.add(resourcePath);
+		publishResources(resourcePaths);
+	}
 
-	public HashMap<String, String> getActionResponseMap(List<String> identifiers, String action) throws IOException {
+	public void publishResources(List<String> resourcePaths) throws IOException {
+		String response = getActionResponseString(resourcePaths, ACTION_PUBLISH);
+		if (response == null) {
+			return;
+		}
+		response = response.trim();
+		if (!response.equals("OK")) {
+			Messages.showDialog("There were warnings during publish.\nCheck the OpenCms log file.\n\n" + response,
+					"Publishing resources", new String[]{"Ok"}, 0, Messages.getWarningIcon());
+		}
+	}
 
-		HashMap<String, String> resourceInfos = new HashMap<String, String>();
+	public String getActionResponseString(List<String> identifiers, String action) throws IOException {
 
 		HttpPost httpPost = new HttpPost(connectorUrl);
 
@@ -110,24 +127,33 @@ public class OpenCmsPluginConnector {
 			HttpEntity entity = response.getEntity();
 			int status = response.getStatusLine().getStatusCode();
 			if (entity != null && status >= 200 && status < 300) {
-				String jsonString = EntityUtils.toString(entity);
-
-				JSONArray jsonArray = (JSONArray)jsonParser.parse(jsonString);
-				for (Object o : jsonArray) {
-					JSONObject metaJson = (JSONObject)o;
-					String id = (String)metaJson.get("id");
-					String xml = (String)metaJson.get("xml");
-					resourceInfos.put(id, xml);
-				}
+				return EntityUtils.toString(entity);
 			}
-		}
-		catch (ParseException e) {
-			LOG.warn("There was an exception parsing the JSON response for the action " + action, e);
 		}
 		finally {
 			response.close();
 		}
 
+		return null;
+	}
+
+	public HashMap<String, String> getActionResponseMap(List<String> identifiers, String action) throws IOException {
+
+		HashMap<String, String> resourceInfos = new HashMap<String, String>();
+		String jsonString = getActionResponseString(identifiers, action);
+
+		try {
+			JSONArray jsonArray = (JSONArray)jsonParser.parse(jsonString);
+			for (Object o : jsonArray) {
+				JSONObject metaJson = (JSONObject)o;
+				String id = (String)metaJson.get("id");
+				String xml = (String)metaJson.get("xml");
+				resourceInfos.put(id, xml);
+			}
+		}
+		catch (ParseException e) {
+			LOG.warn("There was an exception parsing the JSON response for the action " + action, e);
+		}
 		return resourceInfos;
 	}
 

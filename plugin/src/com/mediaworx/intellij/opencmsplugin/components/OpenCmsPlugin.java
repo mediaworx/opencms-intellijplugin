@@ -105,10 +105,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 			registerShortcut(MENU_SYNC_OPEN_TABS_ID, MENU_SYNC_OPEN_TABS_SHORTCUT);
 			registerShortcut(MENU_SYNC_ALL_ID, MENU_SYNC_ALL_SHORTCUT);
 		}
-		if (config.isPluginConnectorEnabled() && keymap.getShortcuts(MENU_PULL_MODULE_METADATA_ID).length == 0) {
-			registerShortcut(MENU_PULL_MODULE_METADATA_ID, MENU_PULL_MODULE_METADATA_SHORTCUT);
-			registerShortcut(MENU_PULL_ALL_METADATA_ID, MENU_PULL_ALL_METADATA_SHORTCUT);
-		}
+		registerShortcut(MENU_PULL_MODULE_METADATA_ID, MENU_PULL_MODULE_METADATA_SHORTCUT);
+		registerShortcut(MENU_PULL_ALL_METADATA_ID, MENU_PULL_ALL_METADATA_SHORTCUT);
 	}
 
 	private void registerShortcut(String actionId, Shortcut shortcut) {
@@ -160,11 +158,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 			addAction(openCmsMenu, MENU_SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenTabsAction(), "Sync all open Editor _Tabs");
 			addAction(openCmsMenu, MENU_SYNC_ALL_ID, new OpenCmsSyncAllAction(), "Sync _all Modules");
 
-			if (config.isPluginConnectorEnabled()) {
-				openCmsMenu.add(Separator.getInstance());
-				addAction(openCmsMenu, MENU_PULL_MODULE_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
-				addAction(openCmsMenu, MENU_PULL_ALL_METADATA_ID, new OpenCmsPullAllMetaDataAction(), "Pull all _Meta Data");
-			}
+			openCmsMenu.add(Separator.getInstance());
+			addAction(openCmsMenu, MENU_PULL_MODULE_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
+			addAction(openCmsMenu, MENU_PULL_ALL_METADATA_ID, new OpenCmsPullAllMetaDataAction(), "Pull all _Meta Data");
+
 			openCmsMenu.add(Separator.getInstance());
 		}
 	}
@@ -175,10 +172,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 		AnAction projectPopupSyncAction = actionManager.getAction(PROJECT_POPUP_SYNC_ID);
 		if (projectPopupSyncAction == null) {
 			addAction(projectPopupMenu, PROJECT_POPUP_SYNC_ID, new OpenCmsSyncAction(), "OpenCms: Sync selected Modules/Folders/Files", MENU_ICON, new Constraints(Anchor.BEFORE, "RevealIn"));
-			if (config.isPluginConnectorEnabled()) {
-				addAction(projectPopupMenu, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "OpenCms: Pull meta data for selected modules", MENU_ICON, new Constraints(Anchor.AFTER, PROJECT_POPUP_SYNC_ID));
-			}
-			projectPopupMenu.add(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_PULL_METADATA_ID));
+			addAction(projectPopupMenu, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "OpenCms: Pull meta data for selected modules", MENU_ICON, new Constraints(Anchor.AFTER, PROJECT_POPUP_SYNC_ID));
+			projectPopupMenu.add(Separator.getInstance(), new Constraints(Anchor.BEFORE, "RevealIn"));
 		}
 	}
 

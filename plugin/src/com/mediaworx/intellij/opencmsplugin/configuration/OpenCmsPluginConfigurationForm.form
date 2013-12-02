@@ -49,13 +49,10 @@
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:max(d;4px):noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
+            <rowspec value="top:6dlu:noGrow"/>
             <colspec value="fill:15px:noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
-            <colspec value="fill:d:noGrow"/>
+            <colspec value="fill:125px:noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
             <colspec value="fill:max(d;4px):grow"/>
             <constraints>
@@ -133,30 +130,6 @@
                   <toolTipText value="The vfsPath to your OpenCms webapp, usually [Tomcat root]/webapps/opencms"/>
                 </properties>
               </component>
-              <component id="9f820" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="16" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                    <preferred-size width="163" height="16"/>
-                  </grid>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <text value="Default Sync &amp;Mode"/>
-                </properties>
-              </component>
-              <component id="f07b4" class="javax.swing.JComboBox" binding="defaultSyncMode">
-                <constraints>
-                  <grid row="16" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <model>
-                    <item value="PUSH (local FS is master, VFS resources not existing locally will be deleted from the VFS)"/>
-                    <item value="SYNC (sync files to and from the VFS based on the modification date)"/>
-                    <item value="PULL (VFS is master, local resources not existing in the VFS will be deleted from the RFS)"/>
-                  </model>
-                </properties>
-              </component>
               <component id="9f197" class="javax.swing.JLabel">
                 <constraints>
                   <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -199,13 +172,13 @@
               </component>
               <hspacer id="77a22">
                 <constraints>
-                  <grid row="0" column="0" row-span="18" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="16" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false"/>
                 </constraints>
               </hspacer>
               <component id="b8c62" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -214,53 +187,115 @@
               </component>
               <component id="afe50" class="javax.swing.JCheckBox" binding="usePluginConnectorCheckBox">
                 <constraints>
-                  <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
-                  <text value="Use the Plugin Connector (OpenCms Module providing meta information for the module manifest)"/>
+                  <text value="Use the Plugin Connector (OpenCms Module providing meta information and publish functionality)"/>
                 </properties>
               </component>
-              <component id="45698" class="javax.swing.JLabel">
+              <grid id="3c46f" binding="connectorOptionsPanel" layout-manager="FormLayout">
+                <rowspec value="center:d:grow"/>
+                <rowspec value="top:4dlu:noGrow"/>
+                <rowspec value="center:max(d;4px):noGrow"/>
+                <rowspec value="top:4dlu:noGrow"/>
+                <rowspec value="center:max(d;4px):noGrow"/>
+                <colspec value="fill:125px:noGrow"/>
+                <colspec value="left:4dlu:noGrow"/>
+                <colspec value="fill:d:grow"/>
                 <constraints>
-                  <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms/>
+                  <grid row="14" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <text value="Manifest Root"/>
+                  <enabled value="true"/>
                 </properties>
-              </component>
-              <component id="202ad" class="javax.swing.JTextField" binding="manifestRoot">
+                <border type="none"/>
+                <children>
+                  <component id="681fa" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Connector URL"/>
+                    </properties>
+                  </component>
+                  <component id="7004" class="javax.swing.JTextField" binding="connectorUrl">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                      <text value="http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.intellijconnector/connector.jsp"/>
+                    </properties>
+                  </component>
+                  <component id="45698" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Manifest Root"/>
+                    </properties>
+                  </component>
+                  <component id="202ad" class="javax.swing.JTextField" binding="manifestRoot">
+                    <constraints>
+                      <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text value="src/main/manifest"/>
+                    </properties>
+                  </component>
+                  <component id="95e5d" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Pull Meta Data"/>
+                    </properties>
+                  </component>
+                  <component id="fd0d0" class="javax.swing.JCheckBox" binding="pullMetaDataCheckbox">
+                    <constraints>
+                      <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Enable Meta Data Pull (VFS module and resource meta data will be pulled to the manifest root)"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <component id="9f820" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
+                  <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="163" height="16"/>
                   </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text value="src/main/manifest"/>
-                </properties>
-              </component>
-              <component id="7004" class="javax.swing.JTextField" binding="connectorUrl">
-                <constraints>
-                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text value="http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.intellijconnector/connector.jsp"/>
-                </properties>
-              </component>
-              <component id="681fa" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
-                  <text value="Connector URL"/>
+                  <text value="Default Sync &amp;Mode"/>
+                </properties>
+              </component>
+              <component id="f07b4" class="javax.swing.JComboBox" binding="defaultSyncMode">
+                <constraints>
+                  <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <model>
+                    <item value="PUSH (local FS is master, VFS resources not existing locally will be deleted from the VFS)"/>
+                    <item value="SYNC (sync files to and from the VFS based on the modification date)"/>
+                    <item value="PULL (VFS is master, local resources not existing in the VFS will be deleted from the RFS)"/>
+                  </model>
                 </properties>
               </component>
             </children>

@@ -53,7 +53,7 @@ public class SyncJob implements Runnable {
 		if (!pullMetadataOnly) {
 			numSteps += 1;
 		}
-		if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
+		if (config.isPluginConnectorEnabled() && config.isPullMetadataEnabled()) {
 			numSteps += 1;
 		}
 		if (syncList.isSyncModuleMetaData()) {
@@ -85,7 +85,7 @@ public class SyncJob implements Runnable {
 		}
 
 		// ######## PULL RESOURCE VFS META INFORMATION ################################
-		if (plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
+		if (config.isPluginConnectorEnabled() && config.isPullMetadataEnabled()) {
 			console.info("Step " + (step++) + "/" + numSteps + ": Pulling resource meta data from OpenCms");
 			pullResourceMetaInfos();
 			console.info("---- Resource meta info pull finished ----\n");

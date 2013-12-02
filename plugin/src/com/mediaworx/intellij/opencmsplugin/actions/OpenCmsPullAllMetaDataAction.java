@@ -2,6 +2,7 @@ package com.mediaworx.intellij.opencmsplugin.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,11 +29,12 @@ public class OpenCmsPullAllMetaDataAction extends OpenCmsPluginAction {
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);
 
-		if (!plugin.getPluginConfiguration().isPluginConnectorEnabled()) {
-			event.getPresentation().setVisible(false);
+		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
+		if (config.isPluginConnectorEnabled() && config.isPullMetadataEnabled()) {
+			event.getPresentation().setEnabled(true);
 		}
 		else {
-			event.getPresentation().setVisible(true);
+			event.getPresentation().setEnabled(false);
 		}
 	}
 }

@@ -12,6 +12,7 @@ public class OpenCmsPluginConfigurationData {
 	private String defaultLocalVfsRoot;
 	private boolean pluginConnectorEnabled;
 	private String connectorUrl;
+	private boolean pullMetadataEnabled;
 	private String manifestRoot;
 	private SyncMode defaultSyncMode;
 
@@ -77,6 +78,14 @@ public class OpenCmsPluginConfigurationData {
 
 	public void setConnectorUrl(String connectorUrl) {
 		this.connectorUrl = connectorUrl;
+	}
+
+	public boolean isPullMetadataEnabled() {
+		return pullMetadataEnabled;
+	}
+
+	public void setPullMetadataEnabled(boolean pullMetadataEnabled) {
+		this.pullMetadataEnabled = pullMetadataEnabled;
 	}
 
 	public String getManifestRoot() {
