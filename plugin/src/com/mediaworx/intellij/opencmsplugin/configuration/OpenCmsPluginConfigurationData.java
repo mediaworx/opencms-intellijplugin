@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
+import com.mediaworx.intellij.opencmsplugin.entities.AutoPublishMode;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
 
 public class OpenCmsPluginConfigurationData {
@@ -10,11 +11,12 @@ public class OpenCmsPluginConfigurationData {
     private String password;
     private String webappRoot;
 	private String defaultLocalVfsRoot;
+	private SyncMode defaultSyncMode;
 	private boolean pluginConnectorEnabled;
 	private String connectorUrl;
 	private boolean pullMetadataEnabled;
 	private String manifestRoot;
-	private SyncMode defaultSyncMode;
+	private AutoPublishMode autoPublishMode;
 
 	public boolean isOpenCmsPluginEnabled() {
 		return openCmsPluginEnabled;
@@ -64,6 +66,14 @@ public class OpenCmsPluginConfigurationData {
 		this.defaultLocalVfsRoot = defaultLocalVfsRoot;
 	}
 
+	public SyncMode getDefaultSyncMode() {
+		return defaultSyncMode != null ? defaultSyncMode : SyncMode.SYNC;
+	}
+
+	public void setDefaultSyncMode(SyncMode defaultSyncMode) {
+		this.defaultSyncMode = defaultSyncMode;
+	}
+
 	public boolean isPluginConnectorEnabled() {
 		return pluginConnectorEnabled;
 	}
@@ -96,18 +106,18 @@ public class OpenCmsPluginConfigurationData {
 		this.manifestRoot = manifestRoot;
 	}
 
-	public SyncMode getDefaultSyncMode() {
-		return defaultSyncMode != null ? defaultSyncMode : SyncMode.PUSH;
-	}
-
-	public void setDefaultSyncMode(SyncMode defaultSyncMode) {
-		this.defaultSyncMode = defaultSyncMode;
-	}
-
 	private String stripTrailingSeparator(String s) {
 		if (s != null && (s.endsWith("\\") || s.endsWith("/"))) {
 			return s.substring(0, s.length() - 1);
 		}
 		return s;
+	}
+
+	public AutoPublishMode getAutoPublishMode() {
+		return autoPublishMode != null ? autoPublishMode : AutoPublishMode.FILECHANGE;
+	}
+
+	public void setAutoPublishMode(AutoPublishMode autoPublishMode) {
+		this.autoPublishMode = autoPublishMode;
 	}
 }

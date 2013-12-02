@@ -1,7 +1,5 @@
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
-import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,6 +24,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	private JComboBox defaultSyncMode;
 	private JPanel connectorOptionsPanel;
 	private JCheckBox pullMetaDataCheckbox;
+	private JComboBox autoPublishMode;
 
 	public OpenCmsPluginConfigurationForm() {
 		formPanel.setVisible(false);
@@ -50,14 +49,15 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		FormTools.setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
 		FormTools.setConfiguredOrKeepDefault(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot());
 
-		if (data.getDefaultSyncMode() == SyncMode.PUSH) {
-			defaultSyncMode.setSelectedIndex(0);
-		}
-		else if (data.getDefaultSyncMode() == SyncMode.SYNC) {
-			defaultSyncMode.setSelectedIndex(1);
-		}
-		else if (data.getDefaultSyncMode() == SyncMode.PULL) {
-			defaultSyncMode.setSelectedIndex(2);
+		switch (data.getDefaultSyncMode()) {
+			case PUSH:
+				defaultSyncMode.setSelectedIndex(0);
+				break;
+			case SYNC:
+				defaultSyncMode.setSelectedIndex(1);
+				break;
+			case PULL:
+				defaultSyncMode.setSelectedIndex(2);
 		}
 
 		usePluginConnectorCheckBox.setSelected(data.isPluginConnectorEnabled());
@@ -66,6 +66,17 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		pullMetaDataCheckbox.setSelected(data.isPullMetadataEnabled());
 		manifestRoot.setEnabled(data.isPullMetadataEnabled());
 		FormTools.setConfiguredOrKeepDefault(manifestRoot, data.getManifestRoot());
+
+		switch (data.getAutoPublishMode()) {
+			case OFF:
+				autoPublishMode.setSelectedIndex(0);
+				break;
+			case FILECHANGE:
+				autoPublishMode.setSelectedIndex(1);
+				break;
+			case ALL:
+				autoPublishMode.setSelectedIndex(2);
+		}
 	}
 
 
@@ -81,6 +92,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		data.setConnectorUrl(connectorUrl.getText());
 		data.setPullMetadataEnabled(pullMetaDataCheckbox.isSelected());
 		data.setManifestRoot(manifestRoot.getText());
+		data.setAutoPublishMode(FormTools.getAutoPublishModeFromCombobox(autoPublishMode));
 	}
 
 
@@ -96,7 +108,8 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			usePluginConnectorCheckBox.isSelected() != data.isPluginConnectorEnabled() ||
 			FormTools.isTextFieldModified(connectorUrl, data.getConnectorUrl()) ||
 			pullMetaDataCheckbox.isSelected() != data.isPullMetadataEnabled() ||
-			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot())
+			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot()) ||
+			!FormTools.getAutoPublishModeFromCombobox(autoPublishMode).equals(data.getAutoPublishMode())
 		;
 	}
 

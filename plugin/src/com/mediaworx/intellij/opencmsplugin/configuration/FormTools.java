@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
+import com.mediaworx.intellij.opencmsplugin.entities.AutoPublishMode;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
 
 import javax.swing.*;
@@ -10,10 +11,19 @@ public class FormTools {
 	public static SyncMode getSyncModeFromComboBox(JComboBox comboBox) {
 		String syncModeStr = (String)comboBox.getSelectedItem();
 		if (syncModeStr == null || syncModeStr.length() == 0) {
-			syncModeStr = SyncMode.PUSH.name();
+			return SyncMode.SYNC;
 		}
 		syncModeStr = syncModeStr.replaceAll("([A-Z]+) ?.*", "$1");
 		return SyncMode.valueOf(syncModeStr);
+	}
+
+	public static AutoPublishMode getAutoPublishModeFromCombobox(JComboBox comboBox) {
+		String autoPublishModeStr = (String)comboBox.getSelectedItem();
+		if (autoPublishModeStr == null || autoPublishModeStr.length() == 0) {
+			return AutoPublishMode.FILECHANGE;
+		}
+		autoPublishModeStr = autoPublishModeStr.replaceAll("([A-Z]+) ?.*", "$1");
+		return AutoPublishMode.valueOf(autoPublishModeStr);
 	}
 
 	public static void setConfiguredOrKeepDefault(JTextComponent field, String configured) {

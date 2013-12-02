@@ -32,7 +32,7 @@ class SyncFileAnalyzer implements Runnable {
 	private VfsAdapter vfsAdapter;
 	ProgressIndicator progressIndicator;
 
-	private boolean pullAllMetaInformation = true;
+	private boolean pullAllMetaInformation;
 	private boolean executeSync = true;
 
 	SyncFileAnalyzer(final OpenCmsPlugin plugin, final VirtualFile[] syncFiles, boolean pullAllMetaInformation) throws CmsConnectionException {

@@ -200,6 +200,8 @@
                 <rowspec value="center:max(d;4px):noGrow"/>
                 <rowspec value="top:4dlu:noGrow"/>
                 <rowspec value="center:max(d;4px):noGrow"/>
+                <rowspec value="top:4dlu:noGrow"/>
+                <rowspec value="center:max(d;4px):noGrow"/>
                 <colspec value="fill:125px:noGrow"/>
                 <colspec value="left:4dlu:noGrow"/>
                 <colspec value="fill:d:grow"/>
@@ -272,6 +274,28 @@
                       <text value="Enable Meta Data Pull (VFS module and resource meta data will be pulled to the manifest root)"/>
                     </properties>
                   </component>
+                  <component id="df20f" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Auto Pubish mode"/>
+                    </properties>
+                  </component>
+                  <component id="f7bbf" class="javax.swing.JComboBox" binding="autoPublishMode">
+                    <constraints>
+                      <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <model>
+                        <item value="OFF - Nothing will be published automatically)"/>
+                        <item value="FILECHANGE - File changes (delete, move and rename) will be published automatically"/>
+                        <item value="ALL - All resources synced to the VFS will be published automatically"/>
+                      </model>
+                    </properties>
+                  </component>
                 </children>
               </grid>
               <component id="9f820" class="javax.swing.JLabel">
@@ -292,9 +316,9 @@
                 </constraints>
                 <properties>
                   <model>
-                    <item value="PUSH (local FS is master, VFS resources not existing locally will be deleted from the VFS)"/>
-                    <item value="SYNC (sync files to and from the VFS based on the modification date)"/>
-                    <item value="PULL (VFS is master, local resources not existing in the VFS will be deleted from the RFS)"/>
+                    <item value="PUSH - local FS is master, VFS resources not existing locally will be deleted from the VFS"/>
+                    <item value="SYNC - sync files to and from the VFS based on the modification date"/>
+                    <item value="PULL - VFS is master, local resources not existing in the VFS will be deleted from the RFS"/>
                   </model>
                 </properties>
               </component>
