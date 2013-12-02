@@ -87,7 +87,7 @@ public class OpenCmsSyncer {
 			message.append("Infos/Warnings during file analysis:\n").append(analyzer.getWarnings().append("\n"));
 		}
 		if (proceed) {
-			if (!skipConfirmDialog && ((numSyncEntities == 1 && message.length() > 0) || numSyncEntities > 1)) {
+			if (!skipConfirmDialog && !pullMetaDataOnly && ((numSyncEntities == 1 && message.length() > 0) || numSyncEntities > 1)) {
 				assembleConfirmMessage(message, syncJob.getSyncList());
 				int dlgStatus = Messages.showOkCancelDialog(plugin.getProject(), message.toString(), "Start OpenCms VFS Sync?", Messages.getQuestionIcon());
 				proceed = dlgStatus == 0;
