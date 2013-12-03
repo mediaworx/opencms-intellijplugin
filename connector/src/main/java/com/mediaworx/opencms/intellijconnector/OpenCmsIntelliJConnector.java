@@ -10,6 +10,7 @@ import org.opencms.db.CmsPublishList;
 import org.opencms.file.CmsObject;
 import org.opencms.file.CmsProject;
 import org.opencms.file.CmsResource;
+import org.opencms.file.CmsResourceFilter;
 import org.opencms.flex.CmsFlexController;
 import org.opencms.main.CmsException;
 import org.opencms.main.OpenCms;
@@ -122,6 +123,9 @@ public class OpenCmsIntelliJConnector {
 	}
 
 	private void publishResources() {
+
+		LOG.info("IntelliJ triggered publish. Publishing the following resources:");
+
 		String[] resourcePaths = getStringArrayFromJSON(params);
 
 		List<CmsResource> publishResources = new ArrayList<CmsResource>(resourcePaths.length);
@@ -129,10 +133,10 @@ public class OpenCmsIntelliJConnector {
 		StringBuilder warnings = new StringBuilder();
 
 		for (String resourcePath : resourcePaths) {
-			if (cmsObject.existsResource(resourcePath)) {
+			if (cmsObject.existsResource(resourcePath, CmsResourceFilter.ALL)) {
 				CmsResource resource;
 				try {
-					resource = cmsObject.readResource(resourcePath);
+					resource = cmsObject.readResource(resourcePath, CmsResourceFilter.ALL);
 				}
 				catch (CmsException e) {
 					String message = resourcePath + " could not be read from the VFS";
@@ -141,6 +145,7 @@ public class OpenCmsIntelliJConnector {
 					hasWarnings = true;
 					continue;
 				}
+				LOG.info("    " + resourcePath);
 				publishResources.add(resource);
 			}
 		}
@@ -160,6 +165,15 @@ public class OpenCmsIntelliJConnector {
 				}
 				I_CmsReport report = new CmsLogReport(Locale.ENGLISH, OpenCmsIntelliJConnector.class);
 				try {
+					List<CmsResource> resources = publishList.getAllResources();
+					for (CmsResource resource : resources) {
+						if (resource.getState().isDeleted()) {
+							LOG.info("DELETED resource " + resource.getRootPath() + " will be published");
+						}
+						else {
+							LOG.info("Resource " + resource.getRootPath() + " will be published");
+						}
+					}
 					publishManager.publishProject(cmsObject, report, publishList);
 				}
 				catch (CmsException e) {
