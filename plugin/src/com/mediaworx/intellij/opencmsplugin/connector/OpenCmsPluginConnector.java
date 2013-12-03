@@ -2,7 +2,6 @@ package com.mediaworx.intellij.opencmsplugin.connector;
 
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.entities.OpenCmsModuleResource;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -35,7 +34,9 @@ public class OpenCmsPluginConnector {
 	private String user;
 	private String password;
 	private CloseableHttpClient httpClient;
-	JSONParser jsonParser;
+	private JSONParser jsonParser;
+
+	private String message;
 
 	public OpenCmsPluginConnector(String connectorUrl, String user, String password) {
 		this.connectorUrl = connectorUrl;
@@ -74,6 +75,7 @@ public class OpenCmsPluginConnector {
 	}
 
 	public HashMap<String, String> getModuleResourceInfos(List<OpenCmsModuleResource> moduleResources) throws IOException {
+		message = null;
 		List<String> resourcePaths = new ArrayList<String>(moduleResources.size());
 		for (OpenCmsModuleResource moduleResource : moduleResources) {
 			resourcePaths.add(moduleResource.getResourcePath());
@@ -83,28 +85,24 @@ public class OpenCmsPluginConnector {
 
 
 	public HashMap<String, String> getResourceInfos(List<String> resourcePaths) throws IOException {
+		message = null;
 		return getActionResponseMap(resourcePaths, ACTION_RESOURCEINFOS);
 	}
 
 	public HashMap<String, String> getModuleManifests(List<String> moduleNames) throws IOException {
+		message = null;
 		return getActionResponseMap(moduleNames, ACTION_MODULEMANIFESTS);
 	}
 
-	public void publishResource(String resourcePath) throws IOException {
-		List<String> resourcePaths = new ArrayList<String>(1);
-		resourcePaths.add(resourcePath);
-		publishResources(resourcePaths);
-	}
-
 	public boolean publishResources(List<String> resourcePaths) throws IOException {
+		message = null;
 		String response = getActionResponseString(resourcePaths, ACTION_PUBLISH);
 		if (response == null) {
 			return false;
 		}
 		response = response.trim();
 		if (!response.equals("OK")) {
-			Messages.showDialog("There were warnings during publish.\nCheck the OpenCms log file.\n\n" + response,
-					"Publishing Resources", new String[]{"Ok"}, 0, Messages.getWarningIcon());
+			message = "There were warnings during publish:\n" + response + "\nCheck the OpenCms log file.";
 			return false;
 		}
 		else {
@@ -169,4 +167,7 @@ public class OpenCmsPluginConnector {
 		return jsonArray.toJSONString();
 	}
 
+	public String getMessage() {
+		return message;
+	}
 }

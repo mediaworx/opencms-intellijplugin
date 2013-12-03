@@ -6,10 +6,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
-import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
-import com.mediaworx.intellij.opencmsplugin.entities.OpenCmsModuleResource;
-import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
-import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
+import com.mediaworx.intellij.opencmsplugin.entities.*;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
@@ -27,20 +24,24 @@ public class SyncJob implements Runnable {
 
 	private OpenCmsPlugin plugin;
 	private OpenCmsToolWindowConsole console;
-    private OpenCmsPluginConfigurationData config;
+	private OpenCmsPluginConfigurationData config;
 	private VfsAdapter adapter;
 
 	private SyncList syncList;
 	private boolean pullMetadataOnly;
 	private List<SyncEntity> refreshEntityList;
 	private List<ExportEntity> exportList;
+	private List<String> publishList;
+	private boolean publish;
 
 	public SyncJob(OpenCmsPlugin plugin, SyncList syncList) {
 		this.plugin = plugin;
 		config = plugin.getPluginConfiguration();
+		publish = config.isPluginConnectorEnabled() && config.getAutoPublishMode() == AutoPublishMode.ALL;
 		adapter = plugin.getVfsAdapter();
 		this.refreshEntityList = new ArrayList<SyncEntity>();
 		this.exportList = new ArrayList<ExportEntity>();
+		this.publishList = new ArrayList<String>();
 		setSyncList(syncList);
 		this.pullMetadataOnly = syncList.isPullMetaDataOnly();
 	}
@@ -58,6 +59,9 @@ public class SyncJob implements Runnable {
 		}
 		if (syncList.isSyncModuleMetaData()) {
 			numSteps += 2;
+		}
+		if (!pullMetadataOnly && publish) {
+			numSteps += 1;
 		}
 		if (!pullMetadataOnly && numExportEntities() > 0) {
 			numSteps += 1;
@@ -91,15 +95,42 @@ public class SyncJob implements Runnable {
 			console.info("---- Resource meta info pull finished ----\n");
 		}
 
-		// ######## EXPORT POINT HANDLING ################################
-              if (!pullMetadataOnly && numExportEntities() > 0) {
-               console.info("Step " + step + "/" + numSteps + ": Handling export points");
+		if (!pullMetadataOnly) {
+			// ######## PUBLISHING ###########################################
+			if (publish) {
+				console.info("Step " + step + "/" + numSteps + ": Publishing");
 
-                  for (ExportEntity entity : exportList) {
-                      doExportPointHandling(entity);
-                  }
-                  console.info("---- Copying of ExportPoints finished ----\n");
-              }
+				if (publishList.size() > 0) {
+					try {
+						if (plugin.getPluginConnector().publishResources(publishList)) {
+							console.info("A direct publish session was started successfully");
+						}
+						else {
+							console.error(plugin.getPluginConnector().getMessage());
+						}
+					}
+					catch (IOException e) {
+						LOG.warn("There was an exception while publishing resources after sync", e);
+						console.error("There was an exception while publishing resources after syncing. Please have a look at the OpenCms log file.");
+					}
+				}
+				else {
+					console.info("No resources need publishing");
+				}
+
+				console.info("---- Publish finished ----\n");
+			}
+
+			// ######## EXPORT POINT HANDLING ################################
+			if (numExportEntities() > 0) {
+				console.info("Step " + step + "/" + numSteps + ": Handling export points");
+
+				for (ExportEntity entity : exportList) {
+					doExportPointHandling(entity);
+				}
+				console.info("---- Copying of ExportPoints finished ----\n");
+			}
+		}
 
 		// ######## REFRESH IDEA FILESYSTEM ##############################
 		if (hasRefreshEntities()) {
@@ -128,9 +159,7 @@ public class SyncJob implements Runnable {
 				if (entity.getSyncAction() == SyncAction.PULL || entity.getSyncAction() == SyncAction.DELETE_RFS) {
 					this.refreshEntityList.add(entity);
 				}
-				if (entity.getSyncAction() != SyncAction.DELETE_VFS) {
-		            addSyncEntityToExportListIfNecessary(entity);
-				}
+				addSyncEntityToExportListIfNecessary(entity);
 			}
 		}
 	}
@@ -139,31 +168,36 @@ public class SyncJob implements Runnable {
 		return syncList;
 	}
 
-    private void addSyncEntityToExportListIfNecessary(SyncEntity syncEntity) {
+	private void addSyncEntityToExportListIfNecessary(SyncEntity syncEntity) {
 
-	    List<ModuleExportPoint> exportPoints = syncEntity.getOcmsModule().getExportPoints();
+		// if publishing is enabled, pushed and deleted entities don't have to be handled (this is done by OpenCms)
+		if (publish && (syncEntity.getSyncAction() == SyncAction.PUSH || syncEntity.getSyncAction() == SyncAction.DELETE_VFS)) {
+			return;
+		}
 
-        if (exportPoints != null) {
+		List<ModuleExportPoint> exportPoints = syncEntity.getOcmsModule().getExportPoints();
 
-	        String localModuleVfsRoot = syncEntity.getOcmsModule().getLocalVfsRoot();
-	        String entityVfsPath = syncEntity.getVfsPath();
+		if (exportPoints != null) {
 
-		    for (ModuleExportPoint exportPoint : exportPoints) {
-			    String vfsSource = exportPoint.getVfsSource();
-	            if (entityVfsPath.startsWith(vfsSource)) {
-	                String destination = exportPoint.getRfsTarget();
-	                String relativePath = entityVfsPath.substring(vfsSource.length());
-	                ExportEntity exportEntity = new ExportEntity();
-	                exportEntity.setSourcePath(localModuleVfsRoot+entityVfsPath);
-	                exportEntity.setTargetPath(config.getWebappRoot() + "/" + destination + relativePath);
-	                exportEntity.setVfsPath(entityVfsPath);
-	                exportEntity.setDestination(destination);
-		            exportEntity.setToBeDeleted(syncEntity.getSyncAction() == SyncAction.DELETE_RFS);
-	                addExportEntity(exportEntity);
-	            }
-	        }
-        }
-    }
+			String localModuleVfsRoot = syncEntity.getOcmsModule().getLocalVfsRoot();
+			String entityVfsPath = syncEntity.getVfsPath();
+
+			for (ModuleExportPoint exportPoint : exportPoints) {
+				String vfsSource = exportPoint.getVfsSource();
+				if (entityVfsPath.startsWith(vfsSource)) {
+					String destination = exportPoint.getRfsTarget();
+					String relativePath = entityVfsPath.substring(vfsSource.length());
+					ExportEntity exportEntity = new ExportEntity();
+					exportEntity.setSourcePath(localModuleVfsRoot+entityVfsPath);
+					exportEntity.setTargetPath(config.getWebappRoot() + "/" + destination + relativePath);
+					exportEntity.setVfsPath(entityVfsPath);
+					exportEntity.setDestination(destination);
+					exportEntity.setToBeDeleted(syncEntity.getSyncAction().isDeleteAction());
+					addExportEntity(exportEntity);
+				}
+			}
+		}
+	}
 
 	private void addExportEntity(ExportEntity entity) {
 		exportList.add(entity);
@@ -197,6 +231,9 @@ public class SyncJob implements Runnable {
 	private void doSync(SyncEntity entity) {
 		if (entity.getSyncAction() == SyncAction.PUSH) {
 			doPush(entity);
+			if (publish) {
+				publishList.add(entity.getVfsPath());
+			}
 		}
 		else if (entity.getSyncAction() == SyncAction.PULL) {
 			doPull(entity);
@@ -206,6 +243,9 @@ public class SyncJob implements Runnable {
 		}
 		else if (entity.getSyncAction() == SyncAction.DELETE_VFS) {
 			doDeleteFromVfs(entity);
+			if (publish) {
+				publishList.add(entity.getVfsPath());
+			}
 		}
 	}
 
@@ -249,17 +289,17 @@ public class SyncJob implements Runnable {
 	private void doPull(SyncEntity entity) {
 		StringBuilder confirmation = new StringBuilder();
 
-        if (entity.isFolder()) {
-            try {
-	            FileUtils.forceMkdir(new File(entity.getRfsPath()));
-            } catch (IOException e) {
-	            console.error("ERROR: couldn't create local directory " + entity.getRfsPath());
-	            LOG.warn("There was an Exception creating a local directory", e);
-           }
-        }
-        else {
-            adapter.pullFile(entity);
-        }
+		if (entity.isFolder()) {
+			try {
+				FileUtils.forceMkdir(new File(entity.getRfsPath()));
+			} catch (IOException e) {
+				console.error("ERROR: couldn't create local directory " + entity.getRfsPath());
+				LOG.warn("There was an Exception creating a local directory", e);
+		   }
+		}
+		else {
+			adapter.pullFile(entity);
+		}
 
 		confirmation.append("PULL: ").append(entity.getVfsPath()).append(" pulled from VFS to ").append(entity.getOcmsModule().getLocalVfsRoot());
 		if (entity.replaceExistingEntity()) {
@@ -397,7 +437,7 @@ public class SyncJob implements Runnable {
 	}
 
 	private void addParentFolderToResourcePaths(String resourcePath, OpenCmsModule ocmsModule,
-	                                            List<OpenCmsModuleResource> resourcePathParents, Set<String> handledParents) {
+												List<OpenCmsModuleResource> resourcePathParents, Set<String> handledParents) {
 		if (resourcePath.endsWith("/")) {
 			resourcePath = resourcePath.substring(0, resourcePath.length() - 1);
 		}
@@ -447,34 +487,34 @@ public class SyncJob implements Runnable {
 	}
 
 	private void doExportPointHandling(ExportEntity entity) {
-        StringBuilder confirmation = new StringBuilder();
+		StringBuilder confirmation = new StringBuilder();
 
 		if (!entity.isToBeDeleted()) {
 			confirmation.append("Copy of ").append(entity.getVfsPath()).append(" to ").append(entity.getDestination()).append(" - ");
-	        File file = new File(entity.getSourcePath());
-	        if (file.exists()) {
-	            if (file.isFile()) {
-	                try {
-	                    FileUtils.copyFile(file, new File(entity.getTargetPath()));
-	                    confirmation.append("SUCCESS");
-	                } catch (IOException e) {
-		                confirmation.insert(0, "ERROR: ");
-	                    confirmation.append("FAILED (").append(e.getMessage()).append(")");
-	                }
-	            }
-	            else if (file.isDirectory()) {
-	                try {
-	                    FileUtils.copyDirectory(file, new File(entity.getTargetPath()));
-	                    confirmation.append("SUCCESS");
-	                } catch (IOException e) {
-		                confirmation.insert(0, "ERROR: ");
-	                    confirmation.append("FAILED (").append(e.getMessage()).append(")");
-	                }
-	            }
-	        }
-	        else {
-	            confirmation.append(" - FILE NOT FOUND");
-	        }
+			File file = new File(entity.getSourcePath());
+			if (file.exists()) {
+				if (file.isFile()) {
+					try {
+						FileUtils.copyFile(file, new File(entity.getTargetPath()));
+						confirmation.append("SUCCESS");
+					} catch (IOException e) {
+						confirmation.insert(0, "ERROR: ");
+						confirmation.append("FAILED (").append(e.getMessage()).append(")");
+					}
+				}
+				else if (file.isDirectory()) {
+					try {
+						FileUtils.copyDirectory(file, new File(entity.getTargetPath()));
+						confirmation.append("SUCCESS");
+					} catch (IOException e) {
+						confirmation.insert(0, "ERROR: ");
+						confirmation.append("FAILED (").append(e.getMessage()).append(")");
+					}
+				}
+			}
+			else {
+				confirmation.append(" - FILE NOT FOUND");
+			}
 		}
 		else {
 			confirmation.append("Resource ").append(entity.getVfsPath()).append(" removed, deletion of exported file ")
@@ -499,7 +539,7 @@ public class SyncJob implements Runnable {
 		else {
 			console.info(confirmation.toString());
 		}
-    }
+	}
 
 	public static void cleanupModuleMetaFolder(OpenCmsModule ocmsModule) {
 		if (ocmsModule != null) {

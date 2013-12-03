@@ -469,7 +469,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 					console.info("PUBLISH: A direct publish session was started successfully");
 				}
 				else {
-					console.error("PUBLISH: There were some problems starting a direct publish session. Please have a look at the OpenCms log file.");
+					console.error("PUBLISH: " + plugin.getPluginConnector().getMessage());
 				}
 			}
 			catch (IOException e) {
