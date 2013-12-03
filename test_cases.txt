@@ -1,0 +1,28 @@
+SYNC
+	tbd
+
+PUSH
+	tbd
+
+PULL
+	tbd
+
+META DATA PULL
+	tbd
+
+AUTO PUBLISH
+	tbd
+
+FILE EVENTS
+	1. Delete File
+	2. Delete Folder
+	3. Rename File
+	4. Rename Folder
+	5. Move File
+	    a) within the same module
+	    b) from one module to another
+	    c) out of a module (to some folder outside of any module)
+	6. Move Folder
+	    a) within the same module
+	    b) from one module to another
+	    c) out of a module (to some folder outside of any module)

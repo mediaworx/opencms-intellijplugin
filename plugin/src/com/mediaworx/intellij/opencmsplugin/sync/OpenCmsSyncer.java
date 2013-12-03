@@ -93,7 +93,7 @@ public class OpenCmsSyncer {
 				proceed = dlgStatus == 0;
 			}
 			if (proceed) {
-				plugin.getToolWindow().activate(null);
+				plugin.showToolWindow();
 				new Thread(syncJob).start();
 			}
 		}

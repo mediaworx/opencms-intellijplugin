@@ -59,6 +59,13 @@ public class OpenCmsModules {
 		return OCMSMODULE_BY_IDEAMODULE.get(ideaModule);
 	}
 
+	public OpenCmsModule getModuleForIdeaModule(Module ideaModule) {
+		if (ideaModule == null) {
+			return null;
+		}
+		return OCMSMODULE_BY_IDEAMODULE.get(ideaModule);
+	}
+
 	public boolean isIdeaVFileOpenCmsModuleResource(final VirtualFile file) {
 		OpenCmsModule ocmsModule = getModuleForIdeaVFile(file);
 		if (ocmsModule == null) {

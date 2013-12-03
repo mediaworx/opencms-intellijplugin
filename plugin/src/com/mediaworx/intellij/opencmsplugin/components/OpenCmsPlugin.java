@@ -47,7 +47,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public static final KeyStroke COMMON_FIRST_KEYSTROKE = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK + KeyEvent.ALT_MASK);
 	private static final Shortcut MENU_SYNC_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0));
-	private static final Shortcut MENU_SYNC_SHORTCUT2 = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK + KeyEvent.ALT_MASK), null);
+	private static final Shortcut MENU_SYNC_SHORTCUT2 = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK), null);
 	private static final Shortcut MENU_SYNC_OPEN_TABS_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_T, 0));
 	private static final Shortcut MENU_SYNC_ALL_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_A, 0));
 	private static final Shortcut MENU_PULL_MODULE_METADATA_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_P, 0));
@@ -66,7 +66,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private ToolWindow toolWindow;
 	private OpenCmsToolWindowConsole console;
 	private ActionManager actionManager;
-	private OpenCmsMenu openCmsMenu;
 
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
@@ -147,7 +146,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerMainMenuActions() {
-		openCmsMenu = (OpenCmsMenu)actionManager.getAction(OPENCMS_MENU_ID);
+		OpenCmsMenu openCmsMenu = (OpenCmsMenu)actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
 			openCmsMenu = new OpenCmsMenu("_OpenCms", false);
@@ -212,11 +211,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 		actionManager.unregisterAction(MENU_PULL_MODULE_METADATA_ID);
 		actionManager.unregisterAction(MENU_PULL_ALL_METADATA_ID);
 		actionManager.unregisterAction(OPENCMS_MENU_ID);
-
-		for (String menuSyncModuleId : shortcutActionIds) {
-			actionManager.unregisterAction(menuSyncModuleId);
-		}
-
 		actionManager.unregisterAction(PROJECT_POPUP_SYNC_ID);
 		actionManager.unregisterAction(PROJECT_POPUP_PULL_METADATA_ID);
 
@@ -255,10 +249,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 		return openCmsModules;
 	}
 
-	public OpenCmsMenu getOpenCmsMenu() {
-		return openCmsMenu;
-	}
-
 	public VfsAdapter getVfsAdapter() {
 		if (vfsAdapter == null) {
 			if (config != null && config.isOpenCmsPluginEnabled() && config.getPassword() != null && config.getPassword().length() > 0) {
@@ -276,19 +266,31 @@ public class OpenCmsPlugin implements ProjectComponent {
 		this.pluginConnector = pluginConnector;
 	}
 
-
+	private void initToolWindow() {
+		toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
+		toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
+		OpenCmsPluginToolWindowFactory toolWindowFactory = new OpenCmsPluginToolWindowFactory();
+		toolWindowFactory.createToolWindowContent(project, toolWindow);
+	}
 
 	public ToolWindow getToolWindow() {
 		if (toolWindow == null) {
-			toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
-			toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
-			OpenCmsPluginToolWindowFactory toolWindowFactory = new OpenCmsPluginToolWindowFactory();
-			toolWindowFactory.createToolWindowContent(project, toolWindow);
+			initToolWindow();
 		}
 		return toolWindow;
 	}
 
+	public void showToolWindow() {
+		if (toolWindow == null || !toolWindow.isActive()) {
+			getToolWindow().activate(null);
+		}
+	}
+
 	public OpenCmsToolWindowConsole getConsole() {
+		// if the console has not been initialized ...
+		if (console == null) {
+			initToolWindow();  // ... initialize the tool window (containing the console)
+		}
 		return console;
 	}
 
