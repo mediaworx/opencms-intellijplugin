@@ -4,6 +4,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
@@ -13,6 +14,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
 import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.entities.AutoPublishMode;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFile;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
@@ -30,10 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // TODO: handle cases where moves or deletions of parents of vfs resources take place (or don't handle those cases, whatever, at least think about it)
 public class OpenCmsModuleFileChangeListener implements BulkFileListener {
@@ -91,12 +90,13 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 			for (VFileEvent event : vFileEvents) {
 				handleFileEvent(event);
 			}
+			if (getNumAffected() > 0) {
+				handleAffectedFiles();
 
-			handleAffectedFiles();
-
-			// Refresh the affected files in the IDEA VFS
-			if (refreshFiles.size() > 0) {
-				LocalFileSystem.getInstance().refreshIoFiles(refreshFiles);
+				// Publish the affected VFS resources (if publish is enabled)
+				if (config.isPluginConnectorEnabled() && config.getAutoPublishMode() != AutoPublishMode.OFF) {
+					publishAffectedVfsResources();
+				}
 			}
 		}
 		catch (CmsConnectionException e) {
@@ -109,6 +109,10 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 			deletedFileModuleLookup.clear();
 			refreshFiles.clear();
 		}
+	}
+
+	private int getNumAffected() {
+		return vfsFilesToBeDeleted.size() + vfsFilesToBeMoved.size() + vfsFilesToBeRenamed.size();
 	}
 
 	private VfsAdapter getVfsAdapter() throws CmsConnectionException {
@@ -234,9 +238,15 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 			renameFiles();
 		}
 
-		// Refresh the affected files in the IDEA VFS
+		// Refresh the affected files in the IDEA VFS after a short delay (to avoid event collision)
 		if (refreshFiles.size() > 0) {
-			LocalFileSystem.getInstance().refreshIoFiles(new ArrayList<File>(refreshFiles), true, false, null);
+			final List<File> filesToBeRefreshedLater = new ArrayList<File>(refreshFiles);
+			new Timer().schedule(new TimerTask() {
+				@Override
+				public void run() {
+					LocalFileSystem.getInstance().refreshIoFiles(filesToBeRefreshedLater, true, false, null);
+				}
+			}, 2000);
 		}
 	}
 
@@ -342,6 +352,10 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				console.info("RENAME: " + renameInfo.oldVfsPath + " to " + renameInfo.newName);
 				try {
 					CmisObject file = getVfsAdapter().getVfsObject(renameInfo.oldVfsPath);
+					if (file == null) {
+						LOG.warn("Error renaming " + renameInfo.oldVfsPath + ": the resource could not be loaded through CMIS");
+						continue;
+					}
 					HashMap<String, Object> properties = new HashMap<String, Object>();
 					properties.put(PropertyIds.NAME, renameInfo.newName);
 					file.updateProperties(properties);
@@ -390,8 +404,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 			File oldMetaDataFile = new File(oldMetaDataFilePath);
 			File newMetaDataFile = new File(newMetaDataFilePath);
 			FileUtils.moveFile(oldMetaDataFile, newMetaDataFile);
-			refreshFiles.add(oldMetaDataFile);
-			refreshFiles.add(newMetaDataFile);
+			File oldParentFile = oldMetaDataFile.getParentFile();
+			File newParentFile = newMetaDataFile.getParentFile();
+			refreshFiles.add(oldParentFile);
+			if (!FileUtil.filesEqual(oldParentFile, newParentFile)) {
+				refreshFiles.add(newParentFile);
+			}
 		}
 		catch (IOException e) {
 			LOG.warn("Exception while moving " + oldMetaDataFilePath + " to " + newMetaDataFilePath, e);
@@ -404,8 +422,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				File oldMetaFolder = new File(oldMetaFolderPath);
 				File newMetaFolder = new File(newMetaFolderPath);
 				FileUtils.moveDirectory(oldMetaFolder, newMetaFolder);
-				refreshFiles.add(oldMetaFolder);
-				refreshFiles.add(newMetaFolder);
+				File oldParentFolder = oldMetaFolder.getParentFile();
+				File newParentFolder = newMetaFolder.getParentFile();
+				refreshFiles.add(oldParentFolder);
+				if (!FileUtil.filesEqual(oldParentFolder, newParentFolder)) {
+					refreshFiles.add(newParentFolder);
+				}
 			}
 			catch (IOException e) {
 				LOG.warn("Exception while moving " + oldMetaFolderPath + " to " + newMetaFolderPath, e);
@@ -426,6 +448,34 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				console.info("DELETE EXPORTPOINT FILE: " + exportPath);
 				FileUtils.deleteQuietly(exportedFileToBeDeleted);
 				refreshFiles.add(exportedFileToBeDeleted);
+			}
+		}
+	}
+
+	private void publishAffectedVfsResources() {
+		ArrayList <String> affectedResourcePaths = new ArrayList<String>(getNumAffected());
+		for (VfsFileDeleteInfo deletedInfo : vfsFilesToBeDeleted) {
+			affectedResourcePaths.add(deletedInfo.vfsPath);
+		}
+		for (VfsFileMoveInfo moveInfo : vfsFilesToBeMoved) {
+			affectedResourcePaths.add(moveInfo.newVfsPath);
+		}
+		for (VfsFileRenameInfo renameInfo : vfsFilesToBeRenamed) {
+			affectedResourcePaths.add(renameInfo.newVfsPath);
+		}
+		if (affectedResourcePaths.size() > 0) {
+			try {
+				if (plugin.getPluginConnector().publishResources(affectedResourcePaths)) {
+					console.info("PUBLISH: A direct publish session was started successfully");
+				}
+				else {
+					console.error("PUBLISH: There were some problems starting a direct publish session. Please have a look at the OpenCms log file.");
+				}
+			}
+			catch (IOException e) {
+				LOG.warn("There was an exception while publishing resources after a file change event", e);
+				Messages.showDialog("There was an Error during publish.\nIs OpenCms running?\n\n" + e.getMessage(),
+						"OpenCms Publish Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 			}
 		}
 	}

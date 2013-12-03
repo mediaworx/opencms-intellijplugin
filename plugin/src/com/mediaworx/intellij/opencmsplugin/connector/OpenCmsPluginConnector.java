@@ -96,15 +96,19 @@ public class OpenCmsPluginConnector {
 		publishResources(resourcePaths);
 	}
 
-	public void publishResources(List<String> resourcePaths) throws IOException {
+	public boolean publishResources(List<String> resourcePaths) throws IOException {
 		String response = getActionResponseString(resourcePaths, ACTION_PUBLISH);
 		if (response == null) {
-			return;
+			return false;
 		}
 		response = response.trim();
 		if (!response.equals("OK")) {
 			Messages.showDialog("There were warnings during publish.\nCheck the OpenCms log file.\n\n" + response,
-					"Publishing resources", new String[]{"Ok"}, 0, Messages.getWarningIcon());
+					"Publishing Resources", new String[]{"Ok"}, 0, Messages.getWarningIcon());
+			return false;
+		}
+		else {
+			return true;
 		}
 	}
 
