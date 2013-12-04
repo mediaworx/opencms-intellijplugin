@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsSyncAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsSyncAction.class);

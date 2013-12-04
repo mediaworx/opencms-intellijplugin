@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 
+@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsSyncAllAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsSyncAllAction.class);

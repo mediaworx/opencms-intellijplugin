@@ -10,6 +10,7 @@ import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsSyncOpenTabsAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsSyncOpenTabsAction.class);

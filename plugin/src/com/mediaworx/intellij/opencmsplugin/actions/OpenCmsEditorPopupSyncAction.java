@@ -7,6 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 
 /** defines the action for the editor popup menu */
+@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsEditorPopupSyncAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsEditorPopupSyncAction.class);

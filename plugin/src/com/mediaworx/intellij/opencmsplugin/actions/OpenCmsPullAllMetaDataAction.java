@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
+@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPullAllMetaDataAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPullAllMetaDataAction.class);

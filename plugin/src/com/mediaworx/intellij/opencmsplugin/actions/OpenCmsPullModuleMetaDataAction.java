@@ -10,6 +10,7 @@ import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncJob;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPullModuleMetaDataAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPullModuleMetaDataAction.class);

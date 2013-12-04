@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsMenu extends DefaultActionGroup {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsMenu.class);
