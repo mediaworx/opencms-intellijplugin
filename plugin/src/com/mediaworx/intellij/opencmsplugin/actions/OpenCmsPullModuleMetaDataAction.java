@@ -47,6 +47,8 @@ public class OpenCmsPullModuleMetaDataAction extends OpenCmsPluginAction {
 
 		super.update(event);
 
+		event.getPresentation().setText("OpenCms: _Pull Meta Data (select Modules to use this option)");
+
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		if (!config.isPluginConnectorEnabled() || !config.isPullMetadataEnabled()) {
 			event.getPresentation().setEnabled(false);
@@ -72,6 +74,9 @@ public class OpenCmsPullModuleMetaDataAction extends OpenCmsPluginAction {
 		}
 
 		if (enableAction) {
+			FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
+			fileTypeCounter.count(selectedFiles);
+			event.getPresentation().setText("OpenCms: _Pull Meta Data for selected " + fileTypeCounter.getEntityNames());
 			event.getPresentation().setEnabled(true);
 		}
 		else {

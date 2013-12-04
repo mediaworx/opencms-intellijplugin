@@ -37,6 +37,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private static final String MENU_PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
 	private static final String MENU_PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
 
+	private static final String PROJECT_POPUP_GROUP_ID = "OpenCmsPlugin.ProjectPopupGroup";
 	private static final String PROJECT_POPUP_SYNC_ID = "OpenCmsPlugin.ProjectPopupSyncAction";
 	private static final String PROJECT_POPUP_PULL_METADATA_ID = "OpenCmsPlugin.ProjectPopupPullModuleMetaDataAction";
 
@@ -166,13 +167,19 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerProjectPopupActions() {
-		DefaultActionGroup projectPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_PROJECT_VIEW_POPUP);
 
-		AnAction projectPopupSyncAction = actionManager.getAction(PROJECT_POPUP_SYNC_ID);
-		if (projectPopupSyncAction == null) {
-			addAction(projectPopupMenu, PROJECT_POPUP_SYNC_ID, new OpenCmsSyncAction(), "OpenCms: Sync selected Modules/Folders/Files", MENU_ICON, new Constraints(Anchor.BEFORE, "RevealIn"));
-			addAction(projectPopupMenu, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "OpenCms: Pull meta data for selected modules", MENU_ICON, new Constraints(Anchor.AFTER, PROJECT_POPUP_SYNC_ID));
-			projectPopupMenu.add(Separator.getInstance(), new Constraints(Anchor.BEFORE, "RevealIn"));
+		DefaultActionGroup projectPopupOpenCmsGroup = (DefaultActionGroup)actionManager.getAction(PROJECT_POPUP_GROUP_ID);
+
+		if (projectPopupOpenCmsGroup == null) {
+			DefaultActionGroup projectPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_PROJECT_VIEW_POPUP);
+
+			projectPopupOpenCmsGroup = new DefaultActionGroup();
+			projectPopupOpenCmsGroup.setPopup(true);
+			addAction(projectPopupMenu, PROJECT_POPUP_GROUP_ID, projectPopupOpenCmsGroup, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "RevealIn"));
+			projectPopupMenu.add(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_GROUP_ID));
+
+			addAction(projectPopupOpenCmsGroup, PROJECT_POPUP_SYNC_ID, new OpenCmsSyncAction(), "OpenCms: _Sync selected Modules/Folders/Files");
+			addAction(projectPopupOpenCmsGroup, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "OpenCms: _Pull Meta Data for selected Modules");
 		}
 	}
 
