@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OpenCmsPluginConnector {
 
@@ -94,9 +95,13 @@ public class OpenCmsPluginConnector {
 		return getActionResponseMap(moduleNames, ACTION_MODULEMANIFESTS);
 	}
 
-	public boolean publishResources(List<String> resourcePaths) throws IOException {
+	public boolean publishResources(List<String> resourcePaths, boolean publishSubResources) throws IOException {
 		message = null;
-		String response = getActionResponseString(resourcePaths, ACTION_PUBLISH);
+
+		Map<String, String> additionalParams = new HashMap<String, String>();
+		additionalParams.put("publishSubResources", String.valueOf(publishSubResources));
+
+		String response = getActionResponseString(resourcePaths, ACTION_PUBLISH, additionalParams);
 		if (response == null) {
 			return false;
 		}
@@ -110,7 +115,7 @@ public class OpenCmsPluginConnector {
 		}
 	}
 
-	public String getActionResponseString(List<String> identifiers, String action) throws IOException {
+	public String getActionResponseString(List<String> identifiers, String action, Map<String, String> additionalParameters) throws IOException {
 
 		HttpPost httpPost = new HttpPost(connectorUrl);
 
@@ -118,7 +123,12 @@ public class OpenCmsPluginConnector {
 		postParams.add(new BasicNameValuePair("user", user));
 		postParams.add(new BasicNameValuePair("password", password));
 		postParams.add(new BasicNameValuePair("action", action));
-		postParams.add(new BasicNameValuePair("params", getJSONArrayForStringList(identifiers)));
+		if (additionalParameters != null) {
+			for (String key : additionalParameters.keySet()) {
+				postParams.add(new BasicNameValuePair(key, additionalParameters.get(key)));
+			}
+		}
+		postParams.add(new BasicNameValuePair("json", getJSONArrayForStringList(identifiers)));
 
 		httpPost.setEntity(new UrlEncodedFormEntity(postParams, "UTF-8"));
 
@@ -131,6 +141,9 @@ public class OpenCmsPluginConnector {
 			if (entity != null && status >= 200 && status < 300) {
 				return EntityUtils.toString(entity);
 			}
+			else {
+				message = "An invalid http status was returned: " + status;
+			}
 		}
 		finally {
 			response.close();
@@ -142,7 +155,7 @@ public class OpenCmsPluginConnector {
 	public HashMap<String, String> getActionResponseMap(List<String> identifiers, String action) throws IOException {
 
 		HashMap<String, String> resourceInfos = new HashMap<String, String>();
-		String jsonString = getActionResponseString(identifiers, action);
+		String jsonString = getActionResponseString(identifiers, action, null);
 
 		try {
 			JSONArray jsonArray = (JSONArray)jsonParser.parse(jsonString);

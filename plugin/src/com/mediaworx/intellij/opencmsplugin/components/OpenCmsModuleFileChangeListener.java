@@ -275,7 +275,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 
 		if (dlgStatus == 0) {
 			console.clear();
-			plugin.showToolWindow();
+			plugin.showConsole();
 			for (VfsFileDeleteInfo deleteInfo : vfsFilesToBeDeleted) {
 				console.info("DELETE: " + deleteInfo.vfsPath);
 				getVfsAdapter().deleteResource(deleteInfo.vfsPath);
@@ -311,7 +311,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 
 		if (dlgStatus == 0) {
 			console.clear();
-			plugin.showToolWindow();
+			plugin.showConsole();
 			for (VfsFileMoveInfo moveInfo : vfsFilesToBeMoved) {
 				try {
 					console.info("MOVE: " + moveInfo.oldVfsPath + " to " + moveInfo.newParentPath);
@@ -347,7 +347,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 
 		if (dlgStatus == 0) {
 			console.clear();
-			plugin.showToolWindow();
+			plugin.showConsole();
 			for (VfsFileRenameInfo renameInfo : vfsFilesToBeRenamed) {
 				console.info("RENAME: " + renameInfo.oldVfsPath + " to " + renameInfo.newName);
 				try {
@@ -465,7 +465,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 		if (affectedResourcePaths.size() > 0) {
 			try {
-				if (plugin.getPluginConnector().publishResources(affectedResourcePaths)) {
+				if (plugin.getPluginConnector().publishResources(affectedResourcePaths, false)) {
 					console.info("PUBLISH: A direct publish session was started successfully");
 				}
 				else {

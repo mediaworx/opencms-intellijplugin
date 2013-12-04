@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.mediaworx.intellij.opencmsplugin.sync.VfsFileAnalyzer;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class OpenCmsSyncOpenTabsAction extends OpenCmsPluginAction {
 				FileDocumentManager fileDocManager = FileDocumentManager.getInstance();
 				for (Editor editor : editors) {
 					VirtualFile vf = fileDocManager.getFile(editor.getDocument());
-					if (vf != null && !OpenCmsSyncer.fileOrPathIsIgnored(vf) && plugin.getOpenCmsModules().isIdeaVFileOpenCmsModuleResource(vf)) {
+					if (vf != null && !VfsFileAnalyzer.fileOrPathIsIgnored(vf) && plugin.getOpenCmsModules().isIdeaVFileOpenCmsModuleResource(vf)) {
 						openFiles.add(vf);
 					}
 				}

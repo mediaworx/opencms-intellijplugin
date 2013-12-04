@@ -19,6 +19,7 @@ import org.opencms.report.CmsLogReport;
 import org.opencms.report.I_CmsReport;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletRequest;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class OpenCmsIntelliJConnector {
 	private static final String ACTION_RESOURCEINFOS = "resourceInfos";
 	private static final String ACTION_PUBLISH = "publishResources";
 
+	private ServletRequest request;
 	private ServletOutputStream out;
 	private CmsObject cmsObject;
 	private MetaXmlHelper xmlHelper;
@@ -41,9 +43,10 @@ public class OpenCmsIntelliJConnector {
 	private JSONParser jsonParser;
 
 	String action;
-	String params;
+	String json;
 
 	public OpenCmsIntelliJConnector(PageContext pageContext) throws IOException {
+		request = pageContext.getRequest();
 		out = pageContext.getResponse().getOutputStream();
 
 		CmsFlexController flexController = CmsFlexController.getController(pageContext.getRequest());
@@ -51,11 +54,11 @@ public class OpenCmsIntelliJConnector {
 		xmlHelper = new MetaXmlHelper(cmsObject);
 		jsonParser = new JSONParser();
 
-		action = pageContext.getRequest().getParameter("action");
-		params = pageContext.getRequest().getParameter("params");
+		action = request.getParameter("action");
+		json = request.getParameter("json");
 
-		String user = pageContext.getRequest().getParameter("user");
-		String password = pageContext.getRequest().getParameter("password");
+		String user = request.getParameter("user");
+		String password = request.getParameter("password");
 
 		login(user, password);
 	}
@@ -91,7 +94,7 @@ public class OpenCmsIntelliJConnector {
 
 	@SuppressWarnings("unchecked")
 	private void streamModuleManifestsOrResourceInfos(boolean isModuleManifest) {
-		String[] ids = getStringArrayFromJSON(params);
+		String[] ids = getStringArrayFromJSON(json);
 		if (ids == null) {
 			return;
 		}
@@ -124,9 +127,10 @@ public class OpenCmsIntelliJConnector {
 
 	private void publishResources() {
 
-		LOG.info("IntelliJ triggered publish. Publishing the following resources:");
+		LOG.info("IntelliJ triggered publish. Publishing the following resources (if necessary):");
 
-		String[] resourcePaths = getStringArrayFromJSON(params);
+		String[] resourcePaths = getStringArrayFromJSON(json);
+		boolean publishSubResources = "true".equals(request.getParameter("publishSubResources"));
 
 		List<CmsResource> publishResources = new ArrayList<CmsResource>(resourcePaths.length);
 		boolean hasWarnings = false;
@@ -154,7 +158,7 @@ public class OpenCmsIntelliJConnector {
 				CmsPublishManager publishManager = OpenCms.getPublishManager();
 				CmsPublishList publishList;
 				try {
-					publishList = publishManager.getPublishList(cmsObject, publishResources, false, false);
+					publishList = publishManager.getPublishList(cmsObject, publishResources, false, publishSubResources);
 				}
 				catch (CmsException e) {
 					String message = "Error retrieving CmsPublishList from OpenCms";

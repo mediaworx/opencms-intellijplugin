@@ -3,8 +3,6 @@ package com.mediaworx.intellij.opencmsplugin.components;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.keymap.Keymap;
-import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -20,8 +18,6 @@ import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 public class OpenCmsPlugin implements ProjectComponent {
 
@@ -31,30 +27,21 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
 
-	private static final String MENU_SYNC_ID = "OpenCmsPlugin.SyncAction";
-	private static final String MENU_SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
-	private static final String MENU_SYNC_ALL_ID = "OpenCmsPlugin.SyncAllAction";
-	private static final String MENU_PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
-	private static final String MENU_PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
-
 	private static final String PROJECT_POPUP_GROUP_ID = "OpenCmsPlugin.ProjectPopupGroup";
 	private static final String PROJECT_POPUP_SYNC_ID = "OpenCmsPlugin.ProjectPopupSyncAction";
 	private static final String PROJECT_POPUP_PULL_METADATA_ID = "OpenCmsPlugin.ProjectPopupPullModuleMetaDataAction";
+	public static final String PROJECT_POPUP_PUBLISH_ID = "OpenCmsPlugin.ProjectPopupPublishAction";
 
+	private static final String EDITOR_POPUP_GROUP_ID = "OpenCmsPlugin.EditorPopupGroup";
 	private static final String EDITOR_POPUP_SYNC_ID = "OpenCmsPlugin.EditorPopupSyncAction";
+	public static final String EDITOR_POPUP_PUBLISH_ID = "OpenCmsPlugin.EditorPopupPublishAction";
 
-	private static final String TABS_POPUP_SYNC_ID = "OpenCmsPlugin.TabsPopupSyncAction";
-	private static final String TABS_POPUP_SYNC_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupSyncOpenTabsAction";
+	private static final String TAB_POPUP_GROUP_ID = "OpenCmsPlugin.TabsPopupGroup";
+	private static final String TAB_POPUP_SYNC_ID = "OpenCmsPlugin.TabsPopupSyncAction";
+	private static final String TAB_POPUP_SYNC_OPEN_TAB_ID = "OpenCmsPlugin.TabsPopupSyncOpenTabsAction";
+	public static final String TAB_POPUP_PUBLISH_ID = "OpenCmsPlugin.TabsPopupPublishAction";
+	public static final String TAB_POPUP_PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupPublishOpenTabsAction";
 
-	public static final KeyStroke COMMON_FIRST_KEYSTROKE = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK + KeyEvent.ALT_MASK);
-	private static final Shortcut MENU_SYNC_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0));
-	private static final Shortcut MENU_SYNC_SHORTCUT2 = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK), null);
-	private static final Shortcut MENU_SYNC_OPEN_TABS_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_T, 0));
-	private static final Shortcut MENU_SYNC_ALL_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_A, 0));
-	private static final Shortcut MENU_PULL_MODULE_METADATA_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_P, 0));
-	private static final Shortcut MENU_PULL_ALL_METADATA_SHORTCUT = new KeyboardShortcut(COMMON_FIRST_KEYSTROKE, KeyStroke.getKeyStroke(KeyEvent.VK_M, 0));
-
-	private final ArrayList<String> shortcutActionIds = new ArrayList<String>();
 	private static final Icon MENU_ICON = new ImageIcon(OpenCmsPlugin.class.getResource("/icons/opencms_menu.png"));
 
 	private Project project;
@@ -62,11 +49,11 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private OpenCmsModules openCmsModules;
 	private VfsAdapter vfsAdapter;
 	private OpenCmsPluginConfigurationData config;
-	private Keymap keymap;
 	private OpenCmsPluginConnector pluginConnector;
 	private ToolWindow toolWindow;
 	private OpenCmsToolWindowConsole console;
 	private ActionManager actionManager;
+	private OpenCmsMenu openCmsMenu;
 
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
@@ -82,37 +69,16 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public void initComponent() {
 		LOG.warn("initComponent called, project: " + project.getName());
 		config = project.getComponent(OpenCmsProjectConfigurationComponent.class).getConfigurationData();
-		keymap = KeymapManager.getInstance().getActiveKeymap();
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
 
 			if (config.isPluginConnectorEnabled()) {
 				pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword());
 			}
-			registerKeyboardShortcuts();
 			registerActions();
 		}
 		else {
-			unregisterShortcuts();
 			unregisterActions();
-		}
-	}
-
-	private void registerKeyboardShortcuts() {
-		if (keymap.getShortcuts(MENU_SYNC_ID).length == 0) {
-			registerShortcut(MENU_SYNC_ID, MENU_SYNC_SHORTCUT);
-			registerShortcut(MENU_SYNC_ID, MENU_SYNC_SHORTCUT2);
-			registerShortcut(MENU_SYNC_OPEN_TABS_ID, MENU_SYNC_OPEN_TABS_SHORTCUT);
-			registerShortcut(MENU_SYNC_ALL_ID, MENU_SYNC_ALL_SHORTCUT);
-		}
-		registerShortcut(MENU_PULL_MODULE_METADATA_ID, MENU_PULL_MODULE_METADATA_SHORTCUT);
-		registerShortcut(MENU_PULL_ALL_METADATA_ID, MENU_PULL_ALL_METADATA_SHORTCUT);
-	}
-
-	private void registerShortcut(String actionId, Shortcut shortcut) {
-		keymap.addShortcut(actionId, shortcut);
-		if (!shortcutActionIds.contains(actionId)) {
-			shortcutActionIds.add(actionId);
 		}
 	}
 
@@ -147,84 +113,80 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerMainMenuActions() {
-		OpenCmsMenu openCmsMenu = (OpenCmsMenu)actionManager.getAction(OPENCMS_MENU_ID);
+		openCmsMenu = (OpenCmsMenu)actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
-			openCmsMenu = new OpenCmsMenu("_OpenCms", false);
+			openCmsMenu = new OpenCmsMenu(this, "_OpenCms", false);
 			actionManager.registerAction(OPENCMS_MENU_ID, openCmsMenu);
 			mainMenu.addAction(openCmsMenu, new Constraints(Anchor.BEFORE, "HelpMenu"));
-
-			addAction(openCmsMenu, MENU_SYNC_ID, new OpenCmsSyncAction(), "_Sync selected Modules/Folders/Files");
-			addAction(openCmsMenu, MENU_SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenTabsAction(), "Sync all open Editor _Tabs");
-			addAction(openCmsMenu, MENU_SYNC_ALL_ID, new OpenCmsSyncAllAction(), "Sync _all Modules");
-
-			openCmsMenu.add(Separator.getInstance());
-			addAction(openCmsMenu, MENU_PULL_MODULE_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
-			addAction(openCmsMenu, MENU_PULL_ALL_METADATA_ID, new OpenCmsPullAllMetaDataAction(), "Pull all _Meta Data");
-
-			openCmsMenu.add(Separator.getInstance());
 		}
 	}
 
 	private void registerProjectPopupActions() {
 
-		DefaultActionGroup projectPopupOpenCmsGroup = (DefaultActionGroup)actionManager.getAction(PROJECT_POPUP_GROUP_ID);
+		DefaultActionGroup group = (DefaultActionGroup)actionManager.getAction(PROJECT_POPUP_GROUP_ID);
 
-		if (projectPopupOpenCmsGroup == null) {
+		if (group == null) {
 			DefaultActionGroup projectPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_PROJECT_VIEW_POPUP);
 
-			projectPopupOpenCmsGroup = new DefaultActionGroup();
-			projectPopupOpenCmsGroup.setPopup(true);
-			addAction(projectPopupMenu, PROJECT_POPUP_GROUP_ID, projectPopupOpenCmsGroup, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "RevealIn"));
+			group = new DefaultActionGroup();
+			group.setPopup(true);
+			addAction(projectPopupMenu, PROJECT_POPUP_GROUP_ID, group, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "RevealIn"));
 			projectPopupMenu.add(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_GROUP_ID));
 
-			addAction(projectPopupOpenCmsGroup, PROJECT_POPUP_SYNC_ID, new OpenCmsSyncAction(), "OpenCms: _Sync selected Modules/Folders/Files");
-			addAction(projectPopupOpenCmsGroup, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "OpenCms: _Pull Meta Data for selected Modules");
+			addAction(group, PROJECT_POPUP_SYNC_ID, new OpenCmsSyncAction(), "_Sync selected Modules/Folders/Files");
+			addAction(group, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
+			addAction(group, PROJECT_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish selected Modules/Folders/Files");
 		}
 	}
 
 	private void registerEditorPopupActions() {
-		DefaultActionGroup editorPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_POPUP);
-		AnAction editorPopupSyncAction = actionManager.getAction(EDITOR_POPUP_SYNC_ID);
-		if (editorPopupSyncAction == null) {
-			addAction(editorPopupMenu, EDITOR_POPUP_SYNC_ID, new OpenCmsEditorPopupSyncAction(), "OpenCms: Sync File", MENU_ICON, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
-			editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_SYNC_ID));
+		DefaultActionGroup group = (DefaultActionGroup)actionManager.getAction(EDITOR_POPUP_GROUP_ID);
+
+		if (group == null) {
+
+			DefaultActionGroup editorPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_POPUP);
+
+			group = new DefaultActionGroup();
+			group.setPopup(true);
+			addAction(editorPopupMenu, EDITOR_POPUP_GROUP_ID, group, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
+			editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_GROUP_ID));
+
+			addAction(group, EDITOR_POPUP_SYNC_ID, new OpenCmsEditorPopupSyncAction(), "_Sync File");
+			addAction(group, EDITOR_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish selected Modules/Folders/Files");
 		}
 	}
 
 	private void registerEditorTabPopupActions() {
-		DefaultActionGroup tabPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_TAB_POPUP);
+		DefaultActionGroup group = (DefaultActionGroup)actionManager.getAction(TAB_POPUP_GROUP_ID);
 
-		AnAction editorTabsSyncAction = actionManager.getAction(TABS_POPUP_SYNC_ID);
-		if (editorTabsSyncAction == null) {
-			addAction(tabPopupMenu, TABS_POPUP_SYNC_ID, new OpenCmsSyncAction(), "OpenCms: Sync File", MENU_ICON);
-			addAction(tabPopupMenu, TABS_POPUP_SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenTabsAction(), "OpenCms: Sync all open Tabs", MENU_ICON);
-			tabPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, TABS_POPUP_SYNC_ID));
-		}
-	}
+		if (group == null) {
 
-	private void unregisterShortcuts() {
-		for (String actionId : shortcutActionIds) {
-			keymap.removeAllActionShortcuts(actionId);
+			DefaultActionGroup tabPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_TAB_POPUP);
+
+			group = new DefaultActionGroup();
+			group.setPopup(true);
+			tabPopupMenu.addAction(Separator.getInstance());
+			addAction(tabPopupMenu, TAB_POPUP_GROUP_ID, group, "_OpenCms", MENU_ICON);
+
+			addAction(group, TAB_POPUP_SYNC_ID, new OpenCmsSyncAction(), "_Sync File");
+			addAction(group, TAB_POPUP_SYNC_OPEN_TAB_ID, new OpenCmsSyncOpenTabsAction(), "Sync all open Editor _Tabs");
+			addAction(group, TAB_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish selected Modules/Folders/Files");
+			addAction(group, TAB_POPUP_PUBLISH_OPEN_TABS_ID, new OpenCmsPublishAction(), "Publish all open Editor Tabs");
 		}
-		shortcutActionIds.clear();
 	}
 
 	private void unregisterActions() {
 		ActionManager actionManager = ActionManager.getInstance();
-		actionManager.unregisterAction(MENU_SYNC_ID);
-		actionManager.unregisterAction(MENU_SYNC_OPEN_TABS_ID);
-		actionManager.unregisterAction(MENU_SYNC_ALL_ID);
-		actionManager.unregisterAction(MENU_PULL_MODULE_METADATA_ID);
-		actionManager.unregisterAction(MENU_PULL_ALL_METADATA_ID);
+		openCmsMenu.unregisterActions();
 		actionManager.unregisterAction(OPENCMS_MENU_ID);
 		actionManager.unregisterAction(PROJECT_POPUP_SYNC_ID);
 		actionManager.unregisterAction(PROJECT_POPUP_PULL_METADATA_ID);
 
 		actionManager.unregisterAction(EDITOR_POPUP_SYNC_ID);
 
-		actionManager.unregisterAction(TABS_POPUP_SYNC_ID);
-		actionManager.unregisterAction(TABS_POPUP_SYNC_OPEN_TABS_ID);
+		actionManager.unregisterAction(TAB_POPUP_SYNC_ID);
+		actionManager.unregisterAction(TAB_POPUP_SYNC_OPEN_TAB_ID);
 	}
 
 	public void disposeComponent() {
@@ -287,7 +249,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		return toolWindow;
 	}
 
-	public void showToolWindow() {
+	public void showConsole() {
 		if (toolWindow == null || !toolWindow.isActive()) {
 			getToolWindow().activate(null);
 		}

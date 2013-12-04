@@ -66,7 +66,7 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 				}
 			}
 
-			String actionText = getActionText(event, fileTypeCounter);
+			String actionText = "_Sync selected " + fileTypeCounter.getEntityNames();
 			event.getPresentation().setText(actionText);
 			if (enableAction) {
 				event.getPresentation().setEnabled(true);
@@ -75,15 +75,6 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 				event.getPresentation().setEnabled(false);
 			}
 		}
-	}
-
-	private String getActionText(@NotNull AnActionEvent event, FileTypeCounter fileTypeCounter) {
-		StringBuilder actionText = new StringBuilder();
-		if (event.getPlace().equals("ProjectViewPopup")) {
-			actionText.append("OpenCms: ");
-		}
-		actionText.append("_Sync selected ").append(fileTypeCounter.getEntityNames());
-		return actionText.toString();
 	}
 
 }

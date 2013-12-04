@@ -102,7 +102,7 @@ public class SyncJob implements Runnable {
 
 				if (publishList.size() > 0) {
 					try {
-						if (plugin.getPluginConnector().publishResources(publishList)) {
+						if (plugin.getPluginConnector().publishResources(publishList, false)) {
 							console.info("A direct publish session was started successfully");
 						}
 						else {
@@ -111,7 +111,7 @@ public class SyncJob implements Runnable {
 					}
 					catch (IOException e) {
 						LOG.warn("There was an exception while publishing resources after sync", e);
-						console.error("There was an exception while publishing resources after syncing. Please have a look at the OpenCms log file.");
+						console.error("There was an exception while publishing resources after syncing. Is OpenCms running? Please have a look at the OpenCms log file and/or the IntelliJ log file.");
 					}
 				}
 				else {

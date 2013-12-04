@@ -93,7 +93,7 @@ public class OpenCmsSyncer {
 				proceed = dlgStatus == 0;
 			}
 			if (proceed) {
-				plugin.showToolWindow();
+				plugin.showConsole();
 				new Thread(syncJob).start();
 			}
 		}
@@ -114,20 +114,6 @@ public class OpenCmsSyncer {
 			message.append(syncEntity.getSyncAction().getDescription()).append(" ").append(syncEntity.getVfsPath()).append(" ").append(suffix).append("\n");
 		}
 		message.append("\nProceed?");
-	}
-
-	public static boolean fileOrPathIsIgnored(final VirtualFile virtualFile) {
-		final String pathLC = virtualFile.getPath().toLowerCase();
-		return pathLC.contains(".git")
-				|| pathLC.contains(".svn")
-				|| pathLC.contains(".cvs")
-				|| pathLC.contains(".sass-cache")
-				|| virtualFile.getName().equals("#SyncJob.txt")
-				|| virtualFile.getName().equals("sass")
-				|| virtualFile.getName().equals(".config")
-				|| virtualFile.getName().equals("manifest.xml")
-				|| virtualFile.getName().equals("log4j.properties")
-				|| virtualFile.getName().equals(".gitignore");
 	}
 
 	public void setPullMetaDataOnly(boolean pullMetaDataOnly) {

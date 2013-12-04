@@ -1,7 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.sync;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -19,27 +18,23 @@ import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import java.io.File;
 import java.util.*;
 
-class SyncFileAnalyzer implements Runnable {
+class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 	private static final Logger LOG = Logger.getInstance(SyncFileAnalyzer.class);
 
-	private OpenCmsPlugin plugin;
-	private final VirtualFile[] syncFiles;
-	private final StringBuilder warnings;
-	SyncList syncList;
+	private SyncList syncList;
 	List<OpenCmsModuleResource> moduleResourcesToBePulled;
 
 	private VfsAdapter vfsAdapter;
-	ProgressIndicator progressIndicator;
 
 	private boolean pullAllMetaInformation;
 	private boolean executeSync = true;
 
 	SyncFileAnalyzer(final OpenCmsPlugin plugin, final VirtualFile[] syncFiles, boolean pullAllMetaInformation) throws CmsConnectionException {
-		this.plugin = plugin;
-		this.syncFiles = syncFiles;
+
+		super(plugin, syncFiles);
+
 		this.pullAllMetaInformation = pullAllMetaInformation;
-		warnings = new StringBuilder();
 		syncList = new SyncList();
 		syncList.setPullMetaDataOnly(pullAllMetaInformation);
 
@@ -61,89 +56,43 @@ class SyncFileAnalyzer implements Runnable {
 		progressIndicator.setIndeterminate(true);
 		progressIndicator.setText("Calculating resources to sync, please wait");
 
-		if (syncFiles != null && syncFiles.length > 0) {
-			for (VirtualFile syncFile : syncFiles) {
-				if (progressIndicator.isCanceled()) {
-					executeSync = false;
-					return;
-				}
+		analyzeFiles();
 
-				// file/folder is ignored
-				if (OpenCmsSyncer.fileOrPathIsIgnored(syncFile)) {
-					// do nothing (filter VCS files and OpenCms Sync Metadata)
-					LOG.info("file/folder is ignored");
-					continue;
-				}
-
-				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(syncFile);
-				if (ocmsModule == null) {
-					LOG.info("file/folder is not within a configured OpenCms module, ignore");
-					continue;
-				}
-
-				// it is a folder that is a module root, so sync all corresponding module resources
-				if (syncFile.isDirectory() && ocmsModule.isIdeaVFileModuleRoot(syncFile)) {
-					handleModule(ocmsModule);
-				}
-
-				// file/folder is within a module resource path, handle it
-				else if (ocmsModule.isIdeaVFileModuleResource(syncFile)) {
-					LOG.info("Handling a module resource path, a folder or a file in a module");
-					walkFileTree(ocmsModule, syncFile, FolderSyncMode.AUTO);
-				}
-
-				// if it is a folder that is not a resource path, but within the VFS path ...
-				else if (syncFile.isDirectory()  && ocmsModule.isIdeaVFileInVFSPath(syncFile)) {
-					String relativeFolderPath = syncFile.getPath().substring(ocmsModule.getLocalVfsRoot().length());
-					// ... get all module resources under the folder and add them
-					for (String moduleResource : ocmsModule.getModuleResources()) {
-						// if the module resource is within the selected folder ...
-						if (moduleResource.startsWith(relativeFolderPath)) {
-							// ... handle it
-							handleModuleResourcePath(ocmsModule, moduleResource);
-						}
-					}
-				}
-
-				// file/folder is neither a module resource nor a VFS resource parent, ignore
-				else {
-					warnings.append("Ignoring '").append(syncFile.getPath()).append("' (not a module path).\n");
-					LOG.info("File is not in the sync path, ignore");
-				}
+		if (!progressIndicator.isCanceled()) {
+			if (moduleResourcesToBePulled != null && moduleResourcesToBePulled.size() > 0) {
+				handleModuleResourcesToBePulled(moduleResourcesToBePulled);
 			}
 		}
-		if (moduleResourcesToBePulled != null && moduleResourcesToBePulled.size() > 0) {
-			handleModuleResourcesToBePulled(moduleResourcesToBePulled);
-		}
-		if (progressIndicator.isCanceled()) {
+		else {
 			executeSync = false;
 		}
 	}
-
 
 	boolean isExecuteSync() {
 		return executeSync;
 	}
 
-	private void handleModule(OpenCmsModule ocmsModule) {
-		for (String resourcePath : ocmsModule.getModuleResources()) {
-			handleModuleResourcePath(ocmsModule, resourcePath);
-		}
+	protected void handleModule(OpenCmsModule ocmsModule) {
+		super.handleModule(ocmsModule);
 		syncList.setSyncModuleMetaData(true);
 		syncList.addOcmsModule(ocmsModule);
 	}
 
-	private void handleModuleResourcePath(OpenCmsModule ocmsModule, String resourcePath) {
+	protected void handleModuleResourcePath(OpenCmsModule ocmsModule, String resourcePath) {
 		LOG.info("resource path: " + ocmsModule.getLocalVfsRoot() + resourcePath);
 		VirtualFile resourceFile = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getLocalVfsRoot() + resourcePath);
 		if (resourceFile != null) {
 			LOG.info("vFolder path: " + resourceFile.getPath());
-			walkFileTree(ocmsModule, resourceFile, FolderSyncMode.AUTO);
+			handleModuleResource(ocmsModule, resourceFile);
 		}
 		else {
 			LOG.info("Resource path doesn't exist in the FS, it has to be pulled from the VFS");
 			moduleResourcesToBePulled.add(new OpenCmsModuleResource(ocmsModule, resourcePath));
 		}
+	}
+
+	protected void handleModuleResource(OpenCmsModule ocmsModule, VirtualFile file) {
+		walkFileTree(ocmsModule, file, FolderSyncMode.AUTO);
 	}
 
 	// TODO: handle cases where a folder on the vfs has the same name as a file on the rfs or vice versa
@@ -154,7 +103,7 @@ class SyncFileAnalyzer implements Runnable {
 			return;
 		}
 
-		if (OpenCmsSyncer.fileOrPathIsIgnored(ideaVFile)) {
+		if (fileOrPathIsIgnored(ideaVFile)) {
 			LOG.info("File is ignored: " + ideaVFile.getPath() + " " + ideaVFile.getName());
 			return;
 		}
@@ -472,14 +421,6 @@ class SyncFileAnalyzer implements Runnable {
 				break;
 		}
 		return syncAction;
-	}
-
-	boolean hasWarnings() {
-		return warnings.length() > 0;
-	}
-
-	StringBuilder getWarnings() {
-		return warnings;
 	}
 
 	SyncList getSyncList() {
