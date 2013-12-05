@@ -2,7 +2,7 @@ package com.mediaworx.intellij.opencmsplugin.connector;
 
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.mediaworx.intellij.opencmsplugin.entities.OpenCmsModuleResource;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleResource;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;

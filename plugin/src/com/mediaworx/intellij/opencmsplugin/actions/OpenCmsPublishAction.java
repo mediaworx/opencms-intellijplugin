@@ -3,21 +3,18 @@ package com.mediaworx.intellij.opencmsplugin.actions;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMenu;
+import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
+import com.mediaworx.intellij.opencmsplugin.actions.tools.FileTypeCounter;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.connector.PublishFileAnalyzer;
-import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -26,10 +23,10 @@ public class OpenCmsPublishAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPublishAction.class);
 
-	private static final HashSet<String> SYNC_SELECTED_ACTION_IDS = new HashSet<String>();
+	private static final HashSet<String> PUBLISH_SELECTED_ACTION_IDS = new HashSet<String>();
 	static {
-		SYNC_SELECTED_ACTION_IDS.add(OpenCmsMenu.PUBLISH_ID);
-		SYNC_SELECTED_ACTION_IDS.add(OpenCmsPlugin.PROJECT_POPUP_PUBLISH_ID);
+		PUBLISH_SELECTED_ACTION_IDS.add(OpenCmsMenu.PUBLISH_ID);
+		PUBLISH_SELECTED_ACTION_IDS.add(OpenCmsPlugin.PROJECT_POPUP_PUBLISH_ID);
 	}
 
 	@Override
@@ -81,33 +78,17 @@ public class OpenCmsPublishAction extends OpenCmsPluginAction {
 	}
 
 	private VirtualFile[] getPublishFileArray(AnActionEvent event) {
-		VirtualFile[] publishFiles = null;
+		VirtualFile[] publishFiles;
 
 		String actionId = event.getActionManager().getId(this);
 
-		// Publish all open Tabs
+		// publish all open Tabs
 		if (actionId.equals(OpenCmsMenu.PUBLISH_OPEN_TABS_ID) || actionId.equals(OpenCmsPlugin.TAB_POPUP_PUBLISH_OPEN_TABS_ID)) {
-			Editor[] editors = EditorFactory.getInstance().getAllEditors();
-			if (editors.length > 0) {
-				ArrayList<VirtualFile> openFiles = new ArrayList<VirtualFile>(editors.length);
-				FileDocumentManager fileDocManager = FileDocumentManager.getInstance();
-				for (Editor editor : editors) {
-					VirtualFile vf = fileDocManager.getFile(editor.getDocument());
-					if (vf != null) {
-						openFiles.add(vf);
-					}
-				}
-				publishFiles = openFiles.toArray(new VirtualFile[openFiles.size()]);
-			}
+			publishFiles = ActionTools.getOpenTabsFileArray();
 		}
-		// Publish all Modules
+		// publish all Modules
 		else if (actionId.equals(OpenCmsMenu.PUBLSH_ALL_MODULES_ID)) {
-			Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
-			publishFiles = new VirtualFile[ocmsModules.size()];
-			int i = 0;
-			for (OpenCmsModule ocmsModule : ocmsModules) {
-				publishFiles[i++] = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getIntelliJModuleRoot());
-			}
+			publishFiles = ActionTools.getAllModulesFileArray(plugin);
 		}
 		// publish specific modules
 		else if (actionId.startsWith(OpenCmsMenu.PUBLISH_MODULE_ID_PREFIX)) {
@@ -132,7 +113,7 @@ public class OpenCmsPublishAction extends OpenCmsPluginAction {
 			return;
 		}
 
-		if (SYNC_SELECTED_ACTION_IDS.contains(actionId)) {
+		if (PUBLISH_SELECTED_ACTION_IDS.contains(actionId)) {
 			boolean enableAction = false;
 			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 

@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.entities;
+package com.mediaworx.intellij.opencmsplugin.opencms;
 
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 

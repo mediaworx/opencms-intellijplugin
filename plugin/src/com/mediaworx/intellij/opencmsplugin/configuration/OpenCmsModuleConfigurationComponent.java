@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.components;
+package com.mediaworx.intellij.opencmsplugin.configuration;
 
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -9,8 +9,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import com.mediaworx.intellij.opencmsplugin.configuration.module.OpenCmsModuleConfigurationData;
-import com.mediaworx.intellij.opencmsplugin.configuration.module.OpenCmsModuleConfigurationForm;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

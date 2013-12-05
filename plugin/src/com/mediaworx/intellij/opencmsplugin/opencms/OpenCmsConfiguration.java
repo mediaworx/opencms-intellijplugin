@@ -1,7 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.opencms;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -65,8 +64,8 @@ public class OpenCmsConfiguration {
 		return parsedModuleConfigurationFile;
 	}
 
-	public List<ModuleExportPoint> getExportPointsForModule(String moduleName) {
-		List<ModuleExportPoint> exportPoints = new ArrayList<ModuleExportPoint>();
+	public List<OpenCmsModuleExportPoint> getExportPointsForModule(String moduleName) {
+		List<OpenCmsModuleExportPoint> exportPoints = new ArrayList<OpenCmsModuleExportPoint>();
 		try {
 			XPath xpath = xPathfactory.newXPath();
 			XPathExpression expr = xpath.compile(String.format(EXPORTPOINT_XPATH, moduleName));
@@ -80,7 +79,7 @@ public class OpenCmsConfiguration {
 				String uri = attr.getNamedItem("uri").getNodeValue();
 				String destination = attr.getNamedItem("destination").getNodeValue();
 				LOG.info("Exportpoint " + (i + 1) + ": uri=" + uri + " - destination=" + destination);
-				exportPoints.add(new ModuleExportPoint(uri, destination));
+				exportPoints.add(new OpenCmsModuleExportPoint(uri, destination));
 			}
 		}
 		catch (Exception e) {

@@ -1,7 +1,6 @@
-package com.mediaworx.intellij.opencmsplugin.configuration.module;
+package com.mediaworx.intellij.opencmsplugin.configuration;
 
-import com.mediaworx.intellij.opencmsplugin.configuration.FormTools;
-import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
+import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

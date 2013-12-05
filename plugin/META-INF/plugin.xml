@@ -13,17 +13,17 @@
 
 	<project-components>
 		<component>
-			<implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsProjectConfigurationComponent
+			<implementation-class>com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationComponent
 			</implementation-class>
 		</component>
 		<component>
-			<implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin</implementation-class>
+			<implementation-class>com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin</implementation-class>
 		</component>
 	</project-components>
 
 	<module-components>
 		<component>
-			<implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsModuleConfigurationComponent
+			<implementation-class>com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationComponent
 			</implementation-class>
 		</component>
 	</module-components>

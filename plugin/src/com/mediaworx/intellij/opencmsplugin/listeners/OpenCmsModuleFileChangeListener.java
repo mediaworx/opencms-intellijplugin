@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.components;
+package com.mediaworx.intellij.opencmsplugin.listeners;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
@@ -12,9 +12,10 @@ import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
-import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
-import com.mediaworx.intellij.opencmsplugin.entities.AutoPublishMode;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
+import com.mediaworx.intellij.opencmsplugin.connector.AutoPublishMode;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFile;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
@@ -380,7 +381,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		deleteExportedFileIfNecessary(oldVfsPath);
 
 		// if the new path is inside an export point, handle it
-		ModuleExportPoint newPathExportPoint = openCmsModules.getExportPointForVfsResource(newVfsPath);
+		OpenCmsModuleExportPoint newPathExportPoint = openCmsModules.getExportPointForVfsResource(newVfsPath);
 		if (newPathExportPoint != null) {
 			File newRfsFile = new File(newRfsPath);
 			String exportTargetPath = config.getWebappRoot() + "/" + newPathExportPoint.getTargetPathForVfsResource(newVfsPath);
@@ -440,7 +441,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 	 * @param vfsPath	   VFS path to check
 	 */
 	private void deleteExportedFileIfNecessary(String vfsPath) {
-		ModuleExportPoint exportPoint = openCmsModules.getExportPointForVfsResource(vfsPath);
+		OpenCmsModuleExportPoint exportPoint = openCmsModules.getExportPointForVfsResource(vfsPath);
 		if (exportPoint != null) {
 			String exportPath = config.getWebappRoot() + "/" + exportPoint.getTargetPathForVfsResource(vfsPath);
 			File exportedFileToBeDeleted = new File(exportPath);

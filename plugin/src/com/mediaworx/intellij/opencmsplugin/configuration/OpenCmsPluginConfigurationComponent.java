@@ -1,12 +1,11 @@
-package com.mediaworx.intellij.opencmsplugin.components;
+package com.mediaworx.intellij.opencmsplugin.configuration;
 
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
-import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationForm;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import org.jetbrains.annotations.Nls;
@@ -23,14 +22,14 @@ import java.util.Collection;
 		@Storage( file = "$PROJECT_CONFIG_DIR$/opencms.xml", scheme = StorageScheme.DIRECTORY_BASED)
 	}
 )
-public class OpenCmsProjectConfigurationComponent implements ProjectComponent, Configurable, PersistentStateComponent<OpenCmsPluginConfigurationData> {
+public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Configurable, PersistentStateComponent<OpenCmsPluginConfigurationData> {
 
    	private OpenCmsPluginConfigurationForm form;
 	private OpenCmsPluginConfigurationData configurationData;
 
 	Project project;
 
-	public OpenCmsProjectConfigurationComponent(Project project) {
+	public OpenCmsPluginConfigurationComponent(Project project) {
 		this.project = project;
 	}
 

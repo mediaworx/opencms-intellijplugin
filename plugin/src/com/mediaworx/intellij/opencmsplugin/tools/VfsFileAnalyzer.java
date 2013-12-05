@@ -1,9 +1,9 @@
-package com.mediaworx.intellij.opencmsplugin.sync;
+package com.mediaworx.intellij.opencmsplugin.tools;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
@@ -104,11 +104,11 @@ public abstract class VfsFileAnalyzer {
 				|| virtualFile.getName().equals(".gitignore");
 	}
 
-	boolean hasWarnings() {
+	public boolean hasWarnings() {
 		return warnings.length() > 0;
 	}
 
-	StringBuilder getWarnings() {
+	public StringBuilder getWarnings() {
 		return warnings;
 	}
 

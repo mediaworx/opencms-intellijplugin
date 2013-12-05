@@ -3,12 +3,14 @@ package com.mediaworx.intellij.opencmsplugin.sync;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
-import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.connector.AutoPublishMode;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.entities.*;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleResource;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.apache.commons.io.FileUtils;
 
@@ -175,14 +177,14 @@ public class SyncJob implements Runnable {
 			return;
 		}
 
-		List<ModuleExportPoint> exportPoints = syncEntity.getOcmsModule().getExportPoints();
+		List<OpenCmsModuleExportPoint> exportPoints = syncEntity.getOcmsModule().getExportPoints();
 
 		if (exportPoints != null) {
 
 			String localModuleVfsRoot = syncEntity.getOcmsModule().getLocalVfsRoot();
 			String entityVfsPath = syncEntity.getVfsPath();
 
-			for (ModuleExportPoint exportPoint : exportPoints) {
+			for (OpenCmsModuleExportPoint exportPoint : exportPoints) {
 				String vfsSource = exportPoint.getVfsSource();
 				if (entityVfsPath.startsWith(vfsSource)) {
 					String destination = exportPoint.getRfsTarget();

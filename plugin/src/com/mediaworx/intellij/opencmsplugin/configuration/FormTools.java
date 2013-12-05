@@ -1,7 +1,7 @@
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
-import com.mediaworx.intellij.opencmsplugin.entities.AutoPublishMode;
-import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
+import com.mediaworx.intellij.opencmsplugin.connector.AutoPublishMode;
+import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;

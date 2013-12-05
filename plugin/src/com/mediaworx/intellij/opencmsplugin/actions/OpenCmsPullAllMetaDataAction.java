@@ -2,6 +2,7 @@ package com.mediaworx.intellij.opencmsplugin.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
+import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
@@ -25,7 +26,7 @@ public class OpenCmsPullAllMetaDataAction extends OpenCmsPluginAction {
 
 			OpenCmsSyncer ocmsSyncer = new OpenCmsSyncer(plugin);
 			ocmsSyncer.setPullMetaDataOnly(true);
-			ocmsSyncer.syncAllModules();
+			ocmsSyncer.syncFiles(ActionTools.getAllModulesFileArray(plugin));
 		}
 		catch (Throwable t) {
 			LOG.warn("Exception in OpenCmsSyncAllAction.actionPerformed: " + t.getMessage(), t);

@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class OpenCmsPluginAction extends AnAction {

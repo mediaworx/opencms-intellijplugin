@@ -1,11 +1,11 @@
-package com.mediaworx.intellij.opencmsplugin.configuration;
+package com.mediaworx.intellij.opencmsplugin.opencms;
 
-public class ModuleExportPoint {
+public class OpenCmsModuleExportPoint {
 
 	private String vfsSource;
 	private String rfsTarget;
 
-	public ModuleExportPoint(String vfsSource, String rfsTarget) {
+	public OpenCmsModuleExportPoint(String vfsSource, String rfsTarget) {
 		this.vfsSource = vfsSource;
 		this.rfsTarget = rfsTarget;
 	}

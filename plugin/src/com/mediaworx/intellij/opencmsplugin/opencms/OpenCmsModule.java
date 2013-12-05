@@ -3,10 +3,9 @@ package com.mediaworx.intellij.opencmsplugin.opencms;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
-import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
-import com.mediaworx.intellij.opencmsplugin.configuration.module.OpenCmsModuleConfigurationData;
-import com.mediaworx.intellij.opencmsplugin.entities.SyncMode;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
 import com.mediaworx.intellij.opencmsplugin.tools.ModuleTools;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public class OpenCmsModule {
 	Module intelliJModule;
 	OpenCmsModuleConfigurationData moduleConfig;
 
-	List<ModuleExportPoint> exportPoints;
+	List<OpenCmsModuleExportPoint> exportPoints;
 	List<String> moduleResources;
 	String intelliJModuleRoot;
 	String localVfsRoot;
@@ -94,7 +93,7 @@ public class OpenCmsModule {
 		return syncMode;
 	}
 
-	public List<ModuleExportPoint> getExportPoints() {
+	public List<OpenCmsModuleExportPoint> getExportPoints() {
 		return exportPoints;
 	}
 

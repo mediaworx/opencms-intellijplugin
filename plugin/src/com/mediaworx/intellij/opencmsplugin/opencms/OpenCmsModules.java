@@ -4,9 +4,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
-import com.mediaworx.intellij.opencmsplugin.configuration.ModuleExportPoint;
-import com.mediaworx.intellij.opencmsplugin.configuration.module.OpenCmsModuleConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 
 import java.util.*;
 
@@ -15,7 +14,7 @@ public class OpenCmsModules {
 	private static final Logger LOG = Logger.getInstance(OpenCmsModules.class);
 
 	OpenCmsPlugin plugin;
-	List<ModuleExportPoint> allExportPoints;
+	List<OpenCmsModuleExportPoint> allExportPoints;
 
 	private Map<Module, OpenCmsModule> OCMSMODULE_BY_IDEAMODULE = new LinkedHashMap<Module, OpenCmsModule>();
 
@@ -75,8 +74,8 @@ public class OpenCmsModules {
 		return ocmsModule.isIdeaVFileModuleResource(file);
 	}
 
-	public ModuleExportPoint getExportPointForVfsResource(String resourcePath) {
-		for (ModuleExportPoint exportPoint : getAllExportPoints()) {
+	public OpenCmsModuleExportPoint getExportPointForVfsResource(String resourcePath) {
+		for (OpenCmsModuleExportPoint exportPoint : getAllExportPoints()) {
 			if (resourcePath.startsWith(exportPoint.getVfsSource())) {
 				return exportPoint;
 			}
@@ -84,13 +83,13 @@ public class OpenCmsModules {
 		return null;
 	}
 
-	public List<ModuleExportPoint> getAllExportPoints() {
+	public List<OpenCmsModuleExportPoint> getAllExportPoints() {
 		if (allExportPoints == null) {
-			allExportPoints = new ArrayList<ModuleExportPoint>();
+			allExportPoints = new ArrayList<OpenCmsModuleExportPoint>();
 			for (OpenCmsModule ocmsModule : getAllModules()) {
-				List<ModuleExportPoint> exportPoints = ocmsModule.getExportPoints();
+				List<OpenCmsModuleExportPoint> exportPoints = ocmsModule.getExportPoints();
 				if (exportPoints != null) {
-					for (ModuleExportPoint exportPoint : exportPoints) {
+					for (OpenCmsModuleExportPoint exportPoint : exportPoints) {
 						allExportPoints.add(exportPoint);
 					}
 				}

@@ -1,10 +1,10 @@
 package com.mediaworx.intellij.opencmsplugin.connector;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
-import com.mediaworx.intellij.opencmsplugin.sync.VfsFileAnalyzer;
+import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
 
 import java.util.ArrayList;
 import java.util.List;

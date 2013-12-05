@@ -1,26 +1,26 @@
-package com.mediaworx.intellij.opencmsplugin.actions;
+package com.mediaworx.intellij.opencmsplugin.actions.tools;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
 import java.util.ArrayList;
 
 public class FileTypeCounter {
 
-	OpenCmsPlugin plugin;
-	int numModules;
-	int numFolders;
-	int numFiles;
+	private OpenCmsPlugin plugin;
+	private int numModules;
+	private int numFolders;
+	private int numFiles;
 
-	FileTypeCounter(OpenCmsPlugin plugin) {
+	public FileTypeCounter(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
 		numModules = 0;
 		numFolders = 0;
 		numFiles = 0;
 	}
 
-	void count(VirtualFile[] selectedFiles) {
+	public void count(VirtualFile[] selectedFiles) {
 		// calculate the number of selected modules, folders and files
 		for (VirtualFile ideaVFile : selectedFiles) {
 
@@ -48,11 +48,11 @@ public class FileTypeCounter {
 		}
 	}
 
-	boolean hasEntities() {
+	public boolean hasEntities() {
 		return numModules + numFolders + numFiles > 0;
 	}
 
-	String getEntityNames() {
+	public String getEntityNames() {
 		StringBuilder entityNames = new StringBuilder();
 		ArrayList<String> textElements = new ArrayList<String>(3);
 		if (numModules + numFolders + numFiles > 0) {

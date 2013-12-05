@@ -1,11 +1,12 @@
-package com.mediaworx.intellij.opencmsplugin.actions;
+package com.mediaworx.intellij.opencmsplugin.actions.groups;
 
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.project.Project;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.actions.*;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
 import javax.swing.*;
@@ -17,9 +18,9 @@ public class OpenCmsMenu extends DefaultActionGroup {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsMenu.class);
 
-	private static final String SYNC_ID = "OpenCmsPlugin.SyncAction";
-	private static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
-	private static final String SYNC_ALL_ID = "OpenCmsPlugin.SyncAllAction";
+	public static final String SYNC_ID = "OpenCmsPlugin.SyncAction";
+	public static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
+	public static final String SYNC_ALL_MODULES_ID = "OpenCmsPlugin.SyncAllAction";
 	private static final String PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
 	private static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
 	public static final String PUBLISH_ID = "OpenCmsPlugin.PublishAction";
@@ -58,8 +59,8 @@ public class OpenCmsMenu extends DefaultActionGroup {
 
 	private void registerActions() {
 		plugin.addAction(this, SYNC_ID, new OpenCmsSyncAction(), "_Sync selected Modules/Folders/Files");
-		plugin.addAction(this, SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenTabsAction(), "Sync all open Editor _Tabs");
-		plugin.addAction(this, SYNC_ALL_ID, new OpenCmsSyncAllAction(), "Sync _all Modules");
+		plugin.addAction(this, SYNC_OPEN_TABS_ID, new OpenCmsSyncAction(), "Sync all open Editor _Tabs");
+		plugin.addAction(this, SYNC_ALL_MODULES_ID, new OpenCmsSyncAction(), "Sync _all Modules");
 
 		add(Separator.getInstance());
 
@@ -153,7 +154,7 @@ public class OpenCmsMenu extends DefaultActionGroup {
 	public void unregisterActions() {
 		actionManager.unregisterAction(SYNC_ID);
 		actionManager.unregisterAction(SYNC_OPEN_TABS_ID);
-		actionManager.unregisterAction(SYNC_ALL_ID);
+		actionManager.unregisterAction(SYNC_ALL_MODULES_ID);
 		actionManager.unregisterAction(PULL_MODULE_METADATA_ID);
 		actionManager.unregisterAction(PULL_ALL_METADATA_ID);
 		unregisterCurrentSyncModuleActions();

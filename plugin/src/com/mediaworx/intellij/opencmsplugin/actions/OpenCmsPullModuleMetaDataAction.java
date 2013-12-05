@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.mediaworx.intellij.opencmsplugin.actions.tools.FileTypeCounter;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
@@ -48,7 +49,7 @@ public class OpenCmsPullModuleMetaDataAction extends OpenCmsPluginAction {
 
 		super.update(event);
 
-		event.getPresentation().setText("_Pull Meta Data (select Modules to use this option)");
+		event.getPresentation().setText("_Pull Meta Data for selected Modules");
 
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		if (!config.isPluginConnectorEnabled() || !config.isPullMetadataEnabled()) {

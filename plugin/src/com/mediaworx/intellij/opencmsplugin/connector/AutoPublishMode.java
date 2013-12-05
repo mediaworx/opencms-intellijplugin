@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.entities;
+package com.mediaworx.intellij.opencmsplugin.connector;
 
 public enum  AutoPublishMode {
 	OFF,

@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.components;
+package com.mediaworx.intellij.opencmsplugin;
 
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
@@ -12,6 +12,9 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.mediaworx.intellij.opencmsplugin.actions.*;
+import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMenu;
+import com.mediaworx.intellij.opencmsplugin.listeners.OpenCmsModuleFileChangeListener;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationComponent;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsConfiguration;
@@ -32,7 +35,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
 
 	private static final String PROJECT_POPUP_GROUP_ID = "OpenCmsPlugin.ProjectPopupGroup";
-	private static final String PROJECT_POPUP_SYNC_ID = "OpenCmsPlugin.ProjectPopupSyncAction";
+	public static final String PROJECT_POPUP_SYNC_ID = "OpenCmsPlugin.ProjectPopupSyncAction";
 	private static final String PROJECT_POPUP_PULL_METADATA_ID = "OpenCmsPlugin.ProjectPopupPullModuleMetaDataAction";
 	public static final String PROJECT_POPUP_PUBLISH_ID = "OpenCmsPlugin.ProjectPopupPublishAction";
 
@@ -42,7 +45,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	private static final String TAB_POPUP_GROUP_ID = "OpenCmsPlugin.TabsPopupGroup";
 	public static final String TAB_POPUP_SYNC_ID = "OpenCmsPlugin.TabsPopupSyncAction";
-	private static final String TAB_POPUP_SYNC_OPEN_TAB_ID = "OpenCmsPlugin.TabsPopupSyncOpenTabsAction";
+	public static final String TAB_POPUP_SYNC_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupSyncOpenTabsAction";
 	public static final String TAB_POPUP_PUBLISH_ID = "OpenCmsPlugin.TabsPopupPublishAction";
 	public static final String TAB_POPUP_PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupPublishOpenTabsAction";
 
@@ -72,7 +75,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public void initComponent() {
 		LOG.warn("initComponent called, project: " + project.getName());
-		config = project.getComponent(OpenCmsProjectConfigurationComponent.class).getConfigurationData();
+		config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getConfigurationData();
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
 
@@ -164,7 +167,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			addAction(editorPopupMenu, EDITOR_POPUP_GROUP_ID, group, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
 			editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_GROUP_ID));
 
-			addAction(group, EDITOR_POPUP_SYNC_ID, new OpenCmsEditorPopupSyncAction(), "_Sync File");
+			addAction(group, EDITOR_POPUP_SYNC_ID, new OpenCmsSyncAction(), "_Sync File");
 			addAction(group, EDITOR_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish File");
 		}
 	}
@@ -182,7 +185,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			addAction(tabPopupMenu, TAB_POPUP_GROUP_ID, group, "_OpenCms", MENU_ICON);
 
 			addAction(group, TAB_POPUP_SYNC_ID, new OpenCmsSyncAction(), "_Sync File");
-			addAction(group, TAB_POPUP_SYNC_OPEN_TAB_ID, new OpenCmsSyncOpenTabsAction(), "Sync all open Editor _Tabs");
+			addAction(group, TAB_POPUP_SYNC_OPEN_TABS_ID, new OpenCmsSyncAction(), "Sync all open Editor _Tabs");
 			addAction(group, TAB_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish File");
 			addAction(group, TAB_POPUP_PUBLISH_OPEN_TABS_ID, new OpenCmsPublishAction(), "Publish all open Editor Tabs");
 		}
@@ -198,7 +201,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		actionManager.unregisterAction(EDITOR_POPUP_SYNC_ID);
 
 		actionManager.unregisterAction(TAB_POPUP_SYNC_ID);
-		actionManager.unregisterAction(TAB_POPUP_SYNC_OPEN_TAB_ID);
+		actionManager.unregisterAction(TAB_POPUP_SYNC_OPEN_TABS_ID);
 	}
 
 	public void disposeComponent() {

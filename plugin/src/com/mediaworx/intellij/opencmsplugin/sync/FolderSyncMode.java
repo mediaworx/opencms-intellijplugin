@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.entities;
+package com.mediaworx.intellij.opencmsplugin.sync;
 
 /**
  * The FolderSyncMode describes the way folders are treated during sync. If a folder exists on both VFS and RFS, its

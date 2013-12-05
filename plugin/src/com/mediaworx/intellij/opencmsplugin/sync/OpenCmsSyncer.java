@@ -4,16 +4,12 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
-import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class OpenCmsSyncer {
@@ -34,29 +30,6 @@ public class OpenCmsSyncer {
 		FileDocumentManager.getInstance().reloadFiles();
 	}
 
-
-	public void syncAllModules() {
-
-		skipConfirmDialog = true;
-
-		Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
-
-		// First put all valid module paths in a List
-		List<VirtualFile> moduleRoots = new ArrayList<VirtualFile>();
-
-		for (OpenCmsModule ocmsModule : ocmsModules) {
-			VirtualFile moduleRoot = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getIntelliJModuleRoot());
-			moduleRoots.add(moduleRoot);
-		}
-
-		// then sync all valid modules
-		try {
-			syncFiles(moduleRoots.toArray(new VirtualFile[moduleRoots.size()]));
-		}
-		catch (Throwable t) {
-			LOG.warn("Exception in OpenCmsSyncAllAction.actionPerformed: " + t.getMessage(), t);
-		}
-	}
 
 	public void syncFiles(VirtualFile[] syncFiles) {
 
@@ -114,6 +87,10 @@ public class OpenCmsSyncer {
 			message.append(syncEntity.getSyncAction().getDescription()).append(" ").append(syncEntity.getVfsPath()).append(" ").append(suffix).append("\n");
 		}
 		message.append("\nProceed?");
+	}
+
+	public void setSkipConfirmDialog(boolean skipConfirmDialog) {
+		this.skipConfirmDialog = skipConfirmDialog;
 	}
 
 	public void setPullMetaDataOnly(boolean pullMetaDataOnly) {
