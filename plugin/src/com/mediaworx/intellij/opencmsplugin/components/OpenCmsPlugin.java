@@ -89,7 +89,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	private void registerActions() {
 		actionManager = ActionManager.getInstance();
-		registerMainMenuActions();
+		registerMainMenu();
 		registerProjectPopupActions();
 		registerEditorPopupActions();
 		registerEditorTabPopupActions();
@@ -124,7 +124,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
-	private void registerMainMenuActions() {
+	private void registerMainMenu() {
 		openCmsMenu = (OpenCmsMenu)actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
