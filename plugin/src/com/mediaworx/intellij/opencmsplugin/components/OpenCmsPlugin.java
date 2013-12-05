@@ -1,12 +1,16 @@
 package com.mediaworx.intellij.opencmsplugin.components;
 
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.util.messages.MessageBus;
+import com.intellij.util.messages.MessageBusConnection;
 import com.mediaworx.intellij.opencmsplugin.actions.*;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
@@ -76,6 +80,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 				pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword());
 			}
 			registerActions();
+			registerFileChangeListener();
 		}
 		else {
 			unregisterActions();
@@ -88,6 +93,13 @@ public class OpenCmsPlugin implements ProjectComponent {
 		registerProjectPopupActions();
 		registerEditorPopupActions();
 		registerEditorTabPopupActions();
+	}
+
+	private void registerFileChangeListener() {
+		MessageBus bus = ApplicationManager.getApplication().getMessageBus();
+		MessageBusConnection connection = bus.connect();
+		OpenCmsModuleFileChangeListener fileChangeListener = new OpenCmsModuleFileChangeListener(this);
+		connection.subscribe(VirtualFileManager.VFS_CHANGES, fileChangeListener);
 	}
 
 	public void addAction(DefaultActionGroup group, String id, AnAction action, String text) {

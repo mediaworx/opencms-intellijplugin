@@ -19,10 +19,6 @@
 		<component>
 			<implementation-class>com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin</implementation-class>
 		</component>
-		<component>
-			<implementation-class>com.mediaworx.intellij.opencmsplugin.components.OnFileChangeComponent
-			</implementation-class>
-		</component>
 	</project-components>
 
 	<module-components>
