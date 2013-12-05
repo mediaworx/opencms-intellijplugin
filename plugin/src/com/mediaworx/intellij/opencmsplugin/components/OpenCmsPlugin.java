@@ -41,7 +41,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public static final String EDITOR_POPUP_PUBLISH_ID = "OpenCmsPlugin.EditorPopupPublishAction";
 
 	private static final String TAB_POPUP_GROUP_ID = "OpenCmsPlugin.TabsPopupGroup";
-	private static final String TAB_POPUP_SYNC_ID = "OpenCmsPlugin.TabsPopupSyncAction";
+	public static final String TAB_POPUP_SYNC_ID = "OpenCmsPlugin.TabsPopupSyncAction";
 	private static final String TAB_POPUP_SYNC_OPEN_TAB_ID = "OpenCmsPlugin.TabsPopupSyncOpenTabsAction";
 	public static final String TAB_POPUP_PUBLISH_ID = "OpenCmsPlugin.TabsPopupPublishAction";
 	public static final String TAB_POPUP_PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupPublishOpenTabsAction";
@@ -165,7 +165,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_GROUP_ID));
 
 			addAction(group, EDITOR_POPUP_SYNC_ID, new OpenCmsEditorPopupSyncAction(), "_Sync File");
-			addAction(group, EDITOR_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish selected Modules/Folders/Files");
+			addAction(group, EDITOR_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish File");
 		}
 	}
 
@@ -183,7 +183,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 			addAction(group, TAB_POPUP_SYNC_ID, new OpenCmsSyncAction(), "_Sync File");
 			addAction(group, TAB_POPUP_SYNC_OPEN_TAB_ID, new OpenCmsSyncOpenTabsAction(), "Sync all open Editor _Tabs");
-			addAction(group, TAB_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish selected Modules/Folders/Files");
+			addAction(group, TAB_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish File");
 			addAction(group, TAB_POPUP_PUBLISH_OPEN_TABS_ID, new OpenCmsPublishAction(), "Publish all open Editor Tabs");
 		}
 	}

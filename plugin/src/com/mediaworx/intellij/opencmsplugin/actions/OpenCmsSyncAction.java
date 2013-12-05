@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.mediaworx.intellij.opencmsplugin.components.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +52,7 @@ public class OpenCmsSyncAction extends OpenCmsPluginAction {
 			return;
 		}
 
-		if (!actionId.startsWith(OpenCmsMenu.SYNC_MODULE_ID_PREFIX)) {
+		if (!actionId.startsWith(OpenCmsMenu.SYNC_MODULE_ID_PREFIX) && !actionId.equals(OpenCmsPlugin.TAB_POPUP_SYNC_ID)) {
 			boolean enableAction = false;
 			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 

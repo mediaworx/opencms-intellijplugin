@@ -1,3 +1,38 @@
+Menu Actions
+	Main Menu
+		Sync selected Modules/Folders/Files (dynamic text depending on selection)
+		Sync all open Editor Tabs
+		Sync all Modules
+		--------
+		[Sync Module X xxx] für alle OpenCmsModule im Projekt
+		--------
+		Pull Meta Data for selected Modules
+		Pull all Meta Data
+		--------
+		Publish selected Modules/Folders/Files
+		Publish all open Editor Tabs
+		Publish all Modules
+		--------
+		[Publish Module X xxx] für alle OpenCmsModule im Projekt
+
+	Project Popup Menu
+		Sync selected Modules/Folders/Files (dynamic text depending on selection)
+		Pull Meta Data for selected Modules
+		Publish selected Modules/Folders/Files
+
+	Editor Popup Menu
+		Sync File
+		Publish File
+
+	Editor Tab Popup Menu
+		Sync File
+		Sync all open Tabs
+		Publish File
+		Publish all open Tabs
+
+
+
+
 SYNC
 	tbd
 

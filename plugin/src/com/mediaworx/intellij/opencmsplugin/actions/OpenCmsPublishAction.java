@@ -30,8 +30,6 @@ public class OpenCmsPublishAction extends OpenCmsPluginAction {
 	static {
 		SYNC_SELECTED_ACTION_IDS.add(OpenCmsMenu.PUBLISH_ID);
 		SYNC_SELECTED_ACTION_IDS.add(OpenCmsPlugin.PROJECT_POPUP_PUBLISH_ID);
-		SYNC_SELECTED_ACTION_IDS.add(OpenCmsPlugin.EDITOR_POPUP_PUBLISH_ID);
-		SYNC_SELECTED_ACTION_IDS.add(OpenCmsPlugin.TAB_POPUP_PUBLISH_ID);
 	}
 
 	@Override
