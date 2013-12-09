@@ -4,17 +4,18 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMenu;
+import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.FileTypeCounter;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
-import com.mediaworx.intellij.opencmsplugin.sync.SyncJob;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("ComponentNotRegistered")
-public class OpenCmsPullModuleMetaDataAction extends OpenCmsPluginAction {
+public class OpenCmsPullMetaDataAction extends OpenCmsPluginAction {
 
-	private static final Logger LOG = Logger.getInstance(OpenCmsPullModuleMetaDataAction.class);
+	private static final Logger LOG = Logger.getInstance(OpenCmsPullMetaDataAction.class);
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
@@ -22,26 +23,31 @@ public class OpenCmsPullModuleMetaDataAction extends OpenCmsPluginAction {
 		super.actionPerformed(event);
 
 		try {
-			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
-
-			cleanupMetaFolders(selectedFiles);
+			VirtualFile[] selectedFiles = getPullFileArray(event);
 
 			OpenCmsSyncer ocmsSyncer = new OpenCmsSyncer(plugin);
 			ocmsSyncer.setPullMetaDataOnly(true);
 			ocmsSyncer.syncFiles(selectedFiles);
 		}
 		catch (Throwable t) {
-			LOG.warn("Exception in OpenCmsSyncAction.actionPerformed: " + t.getMessage(), t);
+			LOG.warn("Exception in OpenCmsPullMetaDataAction.actionPerformed: " + t.getMessage(), t);
 		}
 	}
 
-	private void cleanupMetaFolders(VirtualFile[] moduleFiles) {
-		for (VirtualFile moduleFile : moduleFiles) {
-			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(moduleFile);
-			if (ocmsModule != null) {
-				SyncJob.cleanupModuleMetaFolder(ocmsModule);
-			}
+	private VirtualFile[] getPullFileArray(AnActionEvent event) {
+		VirtualFile[] pullFiles;
+
+		String actionId = event.getActionManager().getId(this);
+
+		// pull all meta data
+		if (actionId.equals(OpenCmsMenu.PULL_ALL_METADATA_ID)) {
+			pullFiles = ActionTools.getAllModulesFileArray(plugin);
 		}
+		// pull meta data for specific module
+		else {
+			pullFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+		}
+		return pullFiles;
 	}
 
 	@Override
@@ -49,11 +55,18 @@ public class OpenCmsPullModuleMetaDataAction extends OpenCmsPluginAction {
 
 		super.update(event);
 
-		event.getPresentation().setText("_Pull Meta Data for selected Modules");
-
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		if (!config.isPluginConnectorEnabled() || !config.isPullMetadataEnabled()) {
+			// Stop if the connector or pulling meta data is disabled
 			event.getPresentation().setEnabled(false);
+			return;
+		}
+
+		String actionId = event.getActionManager().getId(this);
+
+		// there's no update needed for the "pull all meta data" action, the action is always enabled
+		if (actionId.equals(OpenCmsMenu.PULL_ALL_METADATA_ID)) {
+			event.getPresentation().setEnabled(true);
 			return;
 		}
 

@@ -21,8 +21,8 @@ public class OpenCmsMenu extends DefaultActionGroup {
 	public static final String SYNC_ID = "OpenCmsPlugin.SyncAction";
 	public static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
 	public static final String SYNC_ALL_MODULES_ID = "OpenCmsPlugin.SyncAllAction";
-	private static final String PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
-	private static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
+	public static final String PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
+	public static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
 	public static final String PUBLISH_ID = "OpenCmsPlugin.PublishAction";
 	public static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.PublishOpenTabsAction";
 	public static final String SYNC_MODULE_ID_PREFIX = "OpenCmsPlugin.SyncModule.";
@@ -68,8 +68,8 @@ public class OpenCmsMenu extends DefaultActionGroup {
 
 		add(Separator.getInstance());
 
-		plugin.addAction(this, PULL_MODULE_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
-		plugin.addAction(this, PULL_ALL_METADATA_ID, new OpenCmsPullAllMetaDataAction(), "Pull all _Meta Data");
+		plugin.addAction(this, PULL_MODULE_METADATA_ID, new OpenCmsPullMetaDataAction(), "_Pull Meta Data for selected Modules");
+		plugin.addAction(this, PULL_ALL_METADATA_ID, new OpenCmsPullMetaDataAction(), "Pull all _Meta Data");
 
 		add(Separator.getInstance());
 

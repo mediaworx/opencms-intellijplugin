@@ -36,7 +36,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	private static final String PROJECT_POPUP_GROUP_ID = "OpenCmsPlugin.ProjectPopupGroup";
 	public static final String PROJECT_POPUP_SYNC_ID = "OpenCmsPlugin.ProjectPopupSyncAction";
-	private static final String PROJECT_POPUP_PULL_METADATA_ID = "OpenCmsPlugin.ProjectPopupPullModuleMetaDataAction";
+	public static final String PROJECT_POPUP_PULL_METADATA_ID = "OpenCmsPlugin.ProjectPopupPullModuleMetaDataAction";
 	public static final String PROJECT_POPUP_PUBLISH_ID = "OpenCmsPlugin.ProjectPopupPublishAction";
 
 	private static final String EDITOR_POPUP_GROUP_ID = "OpenCmsPlugin.EditorPopupGroup";
@@ -150,7 +150,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			projectPopupMenu.add(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_GROUP_ID));
 
 			addAction(group, PROJECT_POPUP_SYNC_ID, new OpenCmsSyncAction(), "_Sync selected Modules/Folders/Files");
-			addAction(group, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
+			addAction(group, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullMetaDataAction(), "_Pull Meta Data for selected Modules");
 			addAction(group, PROJECT_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish selected Modules/Folders/Files");
 		}
 	}
