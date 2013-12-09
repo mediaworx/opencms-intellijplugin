@@ -28,15 +28,15 @@ public class OpenCmsMenu extends DefaultActionGroup {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsMenu.class);
 
-	public static final String SYNC_SELECTED_ID = "OpenCmsPlugin.SyncAction";
-	public static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
-	public static final String SYNC_ALL_MODULES_ID = "OpenCmsPlugin.SyncAllAction";
-	public static final String PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
-	public static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
-	public static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.PublishAction";
-	public static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.PublishOpenTabsAction";
+	private static final String SYNC_SELECTED_ID = "OpenCmsPlugin.SyncAction";
+	private static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
+	private static final String SYNC_ALL_MODULES_ID = "OpenCmsPlugin.SyncAllAction";
+	private static final String PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
+	private static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
+	private static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.PublishAction";
+	private static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.PublishOpenTabsAction";
 	public static final String SYNC_MODULE_ID_PREFIX = "OpenCmsPlugin.SyncModule.";
-	public static final String PUBLSH_ALL_MODULES_ID = "OpenCmsPlugin.PublishAllModules";
+	private static final String PUBLSH_ALL_MODULES_ID = "OpenCmsPlugin.PublishAllModules";
 	public static final String PUBLISH_MODULE_ID_PREFIX = "OpenCmsPlugin.PublishModule.";
 
 	private static final Shortcut SYNC_SHORTCUT = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK), null);
@@ -49,8 +49,8 @@ public class OpenCmsMenu extends DefaultActionGroup {
 
 	Project currentProject;
 
-	public OpenCmsMenu(OpenCmsPlugin plugin, String shortName, boolean popup) {
-		super(shortName, popup);
+	public OpenCmsMenu(OpenCmsPlugin plugin, String shortName) {
+		super(shortName, false);
 		this.plugin = plugin;
 		actionManager = ActionManager.getInstance();
 		keymap = KeymapManager.getInstance().getActiveKeymap();

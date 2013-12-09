@@ -11,12 +11,10 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
+import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsEditorPopupMenu;
+import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsEditorTabPopupMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMenu;
-import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishOpenEditorTabsAction;
-import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishSelectedAction;
-import com.mediaworx.intellij.opencmsplugin.actions.pullmetadata.OpenCmsPullSelectedModuleMetaDataAction;
-import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncOpenEditorTabsAction;
-import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncSelectedAction;
+import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsProjectPopupMenu;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationComponent;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
@@ -37,21 +35,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public static final String TOOLWINDOW_ID = "OpenCms";
 
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
-
-	private static final String PROJECT_POPUP_GROUP_ID = "OpenCmsPlugin.ProjectPopupGroup";
-	public static final String PROJECT_POPUP_SYNC_SELECTED_ID = "OpenCmsPlugin.ProjectPopupSyncAction";
-	public static final String PROJECT_POPUP_PULL_METADATA_ID = "OpenCmsPlugin.ProjectPopupPullModuleMetaDataAction";
-	public static final String PROJECT_POPUP_PUBLISH_SELECTED_ID = "OpenCmsPlugin.ProjectPopupPublishAction";
-
-	private static final String EDITOR_POPUP_GROUP_ID = "OpenCmsPlugin.EditorPopupGroup";
-	private static final String EDITOR_POPUP_SYNC_FILE_ID = "OpenCmsPlugin.EditorPopupSyncAction";
-	public static final String EDITOR_POPUP_PUBLISH_FILE_ID = "OpenCmsPlugin.EditorPopupPublishAction";
-
-	private static final String TAB_POPUP_GROUP_ID = "OpenCmsPlugin.TabsPopupGroup";
-	public static final String TAB_POPUP_SYNC_FILE_ID = "OpenCmsPlugin.TabsPopupSyncAction";
-	public static final String TAB_POPUP_SYNC_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupSyncOpenTabsAction";
-	public static final String TAB_POPUP_PUBLISH_FILE_ID = "OpenCmsPlugin.TabsPopupPublishAction";
-	public static final String TAB_POPUP_PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupPublishOpenTabsAction";
+	private static final String PROJECT_POPUP_MENU_ID = "OpenCmsPlugin.ProjectPopupMenu";
+	private static final String EDITOR_POPUP_MENU_ID = "OpenCmsPlugin.EditorPopupMenu";
+	private static final String TAB_POPUP_MENU_ID = "OpenCmsPlugin.TabsPopupGroup";
 
 	private static final Icon MENU_ICON = new ImageIcon(OpenCmsPlugin.class.getResource("/icons/opencms_menu.png"));
 
@@ -64,7 +50,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private ToolWindow toolWindow;
 	private OpenCmsToolWindowConsole console;
 	private ActionManager actionManager;
-	private OpenCmsMenu openCmsMenu;
+	private OpenCmsMenu openCmsMainMenu;
+	private OpenCmsProjectPopupMenu openCmsProjectPopupMenu;
+	private OpenCmsEditorPopupMenu openCmsEditorPopupMenu;
+	private OpenCmsEditorTabPopupMenu openCmsEditorTabPopupMenu;
 
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
@@ -97,7 +86,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private void registerActions() {
 		actionManager = ActionManager.getInstance();
 		registerMainMenu();
-		registerProjectPopupActions();
+		registerProjectPopupMenu();
 		registerEditorPopupActions();
 		registerEditorTabPopupActions();
 	}
@@ -132,80 +121,54 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerMainMenu() {
-		openCmsMenu = (OpenCmsMenu)actionManager.getAction(OPENCMS_MENU_ID);
-		if (openCmsMenu == null) {
+		openCmsMainMenu = (OpenCmsMenu)actionManager.getAction(OPENCMS_MENU_ID);
+		if (openCmsMainMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
-			openCmsMenu = new OpenCmsMenu(this, "_OpenCms", false);
-			actionManager.registerAction(OPENCMS_MENU_ID, openCmsMenu);
-			mainMenu.addAction(openCmsMenu, new Constraints(Anchor.BEFORE, "HelpMenu"));
+			openCmsMainMenu = new OpenCmsMenu(this, "_OpenCms");
+			addAction(mainMenu, OPENCMS_MENU_ID, openCmsMainMenu, "_OpenCms", null, new Constraints(Anchor.BEFORE, "HelpMenu"));
 		}
 	}
 
-	private void registerProjectPopupActions() {
-
-		DefaultActionGroup group = (DefaultActionGroup)actionManager.getAction(PROJECT_POPUP_GROUP_ID);
-
-		if (group == null) {
-			DefaultActionGroup projectPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_PROJECT_VIEW_POPUP);
-
-			group = new DefaultActionGroup();
-			group.setPopup(true);
-			addAction(projectPopupMenu, PROJECT_POPUP_GROUP_ID, group, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "RevealIn"));
-			projectPopupMenu.add(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_GROUP_ID));
-
-			addAction(group, PROJECT_POPUP_SYNC_SELECTED_ID, new OpenCmsSyncSelectedAction(), "_Sync selected Modules/Folders/Files");
-			addAction(group, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullSelectedModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
-			addAction(group, PROJECT_POPUP_PUBLISH_SELECTED_ID, new OpenCmsPublishSelectedAction(), "_Publish selected Modules/Folders/Files");
+	private void registerProjectPopupMenu() {
+		openCmsProjectPopupMenu = (OpenCmsProjectPopupMenu)actionManager.getAction(PROJECT_POPUP_MENU_ID);
+		if (openCmsProjectPopupMenu == null) {
+			DefaultActionGroup projectPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_PROJECT_VIEW_POPUP);
+			openCmsProjectPopupMenu = new OpenCmsProjectPopupMenu(this, "_OpenCms");
+			addAction(projectPopup, PROJECT_POPUP_MENU_ID, openCmsProjectPopupMenu, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "RevealIn"));
+			projectPopup.add(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_MENU_ID));
 		}
 	}
 
 	private void registerEditorPopupActions() {
-		DefaultActionGroup group = (DefaultActionGroup)actionManager.getAction(EDITOR_POPUP_GROUP_ID);
-
-		if (group == null) {
-
-			DefaultActionGroup editorPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_POPUP);
-
-			group = new DefaultActionGroup();
-			group.setPopup(true);
-			addAction(editorPopupMenu, EDITOR_POPUP_GROUP_ID, group, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
-			editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_GROUP_ID));
-
-			addAction(group, EDITOR_POPUP_SYNC_FILE_ID, new OpenCmsSyncSelectedAction(), "_Sync File");
-			addAction(group, EDITOR_POPUP_PUBLISH_FILE_ID, new OpenCmsPublishSelectedAction(), "_Publish File");
+		openCmsEditorPopupMenu = (OpenCmsEditorPopupMenu)actionManager.getAction(EDITOR_POPUP_MENU_ID);
+		if (openCmsEditorPopupMenu == null) {
+			DefaultActionGroup editorPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_POPUP);
+			openCmsEditorPopupMenu = new OpenCmsEditorPopupMenu(this, "_OpenCms");
+			addAction(editorPopup, EDITOR_POPUP_MENU_ID, this.openCmsEditorPopupMenu, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
+			editorPopup.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_MENU_ID));
 		}
 	}
 
 	private void registerEditorTabPopupActions() {
-		DefaultActionGroup group = (DefaultActionGroup)actionManager.getAction(TAB_POPUP_GROUP_ID);
-
-		if (group == null) {
-
-			DefaultActionGroup tabPopupMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_TAB_POPUP);
-
-			group = new DefaultActionGroup();
-			group.setPopup(true);
-			tabPopupMenu.addAction(Separator.getInstance());
-			addAction(tabPopupMenu, TAB_POPUP_GROUP_ID, group, "_OpenCms", MENU_ICON);
-
-			addAction(group, TAB_POPUP_SYNC_FILE_ID, new OpenCmsSyncSelectedAction(), "_Sync File");
-			addAction(group, TAB_POPUP_SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenEditorTabsAction(), "Sync all open Editor _Tabs");
-			addAction(group, TAB_POPUP_PUBLISH_FILE_ID, new OpenCmsPublishSelectedAction(), "_Publish File");
-			addAction(group, TAB_POPUP_PUBLISH_OPEN_TABS_ID, new OpenCmsPublishOpenEditorTabsAction(), "Publish all open Editor Tabs");
+		openCmsEditorTabPopupMenu = (OpenCmsEditorTabPopupMenu)actionManager.getAction(TAB_POPUP_MENU_ID);
+		if (openCmsEditorTabPopupMenu == null) {
+			DefaultActionGroup editorTabPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_TAB_POPUP);
+			openCmsEditorTabPopupMenu = new OpenCmsEditorTabPopupMenu(this, "_OpenCms");
+			editorTabPopup.addAction(Separator.getInstance());
+			addAction(editorTabPopup, TAB_POPUP_MENU_ID, openCmsEditorTabPopupMenu, "_OpenCms", MENU_ICON);
 		}
 	}
 
 	private void unregisterActions() {
 		ActionManager actionManager = ActionManager.getInstance();
-		openCmsMenu.unregisterActions();
+		openCmsMainMenu.unregisterActions();
 		actionManager.unregisterAction(OPENCMS_MENU_ID);
-		actionManager.unregisterAction(PROJECT_POPUP_SYNC_SELECTED_ID);
-		actionManager.unregisterAction(PROJECT_POPUP_PULL_METADATA_ID);
-
-		actionManager.unregisterAction(EDITOR_POPUP_SYNC_FILE_ID);
-
-		actionManager.unregisterAction(TAB_POPUP_SYNC_FILE_ID);
-		actionManager.unregisterAction(TAB_POPUP_SYNC_OPEN_TABS_ID);
+		openCmsProjectPopupMenu.unregisterActions();
+		actionManager.unregisterAction(PROJECT_POPUP_MENU_ID);
+		openCmsEditorPopupMenu.unregisterActions();
+		actionManager.unregisterAction(EDITOR_POPUP_MENU_ID);
+		openCmsEditorTabPopupMenu.unregisterActions();
+		actionManager.unregisterAction(EDITOR_POPUP_MENU_ID);
 	}
 
 	public void disposeComponent() {
