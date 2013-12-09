@@ -13,6 +13,7 @@ import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.mediaworx.intellij.opencmsplugin.actions.*;
 import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMenu;
+import com.mediaworx.intellij.opencmsplugin.actions.pullmetadata.OpenCmsPullSelectedModuleMetaDataAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncOpenEditorTabsAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncSelectedAction;
 import com.mediaworx.intellij.opencmsplugin.listeners.OpenCmsModuleFileChangeListener;
@@ -152,7 +153,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			projectPopupMenu.add(Separator.getInstance(), new Constraints(Anchor.AFTER, PROJECT_POPUP_GROUP_ID));
 
 			addAction(group, PROJECT_POPUP_SYNC_SELECTED_ID, new OpenCmsSyncSelectedAction(), "_Sync selected Modules/Folders/Files");
-			addAction(group, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullMetaDataAction(), "_Pull Meta Data for selected Modules");
+			addAction(group, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullSelectedModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
 			addAction(group, PROJECT_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish selected Modules/Folders/Files");
 		}
 	}

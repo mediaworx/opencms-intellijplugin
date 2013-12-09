@@ -8,7 +8,8 @@ import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPublishAction;
-import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPullMetaDataAction;
+import com.mediaworx.intellij.opencmsplugin.actions.pullmetadata.OpenCmsPullAllMetaDataAction;
+import com.mediaworx.intellij.opencmsplugin.actions.pullmetadata.OpenCmsPullSelectedModuleMetaDataAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncAllModulesAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncModuleAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncOpenEditorTabsAction;
@@ -74,8 +75,8 @@ public class OpenCmsMenu extends DefaultActionGroup {
 
 		add(Separator.getInstance());
 
-		plugin.addAction(this, PULL_MODULE_METADATA_ID, new OpenCmsPullMetaDataAction(), "_Pull Meta Data for selected Modules");
-		plugin.addAction(this, PULL_ALL_METADATA_ID, new OpenCmsPullMetaDataAction(), "Pull all _Meta Data");
+		plugin.addAction(this, PULL_MODULE_METADATA_ID, new OpenCmsPullSelectedModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
+		plugin.addAction(this, PULL_ALL_METADATA_ID, new OpenCmsPullAllMetaDataAction(), "Pull all _Meta Data");
 
 		add(Separator.getInstance());
 
