@@ -116,9 +116,15 @@ public class OpenCmsPluginConnector {
 	}
 
 	public String getActionResponseString(List<String> identifiers, String action, Map<String, String> additionalParameters) throws IOException {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("requesting connector response");
+			LOG.debug("connectorUrl: " + connectorUrl);
+			LOG.debug("user: " + user);
+			LOG.debug("password: ********");
+			LOG.debug("action: " + action);
+		}
 
 		HttpPost httpPost = new HttpPost(connectorUrl);
-
 		List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 		postParams.add(new BasicNameValuePair("user", user));
 		postParams.add(new BasicNameValuePair("password", password));
@@ -126,9 +132,16 @@ public class OpenCmsPluginConnector {
 		if (additionalParameters != null) {
 			for (String key : additionalParameters.keySet()) {
 				postParams.add(new BasicNameValuePair(key, additionalParameters.get(key)));
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(key + ": " + additionalParameters.get(key));
+				}
 			}
 		}
-		postParams.add(new BasicNameValuePair("json", getJSONArrayForStringList(identifiers)));
+		String json = getJSONArrayForStringList(identifiers);
+		postParams.add(new BasicNameValuePair("json", json));
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("json: " + json);
+		}
 
 		httpPost.setEntity(new UrlEncodedFormEntity(postParams, "UTF-8"));
 
@@ -168,6 +181,7 @@ public class OpenCmsPluginConnector {
 		}
 		catch (ParseException e) {
 			LOG.warn("There was an exception parsing the JSON response for the action " + action, e);
+			LOG.warn("JSON:\n" + jsonString);
 		}
 		return resourceInfos;
 	}
