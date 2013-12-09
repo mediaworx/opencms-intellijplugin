@@ -52,10 +52,7 @@ public class SyncJob implements Runnable {
 		console = plugin.getConsole();
 
 		int step = 1;
-		int numSteps = 0;
-		if (!pullMetadataOnly) {
-			numSteps += 1;
-		}
+		int numSteps = 1;
 		if (config.isPluginConnectorEnabled() && config.isPullMetadataEnabled()) {
 			numSteps += 1;
 		}
@@ -69,6 +66,7 @@ public class SyncJob implements Runnable {
 			numSteps += 1;
 		}
 
+
 		// ######## SYNC FILES / FOLDERS ################################
 		if (!pullMetadataOnly) {
 			console.info("Step " + (step++) + "/" + numSteps + ": Syncing files and folders");
@@ -76,6 +74,14 @@ public class SyncJob implements Runnable {
 				doSync(entity);
 			}
 			console.info("---- Sync finished ----\n");
+		}
+		// ######## OR CLEAN UP META DATA FOLDERS ################################
+		else {
+			console.info("Step " + (step++) + "/" + numSteps + ": Clean meta data folders for affected modules");
+			for (OpenCmsModule ocmsModule : syncList.getOcmsModules()) {
+				console.info("Cleaning meta data folder for " + ocmsModule.getModuleName());
+				cleanupModuleMetaFolder(ocmsModule);
+			}
 		}
 
 		if (syncList.isSyncModuleMetaData()) {
@@ -205,15 +211,7 @@ public class SyncJob implements Runnable {
 		exportList.add(entity);
 	}
 
-	public int numSyncEntities() {
-		return syncList.size();
-	}
-
-	public boolean hasSyncEntities() {
-		return numSyncEntities() > 0;
-	}
-
-	public List<SyncEntity> getRefreshEntityList() {
+	private List<SyncEntity> getRefreshEntityList() {
 		return refreshEntityList;
 	}
 
@@ -543,13 +541,16 @@ public class SyncJob implements Runnable {
 		}
 	}
 
-	public static void cleanupModuleMetaFolder(OpenCmsModule ocmsModule) {
+	public void cleanupModuleMetaFolder(OpenCmsModule ocmsModule) {
 		if (ocmsModule != null) {
 			File metaFolder = new File(ocmsModule.getManifestRoot());
 			if (!metaFolder.isDirectory()) {
 				return;
 			}
 			File[] metaFiles = metaFolder.listFiles();
+			if (metaFiles == null || metaFiles.length == 0) {
+				return;
+			}
 			for (File metaFile : metaFiles) {
 				FileUtils.deleteQuietly(metaFile);
 			}

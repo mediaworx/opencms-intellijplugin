@@ -49,10 +49,9 @@ public class OpenCmsSyncer {
 			return;
 		}
 
-		SyncJob syncJob = new SyncJob(plugin, analyzer.getSyncList());
-		int numSyncEntities = syncJob.numSyncEntities();
+		int numSyncEntities = analyzer.getSyncList().size();
 
-		boolean proceed = syncJob.hasSyncEntities();
+		boolean proceed = numSyncEntities > 0;
 		LOG.info("proceed? " + proceed);
 
 		StringBuilder message = new StringBuilder();
@@ -60,6 +59,7 @@ public class OpenCmsSyncer {
 			message.append("Infos/Warnings during file analysis:\n").append(analyzer.getWarnings().append("\n"));
 		}
 		if (proceed) {
+			SyncJob syncJob = new SyncJob(plugin, analyzer.getSyncList());
 			if (!skipConfirmDialog && !pullMetaDataOnly && ((numSyncEntities == 1 && message.length() > 0) || numSyncEntities > 1)) {
 				assembleConfirmMessage(message, syncJob.getSyncList());
 				int dlgStatus = Messages.showOkCancelDialog(plugin.getProject(), message.toString(), "Start OpenCms VFS Sync?", Messages.getQuestionIcon());
