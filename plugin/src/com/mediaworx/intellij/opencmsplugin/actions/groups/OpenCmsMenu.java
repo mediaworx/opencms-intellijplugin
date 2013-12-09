@@ -5,8 +5,14 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.project.Project;
-import com.mediaworx.intellij.opencmsplugin.actions.*;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
+import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPublishAction;
+import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPullMetaDataAction;
+import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncAllModulesAction;
+import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncModuleAction;
+import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncOpenEditorTabsAction;
+import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncSelectedAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
 import javax.swing.*;
@@ -18,7 +24,7 @@ public class OpenCmsMenu extends DefaultActionGroup {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsMenu.class);
 
-	public static final String SYNC_ID = "OpenCmsPlugin.SyncAction";
+	public static final String SYNC_SELECTED_ID = "OpenCmsPlugin.SyncAction";
 	public static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
 	public static final String SYNC_ALL_MODULES_ID = "OpenCmsPlugin.SyncAllAction";
 	public static final String PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
@@ -52,15 +58,15 @@ public class OpenCmsMenu extends DefaultActionGroup {
 	}
 
 	private void registerKeyboardShortcuts() {
-		if (keymap.getShortcuts(SYNC_ID).length == 0) {
-			keymap.addShortcut(SYNC_ID, SYNC_SHORTCUT);
+		if (keymap.getShortcuts(SYNC_SELECTED_ID).length == 0) {
+			keymap.addShortcut(SYNC_SELECTED_ID, SYNC_SHORTCUT);
 		}
 	}
 
 	private void registerActions() {
-		plugin.addAction(this, SYNC_ID, new OpenCmsSyncAction(), "_Sync selected Modules/Folders/Files");
-		plugin.addAction(this, SYNC_OPEN_TABS_ID, new OpenCmsSyncAction(), "Sync all open Editor _Tabs");
-		plugin.addAction(this, SYNC_ALL_MODULES_ID, new OpenCmsSyncAction(), "Sync _all Modules");
+		plugin.addAction(this, SYNC_SELECTED_ID, new OpenCmsSyncSelectedAction(), "_Sync selected Modules/Folders/Files");
+		plugin.addAction(this, SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenEditorTabsAction(), "Sync all open Editor _Tabs");
+		plugin.addAction(this, SYNC_ALL_MODULES_ID, new OpenCmsSyncAllModulesAction(), "Sync _all Modules");
 
 		add(Separator.getInstance());
 
@@ -117,7 +123,7 @@ public class OpenCmsMenu extends DefaultActionGroup {
 	}
 
 	public void registerSyncModuleAction(OpenCmsModule ocmsModule) {
-		registerModuleAction(ocmsModule, syncModuleActions, new OpenCmsSyncAction(), SYNC_MODULE_ID_PREFIX, "Sync", syncModuleActions.getChildrenCount() < 10);
+		registerModuleAction(ocmsModule, syncModuleActions, new OpenCmsSyncModuleAction(), SYNC_MODULE_ID_PREFIX, "Sync", syncModuleActions.getChildrenCount() < 10);
 	}
 
 	public void registerPublishModuleAction(OpenCmsModule ocmsModule) {
@@ -152,7 +158,7 @@ public class OpenCmsMenu extends DefaultActionGroup {
 	}
 
 	public void unregisterActions() {
-		actionManager.unregisterAction(SYNC_ID);
+		actionManager.unregisterAction(SYNC_SELECTED_ID);
 		actionManager.unregisterAction(SYNC_OPEN_TABS_ID);
 		actionManager.unregisterAction(SYNC_ALL_MODULES_ID);
 		actionManager.unregisterAction(PULL_MODULE_METADATA_ID);

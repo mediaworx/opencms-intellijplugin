@@ -19,7 +19,7 @@ public class OpenCmsSyncer {
 	OpenCmsPlugin plugin;
 	OpenCmsPluginConfigurationData config;
 
-	boolean skipConfirmDialog = false;
+	boolean showConfirmDialog = false;
 	boolean pullMetaDataOnly = false;
 
 	public OpenCmsSyncer(OpenCmsPlugin plugin) {
@@ -60,7 +60,7 @@ public class OpenCmsSyncer {
 		}
 		if (proceed) {
 			SyncJob syncJob = new SyncJob(plugin, analyzer.getSyncList());
-			if (!skipConfirmDialog && !pullMetaDataOnly && ((numSyncEntities == 1 && message.length() > 0) || numSyncEntities > 1)) {
+			if (showConfirmDialog && !pullMetaDataOnly && ((numSyncEntities == 1 && message.length() > 0) || numSyncEntities > 1)) {
 				assembleConfirmMessage(message, syncJob.getSyncList());
 				int dlgStatus = Messages.showOkCancelDialog(plugin.getProject(), message.toString(), "Start OpenCms VFS Sync?", Messages.getQuestionIcon());
 				proceed = dlgStatus == 0;
@@ -89,8 +89,8 @@ public class OpenCmsSyncer {
 		message.append("\nProceed?");
 	}
 
-	public void setSkipConfirmDialog(boolean skipConfirmDialog) {
-		this.skipConfirmDialog = skipConfirmDialog;
+	public void setShowConfirmDialog(boolean showConfirmDialog) {
+		this.showConfirmDialog = showConfirmDialog;
 	}
 
 	public void setPullMetaDataOnly(boolean pullMetaDataOnly) {
