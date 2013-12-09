@@ -7,7 +7,10 @@ import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
-import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPublishAction;
+import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishAllModulesAction;
+import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishModuleAction;
+import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishOpenEditorTabsAction;
+import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishSelectedAction;
 import com.mediaworx.intellij.opencmsplugin.actions.pullmetadata.OpenCmsPullAllMetaDataAction;
 import com.mediaworx.intellij.opencmsplugin.actions.pullmetadata.OpenCmsPullSelectedModuleMetaDataAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncAllModulesAction;
@@ -30,7 +33,7 @@ public class OpenCmsMenu extends DefaultActionGroup {
 	public static final String SYNC_ALL_MODULES_ID = "OpenCmsPlugin.SyncAllAction";
 	public static final String PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
 	public static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
-	public static final String PUBLISH_ID = "OpenCmsPlugin.PublishAction";
+	public static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.PublishAction";
 	public static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.PublishOpenTabsAction";
 	public static final String SYNC_MODULE_ID_PREFIX = "OpenCmsPlugin.SyncModule.";
 	public static final String PUBLSH_ALL_MODULES_ID = "OpenCmsPlugin.PublishAllModules";
@@ -80,9 +83,9 @@ public class OpenCmsMenu extends DefaultActionGroup {
 
 		add(Separator.getInstance());
 
-		plugin.addAction(this, PUBLISH_ID, new OpenCmsPublishAction(), "_Publish selected Modules/Folders/Files");
-		plugin.addAction(this, PUBLISH_OPEN_TABS_ID, new OpenCmsPublishAction(), "Publish all open Editor Tabs");
-		plugin.addAction(this, PUBLSH_ALL_MODULES_ID, new OpenCmsPublishAction(), "Publish all Modules");
+		plugin.addAction(this, PUBLISH_SELECTED_ID, new OpenCmsPublishSelectedAction(), "_Publish selected Modules/Folders/Files");
+		plugin.addAction(this, PUBLISH_OPEN_TABS_ID, new OpenCmsPublishOpenEditorTabsAction(), "Publish all open Editor Tabs");
+		plugin.addAction(this, PUBLSH_ALL_MODULES_ID, new OpenCmsPublishAllModulesAction(), "Publish all Modules");
 
 		add(Separator.getInstance());
 
@@ -128,7 +131,7 @@ public class OpenCmsMenu extends DefaultActionGroup {
 	}
 
 	public void registerPublishModuleAction(OpenCmsModule ocmsModule) {
-		registerModuleAction(ocmsModule, publishModuleActions, new OpenCmsPublishAction(), PUBLISH_MODULE_ID_PREFIX, "Publish", false);
+		registerModuleAction(ocmsModule, publishModuleActions, new OpenCmsPublishModuleAction(), PUBLISH_MODULE_ID_PREFIX, "Publish", false);
 	}
 
 	public void registerModuleAction(OpenCmsModule ocmsModule, DefaultActionGroup group, OpenCmsPluginAction action, String idPrefix, String textPrefix, boolean addShortcut) {
@@ -165,7 +168,7 @@ public class OpenCmsMenu extends DefaultActionGroup {
 		actionManager.unregisterAction(PULL_MODULE_METADATA_ID);
 		actionManager.unregisterAction(PULL_ALL_METADATA_ID);
 		unregisterCurrentSyncModuleActions();
-		actionManager.unregisterAction(PUBLISH_ID);
+		actionManager.unregisterAction(PUBLISH_SELECTED_ID);
 		actionManager.unregisterAction(PUBLISH_OPEN_TABS_ID);
 		actionManager.unregisterAction(PUBLSH_ALL_MODULES_ID);
 		unregisterCurrentPublishModuleActions();

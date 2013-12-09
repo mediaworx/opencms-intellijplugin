@@ -12,8 +12,8 @@ public class OpenCmsSyncModuleAction extends OpenCmsSyncAction {
 
 	@Override
 	protected VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event) {
-		String actionId = event.getActionManager().getId(this);
 		VirtualFile[] syncFiles = new VirtualFile[1];
+		String actionId = event.getActionManager().getId(this);
 		String moduleRoot = actionId.substring(OpenCmsMenu.SYNC_MODULE_ID_PREFIX.length());
 		syncFiles[0] = LocalFileSystem.getInstance().findFileByPath(moduleRoot);
 		return syncFiles;

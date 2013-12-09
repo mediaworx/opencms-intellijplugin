@@ -11,15 +11,16 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
-import com.mediaworx.intellij.opencmsplugin.actions.*;
 import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMenu;
+import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishOpenEditorTabsAction;
+import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishSelectedAction;
 import com.mediaworx.intellij.opencmsplugin.actions.pullmetadata.OpenCmsPullSelectedModuleMetaDataAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncOpenEditorTabsAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncSelectedAction;
-import com.mediaworx.intellij.opencmsplugin.listeners.OpenCmsModuleFileChangeListener;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationComponent;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
+import com.mediaworx.intellij.opencmsplugin.listeners.OpenCmsModuleFileChangeListener;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsConfiguration;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
@@ -40,16 +41,16 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private static final String PROJECT_POPUP_GROUP_ID = "OpenCmsPlugin.ProjectPopupGroup";
 	public static final String PROJECT_POPUP_SYNC_SELECTED_ID = "OpenCmsPlugin.ProjectPopupSyncAction";
 	public static final String PROJECT_POPUP_PULL_METADATA_ID = "OpenCmsPlugin.ProjectPopupPullModuleMetaDataAction";
-	public static final String PROJECT_POPUP_PUBLISH_ID = "OpenCmsPlugin.ProjectPopupPublishAction";
+	public static final String PROJECT_POPUP_PUBLISH_SELECTED_ID = "OpenCmsPlugin.ProjectPopupPublishAction";
 
 	private static final String EDITOR_POPUP_GROUP_ID = "OpenCmsPlugin.EditorPopupGroup";
-	private static final String EDITOR_POPUP_SYNC_ID = "OpenCmsPlugin.EditorPopupSyncAction";
-	public static final String EDITOR_POPUP_PUBLISH_ID = "OpenCmsPlugin.EditorPopupPublishAction";
+	private static final String EDITOR_POPUP_SYNC_FILE_ID = "OpenCmsPlugin.EditorPopupSyncAction";
+	public static final String EDITOR_POPUP_PUBLISH_FILE_ID = "OpenCmsPlugin.EditorPopupPublishAction";
 
 	private static final String TAB_POPUP_GROUP_ID = "OpenCmsPlugin.TabsPopupGroup";
 	public static final String TAB_POPUP_SYNC_FILE_ID = "OpenCmsPlugin.TabsPopupSyncAction";
 	public static final String TAB_POPUP_SYNC_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupSyncOpenTabsAction";
-	public static final String TAB_POPUP_PUBLISH_ID = "OpenCmsPlugin.TabsPopupPublishAction";
+	public static final String TAB_POPUP_PUBLISH_FILE_ID = "OpenCmsPlugin.TabsPopupPublishAction";
 	public static final String TAB_POPUP_PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupPublishOpenTabsAction";
 
 	private static final Icon MENU_ICON = new ImageIcon(OpenCmsPlugin.class.getResource("/icons/opencms_menu.png"));
@@ -154,7 +155,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 			addAction(group, PROJECT_POPUP_SYNC_SELECTED_ID, new OpenCmsSyncSelectedAction(), "_Sync selected Modules/Folders/Files");
 			addAction(group, PROJECT_POPUP_PULL_METADATA_ID, new OpenCmsPullSelectedModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
-			addAction(group, PROJECT_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish selected Modules/Folders/Files");
+			addAction(group, PROJECT_POPUP_PUBLISH_SELECTED_ID, new OpenCmsPublishSelectedAction(), "_Publish selected Modules/Folders/Files");
 		}
 	}
 
@@ -170,8 +171,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 			addAction(editorPopupMenu, EDITOR_POPUP_GROUP_ID, group, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
 			editorPopupMenu.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_GROUP_ID));
 
-			addAction(group, EDITOR_POPUP_SYNC_ID, new OpenCmsSyncSelectedAction(), "_Sync File");
-			addAction(group, EDITOR_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish File");
+			addAction(group, EDITOR_POPUP_SYNC_FILE_ID, new OpenCmsSyncSelectedAction(), "_Sync File");
+			addAction(group, EDITOR_POPUP_PUBLISH_FILE_ID, new OpenCmsPublishSelectedAction(), "_Publish File");
 		}
 	}
 
@@ -189,8 +190,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 			addAction(group, TAB_POPUP_SYNC_FILE_ID, new OpenCmsSyncSelectedAction(), "_Sync File");
 			addAction(group, TAB_POPUP_SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenEditorTabsAction(), "Sync all open Editor _Tabs");
-			addAction(group, TAB_POPUP_PUBLISH_ID, new OpenCmsPublishAction(), "_Publish File");
-			addAction(group, TAB_POPUP_PUBLISH_OPEN_TABS_ID, new OpenCmsPublishAction(), "Publish all open Editor Tabs");
+			addAction(group, TAB_POPUP_PUBLISH_FILE_ID, new OpenCmsPublishSelectedAction(), "_Publish File");
+			addAction(group, TAB_POPUP_PUBLISH_OPEN_TABS_ID, new OpenCmsPublishOpenEditorTabsAction(), "Publish all open Editor Tabs");
 		}
 	}
 
@@ -201,7 +202,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		actionManager.unregisterAction(PROJECT_POPUP_SYNC_SELECTED_ID);
 		actionManager.unregisterAction(PROJECT_POPUP_PULL_METADATA_ID);
 
-		actionManager.unregisterAction(EDITOR_POPUP_SYNC_ID);
+		actionManager.unregisterAction(EDITOR_POPUP_SYNC_FILE_ID);
 
 		actionManager.unregisterAction(TAB_POPUP_SYNC_FILE_ID);
 		actionManager.unregisterAction(TAB_POPUP_SYNC_OPEN_TABS_ID);
