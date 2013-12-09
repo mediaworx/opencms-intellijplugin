@@ -2,7 +2,6 @@ package com.mediaworx.intellij.opencmsplugin.actions.pullmetadata;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPullMetaDataAction;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
 

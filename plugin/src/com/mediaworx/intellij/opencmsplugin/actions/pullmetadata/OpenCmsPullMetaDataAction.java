@@ -1,5 +1,6 @@
-package com.mediaworx.intellij.opencmsplugin.actions;
+package com.mediaworx.intellij.opencmsplugin.actions.pullmetadata;
 
+import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncAction;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import org.jetbrains.annotations.NotNull;
