@@ -16,6 +16,8 @@ public class OpenCmsPublishSelectedAction extends OpenCmsPublishAction {
 
 	@Override
 	public void update(@NotNull AnActionEvent event) {
+		super.update(event);
+
 		boolean enableAction = false;
 		VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 

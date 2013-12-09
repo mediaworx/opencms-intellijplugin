@@ -17,6 +17,8 @@ public class OpenCmsPullSelectedModuleMetaDataAction extends OpenCmsPullMetaData
 
 	@Override
 	public void update(@NotNull AnActionEvent event) {
+		super.update(event);
+
 		if (!isEnabled()) {
 			event.getPresentation().setEnabled(false);
 			return;

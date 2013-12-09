@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMenu;
 
+@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPublishModuleAction extends OpenCmsPublishAction {
 
 	@Override

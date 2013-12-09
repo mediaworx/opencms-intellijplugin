@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 
+@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPublishAllModulesAction extends OpenCmsPublishAction {
 
 	@Override
