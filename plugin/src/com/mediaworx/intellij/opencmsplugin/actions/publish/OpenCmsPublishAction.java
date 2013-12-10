@@ -4,9 +4,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.connector.PublishFileAnalyzer;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -66,4 +68,14 @@ public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 
 	protected abstract VirtualFile[] getPublishFileArray(AnActionEvent event);
 
+	@Override
+	public void update(@NotNull AnActionEvent event) {
+		super.update(event);
+		event.getPresentation().setEnabled(isConnectorEnabled());
+	}
+
+	protected boolean isConnectorEnabled() {
+		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
+		return config != null && config.isPluginConnectorEnabled() && config.isPullMetadataEnabled();
+	}
 }
