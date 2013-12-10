@@ -24,6 +24,13 @@ public abstract class OpenCmsPluginAction extends AnAction {
 		// Do nothing to avoid calling update() twice (default behaviour for AnAction)
 	}
 
+	/**
+	 * update method that hides the action if the IntelliJ plugin is not enabled. That way the OpenCms menus containing
+	 * the actions will be disabled automatically for projects that don't use the OpenCmsPlugin, because
+	 * <code>disableIfNoVisibleChildren()</code> returns <code>true</code> (see
+	 * {@link com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMenu#disableIfNoVisibleChildren()}).
+	 * @param event the event (provided by IntelliJ)
+	 */
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);

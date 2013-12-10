@@ -92,6 +92,14 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		add(publishModuleActions);
 	}
 
+	/**
+	 * refreshes the list of module actions on project change (if two instances of IntelliJ are running and a
+	 * switch from one instance to the other occurs). If the active project doesn't use the IntelliJ plugin, the
+	 * OpenCms menu in the main menu is explicitly disabled because the disableIfNoVisibleChildren mechanism doesn't
+	 * work for the main menu (this seems to be a bug in IntelliJ, see
+	 * {@link com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMenu#disableIfNoVisibleChildren()})
+	 * @param event the event (provided by IntelliJ)
+	 */
 	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
@@ -116,6 +124,11 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		}
 	}
 
+	/**
+	 * the disableIfNoVisibleChildren mechanism doesn't work for the main menu (this seems to be a bug in IntelliJ),
+	 * so it is explicitly disabled.
+	 * @return always returns <code>false</code>
+	 */
 	@Override
 	public boolean disableIfNoVisibleChildren() {
 		return false;

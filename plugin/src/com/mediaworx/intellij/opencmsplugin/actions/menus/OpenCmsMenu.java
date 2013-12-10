@@ -44,6 +44,15 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 		return config != null && config.isOpenCmsPluginEnabled();
 	}
 
+	/**
+	 * the disableIfNoVisibleChildren mechanism is activated, and since all actions are automatically hidden if the
+	 * IntelliJ plugin is not enabled (see
+	 * {@link com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction#update(AnActionEvent)}),
+	 * the OpenCms menus containing the actions will be disabled automatically for projects that don't use the
+	 * OpenCmsPlugin. Because of a suspected bug in IntelliJ the OpenCms menu in the main menu ist treated differently,
+	 * see {@link OpenCmsMainMenu#update(AnActionEvent)}.
+	 * @return  always returns <code>true</code>
+	 */
 	@Override
 	public boolean disableIfNoVisibleChildren() {
 		return true;
