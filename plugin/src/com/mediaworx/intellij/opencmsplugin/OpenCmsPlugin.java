@@ -211,7 +211,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 			toolWindowManager =	ToolWindowManager.getInstance(project);
 		}
 		catch (NullPointerException e) {
-			LOG.info("Exception retrieving the ToolWindowManager instance (this may happen when closing IntelliJ)", e);
+			LOG.debug("Exception retrieving the ToolWindowManager instance (this may happen when closing IntelliJ)", e);
 		}
 		if (toolWindowManager == null) {
 			return;
