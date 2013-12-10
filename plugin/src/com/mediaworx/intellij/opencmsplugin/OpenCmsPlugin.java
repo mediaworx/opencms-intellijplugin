@@ -13,7 +13,7 @@ import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsEditorPopupMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsEditorTabPopupMenu;
-import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMenu;
+import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMainMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsProjectPopupMenu;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationComponent;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
@@ -50,7 +50,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private ToolWindow toolWindow;
 	private OpenCmsToolWindowConsole console;
 	private ActionManager actionManager;
-	private OpenCmsMenu openCmsMainMenu;
+	private OpenCmsMainMenu openCmsMainMenu;
 	private OpenCmsProjectPopupMenu openCmsProjectPopupMenu;
 	private OpenCmsEditorPopupMenu openCmsEditorPopupMenu;
 	private OpenCmsEditorTabPopupMenu openCmsEditorTabPopupMenu;
@@ -121,10 +121,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerMainMenu() {
-		openCmsMainMenu = (OpenCmsMenu)actionManager.getAction(OPENCMS_MENU_ID);
+		openCmsMainMenu = (OpenCmsMainMenu)actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMainMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
-			openCmsMainMenu = new OpenCmsMenu(this, "_OpenCms");
+			openCmsMainMenu = new OpenCmsMainMenu(this, "_OpenCms");
 			addAction(mainMenu, OPENCMS_MENU_ID, openCmsMainMenu, "_OpenCms", null, new Constraints(Anchor.BEFORE, "HelpMenu"));
 		}
 	}

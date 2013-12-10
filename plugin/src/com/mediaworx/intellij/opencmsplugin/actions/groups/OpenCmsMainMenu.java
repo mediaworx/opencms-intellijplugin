@@ -24,9 +24,9 @@ import java.awt.event.KeyEvent;
 import java.util.Collection;
 
 @SuppressWarnings("ComponentNotRegistered")
-public class OpenCmsMenu extends DefaultActionGroup {
+public class OpenCmsMainMenu extends DefaultActionGroup {
 
-	private static final Logger LOG = Logger.getInstance(OpenCmsMenu.class);
+	private static final Logger LOG = Logger.getInstance(OpenCmsMainMenu.class);
 
 	private static final String SYNC_SELECTED_ID = "OpenCmsPlugin.SyncAction";
 	private static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
@@ -49,7 +49,7 @@ public class OpenCmsMenu extends DefaultActionGroup {
 
 	Project currentProject;
 
-	public OpenCmsMenu(OpenCmsPlugin plugin, String shortName) {
+	public OpenCmsMainMenu(OpenCmsPlugin plugin, String shortName) {
 		super(shortName, false);
 		this.plugin = plugin;
 		actionManager = ActionManager.getInstance();
