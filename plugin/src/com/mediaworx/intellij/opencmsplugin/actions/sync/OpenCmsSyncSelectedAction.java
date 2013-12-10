@@ -3,7 +3,7 @@ package com.mediaworx.intellij.opencmsplugin.actions.sync;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.actions.tools.FileTypeCounter;
+import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,28 +21,7 @@ public class OpenCmsSyncSelectedAction extends OpenCmsSyncAction {
 		super.update(event);
 
 		if (isPluginEnabled()) {
-			boolean enableAction = false;
-			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
-
-			FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
-
-			if (selectedFiles != null && selectedFiles.length > 0) {
-
-				fileTypeCounter.count(selectedFiles);
-
-				if (fileTypeCounter.hasEntities()) {
-					enableAction = true;
-				}
-			}
-
-			String actionText = "_Sync selected " + fileTypeCounter.getEntityNames();
-			event.getPresentation().setText(actionText);
-			if (enableAction) {
-				event.getPresentation().setEnabled(true);
-			}
-			else {
-				event.getPresentation().setEnabled(false);
-			}
+			ActionTools.setSelectionSpecificActionText(event, plugin, "_Sync");
 		}
 	}
 

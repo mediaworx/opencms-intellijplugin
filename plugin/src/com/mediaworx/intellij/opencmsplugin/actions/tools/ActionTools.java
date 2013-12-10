@@ -1,5 +1,8 @@
 package com.mediaworx.intellij.opencmsplugin.actions.tools;
 
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -38,6 +41,31 @@ public class ActionTools {
 			publishFiles[i++] = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getIntelliJModuleRoot());
 		}
 		return publishFiles;
+	}
+
+	public static void setSelectionSpecificActionText(AnActionEvent event, OpenCmsPlugin plugin, String prefix) {
+		String actionPlace = event.getPlace();
+		if (!actionPlace.equals(ActionPlaces.EDITOR_POPUP) && !actionPlace.equals(ActionPlaces.EDITOR_TAB_POPUP)) {
+			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+			FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
+
+			boolean enableAction = false;
+			if (selectedFiles != null && selectedFiles.length > 0) {
+				fileTypeCounter.count(selectedFiles);
+				if (fileTypeCounter.hasEntities()) {
+					enableAction = true;
+				}
+			}
+
+			String actionText = prefix + " selected " + fileTypeCounter.getEntityNames();
+			event.getPresentation().setText(actionText);
+			if (enableAction) {
+				event.getPresentation().setEnabled(true);
+			}
+			else {
+				event.getPresentation().setEnabled(false);
+			}
+		}
 	}
 
 }
