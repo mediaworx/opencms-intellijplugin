@@ -13,11 +13,8 @@ public abstract class OpenCmsPullMetaDataAction extends OpenCmsSyncAction {
 		syncer.setPullMetaDataOnly(true);
 	}
 
-
-
 	protected boolean isPullMetaDataEnabled() {
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		return config != null && config.isPluginConnectorEnabled() && config.isPullMetadataEnabled();
 	}
-
 }
