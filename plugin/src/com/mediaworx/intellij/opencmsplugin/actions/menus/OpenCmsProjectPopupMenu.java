@@ -23,11 +23,4 @@ public class OpenCmsProjectPopupMenu extends OpenCmsMenu {
 		plugin.addAction(this, PUBLISH_SELECTED_ID, new OpenCmsPublishSelectedAction(), "_Publish selected Modules/Folders/Files");
 	}
 
-	@Override
-	public void unregisterActions() {
-		actionManager.unregisterAction(SYNC_SELECTED_ID);
-		actionManager.unregisterAction(PULL_METADATA_ID);
-		actionManager.unregisterAction(PUBLISH_SELECTED_ID);
-	}
-
 }

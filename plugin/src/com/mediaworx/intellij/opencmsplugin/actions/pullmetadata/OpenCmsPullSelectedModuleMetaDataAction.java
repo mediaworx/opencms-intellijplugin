@@ -19,37 +19,34 @@ public class OpenCmsPullSelectedModuleMetaDataAction extends OpenCmsPullMetaData
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);
 
-		if (!isEnabled()) {
-			event.getPresentation().setEnabled(false);
-			return;
-		}
+		if (isPluginEnabled() && isPullMetaDataEnabled()) {
+			VirtualFile[] selectedFiles = getSyncFileArray(event);
 
-		VirtualFile[] selectedFiles = getSyncFileArray(event);
+			boolean enableAction = true;
 
-		boolean enableAction = true;
-
-		if (selectedFiles != null) {
-			// check if only module roots have been selected
-			for (VirtualFile ideaVFile : selectedFiles) {
-				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
-				if (ocmsModule == null || !ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
-					enableAction = false;
-					break;
+			if (selectedFiles != null) {
+				// check if only module roots have been selected
+				for (VirtualFile ideaVFile : selectedFiles) {
+					OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
+					if (ocmsModule == null || !ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
+						enableAction = false;
+						break;
+					}
 				}
 			}
-		}
-		else {
-			enableAction = false;
-		}
+			else {
+				enableAction = false;
+			}
 
-		if (enableAction) {
-			FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
-			fileTypeCounter.count(selectedFiles);
-			event.getPresentation().setText("_Pull Meta Data for selected " + fileTypeCounter.getEntityNames());
-			event.getPresentation().setEnabled(true);
-		}
-		else {
-			event.getPresentation().setEnabled(false);
+			if (enableAction) {
+				FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
+				fileTypeCounter.count(selectedFiles);
+				event.getPresentation().setText("_Pull Meta Data for selected " + fileTypeCounter.getEntityNames());
+				event.getPresentation().setEnabled(true);
+			}
+			else {
+				event.getPresentation().setEnabled(false);
+			}
 		}
 	}
 }

@@ -16,8 +16,7 @@ public class OpenCmsPullAllMetaDataAction extends OpenCmsPullMetaDataAction {
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);
-
-		if (isEnabled()) {
+		if (isPluginEnabled() && isPullMetaDataEnabled()) {
 			event.getPresentation().setEnabled(true);
 		}
 		else {

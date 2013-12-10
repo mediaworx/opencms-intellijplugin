@@ -20,10 +20,4 @@ public class OpenCmsEditorPopupMenu extends OpenCmsMenu {
 		plugin.addAction(this, PUBLISH_FILE_ID, new OpenCmsPublishSelectedAction(), "_Publish File");
 	}
 
-	@Override
-	public void unregisterActions() {
-		actionManager.unregisterAction(SYNC_FILE_ID);
-		actionManager.unregisterAction(PUBLISH_FILE_ID);
-	}
-
 }

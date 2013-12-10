@@ -1,9 +1,12 @@
 package com.mediaworx.intellij.opencmsplugin.actions.menus;
 
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 
 public abstract class OpenCmsMenu extends DefaultActionGroup {
 
@@ -21,6 +24,28 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 
 	protected abstract void registerActions();
 
-	public abstract void unregisterActions();
+	@Override
+	public void actionPerformed(AnActionEvent event) {
+		LOG.warn("menu's actionPerformed called for " + event.getPlace() + " " + event.getPresentation().getText());
+	}
 
+	@Override
+	public void update(AnActionEvent event) {
+		super.update(event);
+		Project eventProject = event.getProject();
+		if (eventProject == null) {
+			return;
+		}
+		plugin = eventProject.getComponent(OpenCmsPlugin.class);
+	}
+
+	protected boolean isPluginEnabled() {
+		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
+		return config != null && config.isOpenCmsPluginEnabled();
+	}
+
+	@Override
+	public boolean disableIfNoVisibleChildren() {
+		return true;
+	}
 }

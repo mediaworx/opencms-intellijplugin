@@ -5,12 +5,14 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class OpenCmsPluginAction extends AnAction {
 
 	protected Project project;
 	protected OpenCmsPlugin plugin;
+	protected OpenCmsPluginConfigurationData config;
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
@@ -24,8 +26,9 @@ public abstract class OpenCmsPluginAction extends AnAction {
 
 	@Override
 	public void update(@NotNull AnActionEvent event) {
-		init(event);
 		super.update(event);
+		init(event);
+		event.getPresentation().setVisible(isPluginEnabled());
 	}
 
 	private void init(AnActionEvent event) {
@@ -34,8 +37,14 @@ public abstract class OpenCmsPluginAction extends AnAction {
 			return;
 		}
 		plugin = project.getComponent(OpenCmsPlugin.class);
+		config = plugin.getPluginConfiguration();
 		if (plugin.getConsole() != null) {
 			plugin.getConsole().clear();
 		}
+	}
+
+	protected boolean isPluginEnabled() {
+		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
+		return config != null && config.isPluginConnectorEnabled() && config.isPullMetadataEnabled();
 	}
 }

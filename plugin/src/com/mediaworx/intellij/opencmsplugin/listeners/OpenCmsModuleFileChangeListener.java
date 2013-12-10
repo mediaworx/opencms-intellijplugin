@@ -12,15 +12,16 @@ import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
+import com.intellij.openapi.wm.ToolWindow;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
-import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.connector.AutoPublishMode;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFile;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
@@ -65,6 +66,11 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 	}
 
 	public void before(@NotNull List<? extends VFileEvent> vFileEvents) {
+
+		if (config == null || !config.isOpenCmsPluginEnabled()) {
+			return;
+		}
+
 		// save all modules for deleted files in a lookup map, because IntelliJ can't find the module after the
 		// deletion of directories (ModuleUtil.findModuleForFile returns null in that case)
 		for (VFileEvent event : vFileEvents) {
@@ -84,7 +90,15 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 
 	public void after(@NotNull List<? extends VFileEvent> vFileEvents) {
 
-		plugin.getToolWindow();
+		if (config == null || !config.isOpenCmsPluginEnabled()) {
+			return;
+		}
+
+		ToolWindow toolWindow = plugin.getToolWindow();
+		if (toolWindow == null) {
+			return;
+		}
+
 		console = plugin.getConsole();
 
 		try {

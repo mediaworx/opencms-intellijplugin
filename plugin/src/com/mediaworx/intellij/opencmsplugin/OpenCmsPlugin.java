@@ -51,33 +51,33 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
 		openCmsModules = new OpenCmsModules(this);
-	}
 
-	public void projectOpened() {
-	}
-
-	public void projectClosed() {
 	}
 
 	public void initComponent() {
 		LOG.warn("initComponent called, project: " + project.getName());
 		actionManager = ActionManager.getInstance();
 		config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getConfigurationData();
+
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
-
 			if (config.isPluginConnectorEnabled()) {
 				pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword());
 			}
-			registerActions();
-			registerListeners();
-		}
-		else {
-			unregisterActions();
 		}
 	}
 
-	private void registerActions() {
+	public void projectOpened() {
+		if (config != null && config.isOpenCmsPluginEnabled()) {
+			registerMenus();
+			registerListeners();
+		}
+	}
+
+	public void projectClosed() {
+	}
+
+	private void registerMenus() {
 		registerMainMenu();
 		registerProjectPopupMenu();
 		registerEditorPopupActions();
@@ -114,7 +114,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerMainMenu() {
-		OpenCmsMainMenu openCmsMainMenu = (OpenCmsMainMenu) actionManager.getAction(OPENCMS_MENU_ID);
+		OpenCmsMainMenu openCmsMainMenu = (OpenCmsMainMenu)actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMainMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
 			openCmsMainMenu = new OpenCmsMainMenu(this);
@@ -123,7 +123,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerProjectPopupMenu() {
-		OpenCmsProjectPopupMenu openCmsProjectPopupMenu = (OpenCmsProjectPopupMenu) actionManager.getAction(PROJECT_POPUP_MENU_ID);
+		OpenCmsProjectPopupMenu openCmsProjectPopupMenu = (OpenCmsProjectPopupMenu)actionManager.getAction(PROJECT_POPUP_MENU_ID);
 		if (openCmsProjectPopupMenu == null) {
 			DefaultActionGroup projectPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_PROJECT_VIEW_POPUP);
 			openCmsProjectPopupMenu = new OpenCmsProjectPopupMenu(this);
@@ -133,7 +133,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerEditorPopupActions() {
-		OpenCmsEditorPopupMenu openCmsEditorPopupMenu = (OpenCmsEditorPopupMenu) actionManager.getAction(EDITOR_POPUP_MENU_ID);
+		OpenCmsEditorPopupMenu openCmsEditorPopupMenu = (OpenCmsEditorPopupMenu)actionManager.getAction(EDITOR_POPUP_MENU_ID);
 		if (openCmsEditorPopupMenu == null) {
 			DefaultActionGroup editorPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_POPUP);
 			openCmsEditorPopupMenu = new OpenCmsEditorPopupMenu(this);
@@ -143,7 +143,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void registerEditorTabPopupActions() {
-		OpenCmsEditorTabPopupMenu openCmsEditorTabPopupMenu = (OpenCmsEditorTabPopupMenu) actionManager.getAction(TAB_POPUP_MENU_ID);
+		OpenCmsEditorTabPopupMenu openCmsEditorTabPopupMenu = (OpenCmsEditorTabPopupMenu)actionManager.getAction(TAB_POPUP_MENU_ID);
 		if (openCmsEditorTabPopupMenu == null) {
 			DefaultActionGroup editorTabPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_TAB_POPUP);
 			openCmsEditorTabPopupMenu = new OpenCmsEditorTabPopupMenu(this);
@@ -152,27 +152,16 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
-	private void unregisterActions() {
-		unregisterMenuAction(OPENCMS_MENU_ID);
-		unregisterMenuAction(PROJECT_POPUP_MENU_ID);
-		unregisterMenuAction(EDITOR_POPUP_MENU_ID);
-		unregisterMenuAction(TAB_POPUP_MENU_ID);
-	}
-
-	private void unregisterMenuAction(String menuId) {
-		OpenCmsMenu menu = (OpenCmsMenu)actionManager.getAction(menuId);
-		if (menu != null) {
-			menu.unregisterActions();
-			actionManager.unregisterAction(menuId);
-		}
-	}
-
 	public void disposeComponent() {
 		project = null;
-		vfsAdapter = null;
-		config = null;
 		openCmsConfiguration = null;
 		openCmsModules = null;
+		vfsAdapter = null;
+		config = null;
+		pluginConnector = null;
+		toolWindow = null;
+		console = null;
+		actionManager = null;
 	}
 
 	@NotNull
@@ -214,7 +203,17 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void initToolWindow() {
-		toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
+		ToolWindowManager toolWindowManager = null;
+		try {
+			toolWindowManager =	ToolWindowManager.getInstance(project);
+		}
+		catch (NullPointerException e) {
+			LOG.info("Exception retrieving the ToolWindowManager instance (this may happen when closing IntelliJ)", e);
+		}
+		if (toolWindowManager == null) {
+			return;
+		}
+		toolWindow = toolWindowManager.registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
 		toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
 		OpenCmsPluginToolWindowFactory toolWindowFactory = new OpenCmsPluginToolWindowFactory();
 		toolWindowFactory.createToolWindowContent(project, toolWindow);
@@ -244,4 +243,5 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public void setConsole(OpenCmsToolWindowConsole console) {
 		this.console = console;
 	}
+
 }

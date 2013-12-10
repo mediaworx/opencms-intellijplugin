@@ -20,27 +20,29 @@ public class OpenCmsSyncSelectedAction extends OpenCmsSyncAction {
 
 		super.update(event);
 
-		boolean enableAction = false;
-		VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+		if (isPluginEnabled()) {
+			boolean enableAction = false;
+			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 
-		FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
+			FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
 
-		if (selectedFiles != null && selectedFiles.length > 0) {
+			if (selectedFiles != null && selectedFiles.length > 0) {
 
-			fileTypeCounter.count(selectedFiles);
+				fileTypeCounter.count(selectedFiles);
 
-			if (fileTypeCounter.hasEntities()) {
-				enableAction = true;
+				if (fileTypeCounter.hasEntities()) {
+					enableAction = true;
+				}
 			}
-		}
 
-		String actionText = "_Sync selected " + fileTypeCounter.getEntityNames();
-		event.getPresentation().setText(actionText);
-		if (enableAction) {
-			event.getPresentation().setEnabled(true);
-		}
-		else {
-			event.getPresentation().setEnabled(false);
+			String actionText = "_Sync selected " + fileTypeCounter.getEntityNames();
+			event.getPresentation().setText(actionText);
+			if (enableAction) {
+				event.getPresentation().setEnabled(true);
+			}
+			else {
+				event.getPresentation().setEnabled(false);
+			}
 		}
 	}
 

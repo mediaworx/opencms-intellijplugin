@@ -49,6 +49,8 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 	public OpenCmsMainMenu(OpenCmsPlugin plugin) {
 		super(plugin, false);
+		currentProject = plugin.getProject();
+		registerModuleActions();
 	}
 
 	private void registerKeyboardShortcuts() {
@@ -90,36 +92,47 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	}
 
 	@Override
-	public void update(AnActionEvent e) {
-		super.update(e);
+	public void update(AnActionEvent event) {
+		super.update(event);
 
-		Project eventProject = e.getProject();
+		event.getPresentation().setEnabled(isPluginEnabled());
 
-		if (eventProject == null) {
-			return;
+		if (isPluginEnabled()) {
+			Project eventProject = event.getProject();
+
+			if (eventProject == null) {
+				return;
+			}
+
+			if (eventProject != currentProject) {
+				LOG.info("project switched, reinitializing module actions");
+				registerModuleActions();
+				currentProject = eventProject;
+				registerModuleActions();
+			}
+		}
+	}
+
+	@Override
+	public boolean disableIfNoVisibleChildren() {
+		return false;
+	}
+
+	public void registerModuleActions() {
+		if (syncModuleActions.getChildrenCount() > 0) {
+			unregisterCurrentSyncModuleActions();
+		}
+		if (publishModuleActions.getChildrenCount() > 0) {
+			unregisterCurrentPublishModuleActions();
 		}
 
-		if (eventProject != currentProject) {
-			plugin = eventProject.getComponent(OpenCmsPlugin.class);
+		Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
+		for (OpenCmsModule ocmsModule : ocmsModules) {
+			registerSyncModuleAction(ocmsModule);
+		}
 
-			LOG.info("project switched, reinitializing module actions");
-
-			if (syncModuleActions.getChildrenCount() > 0) {
-				unregisterCurrentSyncModuleActions();
-			}
-			if (publishModuleActions.getChildrenCount() > 0) {
-				unregisterCurrentPublishModuleActions();
-			}
-
-			Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
-			for (OpenCmsModule ocmsModule : ocmsModules) {
-				registerSyncModuleAction(ocmsModule);
-			}
-
-			for (OpenCmsModule ocmsModule : ocmsModules) {
-				registerPublishModuleAction(ocmsModule);
-			}
-			currentProject = eventProject;
+		for (OpenCmsModule ocmsModule : ocmsModules) {
+			registerPublishModuleAction(ocmsModule);
 		}
 	}
 
@@ -158,17 +171,4 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		publishModuleActions.removeAll();
 	}
 
-	@Override
-	public void unregisterActions() {
-		actionManager.unregisterAction(SYNC_SELECTED_ID);
-		actionManager.unregisterAction(SYNC_OPEN_TABS_ID);
-		actionManager.unregisterAction(SYNC_ALL_MODULES_ID);
-		actionManager.unregisterAction(PULL_MODULE_METADATA_ID);
-		actionManager.unregisterAction(PULL_ALL_METADATA_ID);
-		unregisterCurrentSyncModuleActions();
-		actionManager.unregisterAction(PUBLISH_SELECTED_ID);
-		actionManager.unregisterAction(PUBLISH_OPEN_TABS_ID);
-		actionManager.unregisterAction(PUBLSH_ALL_MODULES_ID);
-		unregisterCurrentPublishModuleActions();
-	}
 }

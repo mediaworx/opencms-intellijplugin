@@ -26,12 +26,4 @@ public class OpenCmsEditorTabPopupMenu extends OpenCmsMenu {
 		plugin.addAction(this, PUBLISH_OPEN_TABS_ID, new OpenCmsPublishOpenEditorTabsAction(), "Publish all open Editor Tabs");
 	}
 
-	@Override
-	public void unregisterActions() {
-		actionManager.unregisterAction(SYNC_FILE_ID);
-		actionManager.unregisterAction(SYNC_OPEN_TABS_ID);
-		actionManager.unregisterAction(PUBLISH_FILE_ID);
-		actionManager.unregisterAction(PUBLISH_OPEN_TABS_ID);
-	}
-
 }
