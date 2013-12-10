@@ -3,7 +3,7 @@ package com.mediaworx.intellij.opencmsplugin.actions.sync;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.mediaworx.intellij.opencmsplugin.actions.groups.OpenCmsMainMenu;
+import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("ComponentNotRegistered")

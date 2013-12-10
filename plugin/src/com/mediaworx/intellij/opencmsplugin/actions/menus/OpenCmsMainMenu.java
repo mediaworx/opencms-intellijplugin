@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.actions.groups;
+package com.mediaworx.intellij.opencmsplugin.actions.menus;
 
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.diagnostic.Logger;
@@ -24,7 +24,7 @@ import java.awt.event.KeyEvent;
 import java.util.Collection;
 
 @SuppressWarnings("ComponentNotRegistered")
-public class OpenCmsMainMenu extends DefaultActionGroup {
+public class OpenCmsMainMenu extends OpenCmsMenu {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsMainMenu.class);
 
@@ -41,24 +41,14 @@ public class OpenCmsMainMenu extends DefaultActionGroup {
 
 	private static final Shortcut SYNC_SHORTCUT = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK), null);
 
-	private OpenCmsPlugin plugin;
-	private ActionManager actionManager;
 	private Keymap keymap;
 	private DefaultActionGroup syncModuleActions;
 	private DefaultActionGroup publishModuleActions;
 
 	Project currentProject;
 
-	public OpenCmsMainMenu(OpenCmsPlugin plugin, String shortName) {
-		super(shortName, false);
-		this.plugin = plugin;
-		actionManager = ActionManager.getInstance();
-		keymap = KeymapManager.getInstance().getActiveKeymap();
-		syncModuleActions = new DefaultActionGroup();
-		publishModuleActions = new DefaultActionGroup();
-
-		registerKeyboardShortcuts();
-		registerActions();
+	public OpenCmsMainMenu(OpenCmsPlugin plugin) {
+		super(plugin, false);
 	}
 
 	private void registerKeyboardShortcuts() {
@@ -67,7 +57,14 @@ public class OpenCmsMainMenu extends DefaultActionGroup {
 		}
 	}
 
-	private void registerActions() {
+	@Override
+	protected void registerActions() {
+		keymap = KeymapManager.getInstance().getActiveKeymap();
+		syncModuleActions = new DefaultActionGroup();
+		publishModuleActions = new DefaultActionGroup();
+
+		registerKeyboardShortcuts();
+
 		plugin.addAction(this, SYNC_SELECTED_ID, new OpenCmsSyncSelectedAction(), "_Sync selected Modules/Folders/Files");
 		plugin.addAction(this, SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenEditorTabsAction(), "Sync all open Editor _Tabs");
 		plugin.addAction(this, SYNC_ALL_MODULES_ID, new OpenCmsSyncAllModulesAction(), "Sync _all Modules");
@@ -161,6 +158,7 @@ public class OpenCmsMainMenu extends DefaultActionGroup {
 		publishModuleActions.removeAll();
 	}
 
+	@Override
 	public void unregisterActions() {
 		actionManager.unregisterAction(SYNC_SELECTED_ID);
 		actionManager.unregisterAction(SYNC_OPEN_TABS_ID);
