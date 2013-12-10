@@ -5,6 +5,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishAllModulesAction;
@@ -97,19 +98,21 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 		event.getPresentation().setEnabled(isPluginEnabled());
 
-		if (isPluginEnabled()) {
-			Project eventProject = event.getProject();
+		Project eventProject = event.getProject();
 
-			if (eventProject == null) {
-				return;
-			}
+		if (eventProject == null) {
+			return;
+		}
 
-			if (eventProject != currentProject) {
+		if (eventProject != currentProject) {
+			if (isPluginEnabled()) {
 				LOG.info("project switched, reinitializing module actions");
 				registerModuleActions();
 				currentProject = eventProject;
 				registerModuleActions();
 			}
+			ToolWindow toolWindow = plugin.getToolWindow();
+			toolWindow.setAvailable(isPluginEnabled(), null);
 		}
 	}
 
