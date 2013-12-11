@@ -10,6 +10,8 @@ public class OpenCmsModuleConfigurationData {
     private String localVfsRoot;
 	private boolean useProjectDefaultSyncModeEnabled = true;
 	private SyncMode syncMode;
+	private boolean setSpecificModuleVersionEnabled = false;
+	private String moduleVersion;
 
 	public boolean isOpenCmsModuleEnabled() {
 		return openCmsModuleEnabled;
@@ -57,5 +59,21 @@ public class OpenCmsModuleConfigurationData {
 
 	public void setSyncMode(SyncMode syncMode) {
 		this.syncMode = syncMode;
+	}
+
+	public boolean isSetSpecificModuleVersionEnabled() {
+		return setSpecificModuleVersionEnabled;
+	}
+
+	public void setSetSpecificModuleVersionEnabled(boolean setSpecificModuleVersionEnabled) {
+		this.setSpecificModuleVersionEnabled = setSpecificModuleVersionEnabled;
+	}
+
+	public String getModuleVersion() {
+		return moduleVersion;
+	}
+
+	public void setModuleVersion(String moduleVersion) {
+		this.moduleVersion = moduleVersion;
 	}
 }

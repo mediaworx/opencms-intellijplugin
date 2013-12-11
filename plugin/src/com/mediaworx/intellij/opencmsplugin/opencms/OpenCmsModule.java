@@ -24,6 +24,8 @@ public class OpenCmsModule {
 	String intelliJModuleRoot;
 	String localVfsRoot;
 	SyncMode syncMode;
+	private boolean setSpecificModuleVersionEnabled = false;
+	private String moduleVersion;
 
 	public OpenCmsModule(OpenCmsPlugin plugin, Module intelliJModule) {
 		this.plugin = plugin;
@@ -62,6 +64,9 @@ public class OpenCmsModule {
 		else {
 			syncMode = moduleConfig.getSyncMode();
 		}
+
+		setSpecificModuleVersionEnabled = moduleConfig.isSetSpecificModuleVersionEnabled();
+		moduleVersion = moduleConfig.getModuleVersion();
 	}
 
 	public void refresh(OpenCmsModuleConfigurationData moduleConfig) {
@@ -92,6 +97,14 @@ public class OpenCmsModule {
 
 	public SyncMode getSyncMode() {
 		return syncMode;
+	}
+
+	public boolean isSetSpecificModuleVersionEnabled() {
+		return setSpecificModuleVersionEnabled;
+	}
+
+	public String getModuleVersion() {
+		return moduleVersion;
 	}
 
 	public List<OpenCmsModuleExportPoint> getExportPoints() {

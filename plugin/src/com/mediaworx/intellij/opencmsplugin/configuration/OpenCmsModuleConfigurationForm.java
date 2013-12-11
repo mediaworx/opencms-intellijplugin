@@ -10,8 +10,9 @@ import java.awt.event.FocusListener;
 
 public class OpenCmsModuleConfigurationForm implements ActionListener, FocusListener {
 
+	private OpenCmsPluginConfigurationData config;
 	private JPanel rootComponent;
-	private JCheckBox isOpenCmsModule;
+	private JCheckBox isOpenCmsModuleCheckbox;
 	private JTextField moduleName;
 	private JPanel formPanel;
 	private JRadioButton useProjectDefaultVfsRootRadioButton;
@@ -20,16 +21,22 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	private JRadioButton useProjectDefaultSyncModeRadioButton;
 	private JRadioButton useModuleSpecificSyncModeRadioButton;
 	private JComboBox syncMode;
+	private JPanel moduleVersionPanel;
+	private JCheckBox setSpecificModuleVersionCheckbox;
+	private JTextField moduleVersion;
 
 
-	public OpenCmsModuleConfigurationForm() {
+	public OpenCmsModuleConfigurationForm(OpenCmsPluginConfigurationData config) {
+		this.config = config;
 		formPanel.setVisible(false);
-		isOpenCmsModule.addActionListener(this);
+		isOpenCmsModuleCheckbox.addActionListener(this);
 		useProjectDefaultVfsRootRadioButton.addActionListener(this);
 		useModuleSpecificVfsRootRadioButton.addActionListener(this);
 		useProjectDefaultSyncModeRadioButton.addActionListener(this);
 		useModuleSpecificSyncModeRadioButton.addActionListener(this);
 		localVfsRoot.addFocusListener(this);
+		moduleVersionPanel.setVisible(config.isPluginConnectorEnabled() && config.isPullMetadataEnabled());
+		setSpecificModuleVersionCheckbox.addActionListener(this);
 	}
 
 	// Method returns the root component of the form
@@ -38,7 +45,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	}
 
 	public void setData(OpenCmsModuleConfigurationData data) {
-		isOpenCmsModule.setSelected(data.isOpenCmsModuleEnabled());
+		isOpenCmsModuleCheckbox.setSelected(data.isOpenCmsModuleEnabled());
 		formPanel.setVisible(data.isOpenCmsModuleEnabled());
 		FormTools.setConfiguredOrKeepDefault(moduleName, data.getModuleName());
 
@@ -73,11 +80,17 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		else if (data.getSyncMode() == SyncMode.PULL) {
 			syncMode.setSelectedIndex(2);
 		}
+
+		moduleVersionPanel.setVisible(config.isPluginConnectorEnabled() && config.isPullMetadataEnabled());
+		setSpecificModuleVersionCheckbox.setSelected(data.isSetSpecificModuleVersionEnabled());
+
+		moduleVersion.setEnabled(data.isSetSpecificModuleVersionEnabled());
+		moduleVersion.setText(data.getModuleVersion());
 	}
 
 
 	public void getData(OpenCmsModuleConfigurationData data) {
-		data.setOpenCmsModuleEnabled(isOpenCmsModule.isSelected());
+		data.setOpenCmsModuleEnabled(isOpenCmsModuleCheckbox.isSelected());
 		data.setModuleName(moduleName.getText());
 		if (useProjectDefaultVfsRootRadioButton.isSelected()) {
 			data.setUseProjectDefaultVfsRootEnabled(true);
@@ -93,12 +106,15 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 			data.setUseProjectDefaultSyncModeEnabled(false);
 		}
 		data.setSyncMode(FormTools.getSyncModeFromComboBox(syncMode));
+
+		data.setSetSpecificModuleVersionEnabled(setSpecificModuleVersionCheckbox.isSelected());
+		data.setModuleVersion(moduleVersion.getText());
 	}
 
 
 	public boolean isModified(OpenCmsModuleConfigurationData data) {
 		return
-				isOpenCmsModule.isSelected() != data.isOpenCmsModuleEnabled() ||
+				isOpenCmsModuleCheckbox.isSelected() != data.isOpenCmsModuleEnabled() ||
 				FormTools.isTextFieldModified(moduleName, data.getModuleName()) ||
 				useProjectDefaultVfsRootRadioButton.isSelected() && !data.isUseProjectDefaultVfsRootEnabled() ||
 				FormTools.isTextFieldModified(localVfsRoot, data.getLocalVfsRoot()) ||
@@ -112,8 +128,8 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
-		if (source == isOpenCmsModule) {
-			formPanel.setVisible(isOpenCmsModule.isSelected());
+		if (source == isOpenCmsModuleCheckbox) {
+			formPanel.setVisible(isOpenCmsModuleCheckbox.isSelected());
 		}
 		if (source == useProjectDefaultVfsRootRadioButton && useProjectDefaultVfsRootRadioButton.isSelected()) {
 			localVfsRoot.setEnabled(false);
@@ -126,6 +142,9 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		}
 		if (source == useModuleSpecificSyncModeRadioButton && useModuleSpecificSyncModeRadioButton.isSelected()) {
 			syncMode.setEnabled(true);
+		}
+		if (source == setSpecificModuleVersionCheckbox) {
+			moduleVersion.setEnabled(setSpecificModuleVersionCheckbox.isSelected());
 		}
 	}
 

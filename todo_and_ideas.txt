@@ -1,23 +1,23 @@
 GO ON:
-- Nachdenken, ob für die mehrfach verwendeten Actions nicht jeweils eine einzige Instanz ausreichen würde. Wie machen?
-  Über statische getInstance-Methoden? Oder ActionFactory/ActionManager? Würde einige Objekte sparen, besonders bei
-  vielen Modulen.
-- Idee: Version des OpenCms-Moduls konfigurierbar in IntelliJ-Modul: Keep Module Version from OpenCms / Use specific
-  Version (dort dann unsere Maven-Versions-Variable einbinden)
-- Refactoring: alle Referenzen auf Project und Plugin aus Constructoren entfernen, jeweils dynamisch ermitteln, bloss
-  nicht statisch, immer beim Event bzw. bei der Action! PRÜFEN, OB DAS NÖTIG IST, scheint doch so zu funktionieren,
-  aber sollte eben geprüft werden.
-  Kandidaten für Probleme: ToolWindow und Console. Hat jede IntelliJ-Instanz eine eigene Console?
 - Testen, testen, testen
-- Dokumentation!
-- Idee: Sync/Publish einer Java-Klasse unter src triggert Sync/Publish der entsprechenden kompilierten Klasse
+- Dokumentation (auch im Wiki)!
+- Idee: Sync/Publish einer Java-Klasse unter src triggert Compilation und Sync/Publish der entsprechenden kompilierten Klasse
 - Idee: Integration OpenCms-Logfile in ToolWindow (analog zu Logfile-Integration von IntelliJ)
 - Idee: VFS-Browser im ToolWindow (als zusätzlicher Tab neben Console), Preview eines selektierten Files.
 - Idee: Clear Modules Before Sync (dafür muss man dann aber auf die Publizierung der Löschung warten, wohl eher zu viel Aufwand!)
-- Mit Kara klären: Was machen wir mit der Modul-Version im Manifest-Stub?
-- Native2ASCII in IntelliJ Build integrieren
+- Grundsätzlich: Native2ASCII in IntelliJ Build integrieren
 
 DONE
+- HAT SICH ERLEDIGT: Mit Kara klären: Was machen wir mit der Modul-Version im Manifest-Stub?
+- Idee: Version des OpenCms-Moduls konfigurierbar in IntelliJ-Modul: Keep Module Version from OpenCms / Use specific
+  Version (dort dann unsere Maven-Versions-Variable einbinden)
+- DONE bzw. NICHT NÖTIG: alle finalen Referenzen auf Project und Plugin aus Constructoren entfernen, jeweils dynamisch
+  ermitteln, bloss nicht statisch, immer beim Event bzw. bei der Action! PRÜFEN, OB DAS NÖTIG IST, scheint doch so zu
+  funktionieren, aber sollte eben geprüft werden.
+  Kandidaten für Probleme: ToolWindow und Console. Hat jede IntelliJ-Instanz eine eigene Console?
+- Nachdenken, ob für die mehrfach verwendeten Actions nicht jeweils eine einzige Instanz ausreichen würde. Wie machen?
+  Über statische getInstance-Methoden? Oder ActionFactory/ActionManager? Würde einige Objekte sparen, besonders bei
+  vielen Modulen. => Nicht jetzt, Problem bereiten die unterschiedlichen Presentations.
 - Sync file / publish file in Editor + Tab Menü nur anbieten, wenn das file auch eine Modulressource ist, ansonsten disablen
 - Excluded Files/Folders konfigurierbar
 - Check behaviour if plugin is activated/deactivated in a project (all menus and the ToolWindow should be enabled/disabled)
@@ -30,9 +30,10 @@ DONE
   Aufruf kommt über event.place() oder wie das heißt? Eventuell pro Typ je ein ActionHandler mit einer Instanz, aber
   viele schlanke Action-Instanzen?
 - Nachdenken, ob wirklich einzelne Action-Instanzen benötigt werden, oder ob eine Instanz alle Menü-Einträge bedienen
-  kann => Ja, es werden einzelne Instanzen benötigt (IntelliJ benötigt je Menü-Eintrag eine Instanz). => FALSCH, es
-  werden keine eigenen Instanzen benötigt, eine Action kann auch in mehreren Menüs eingebunden werden, aber ich müsste
-  meine gesamte Architektur umstellen, um Actions mehrfach zu verwenden. Mal darüber nachdenken (neuer Punkt oben)
+  kann => Ja, es werden einzelne Instanzen benötigt (IntelliJ benötigt je Menü-Eintrag eine Instanz). => NICHT GANZ
+  RICHTIG, es werden keine eigenen Instanzen benötigt, solange die Presentation (also der Menütext) identisch ist,
+  was bei mir aber nicht immer der Fall ist. Grundsätzlich kann eine Action aber auch in mehreren Menüs eingebunden
+  werden.
 - Refactoring: FileChangeComponent wegwerfen, den Kram im OpenCmsPlugin direkt machen
 - Publizierung aus dem OpenCms-Menü ermöglichen
 - Rechtsklick-Publizierung ermöglichen

@@ -13,6 +13,7 @@ import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleResource;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -470,7 +471,11 @@ public class SyncJob implements Runnable {
 					if (manifestInfos.containsKey(ocmsModule.getModuleName())) {
 						// put the manifest to a file
 						String manifestPath = ocmsModule.getManifestRoot() + "/manifest_stub.xml";
-						FileUtils.writeStringToFile(new File(manifestPath), manifestInfos.get(ocmsModule.getModuleName()), Charset.forName("UTF-8"));
+						String manifest = manifestInfos.get(ocmsModule.getModuleName());
+						if (ocmsModule.isSetSpecificModuleVersionEnabled() && StringUtils.isNotEmpty(ocmsModule.getModuleVersion())) {
+							manifest = manifest.replaceFirst("<version>[^<]*</version>", "<version>" + ocmsModule.getModuleVersion() + "</version>");
+						}
+						FileUtils.writeStringToFile(new File(manifestPath), manifest, Charset.forName("UTF-8"));
 						console.info("PULL: " + manifestPath + " pulled from OpenCms");
 					}
 					else {

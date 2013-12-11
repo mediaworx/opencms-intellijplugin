@@ -82,7 +82,7 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 			configurationData = new OpenCmsModuleConfigurationData();
 		}
 		if (form == null) {
-			form = new OpenCmsModuleConfigurationForm();
+			form = new OpenCmsModuleConfigurationForm(plugin.getPluginConfiguration());
 		}
 		return form.getRootComponent();
 	}
