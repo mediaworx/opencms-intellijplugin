@@ -1,6 +1,7 @@
 package com.mediaworx.intellij.opencmsplugin.opencms;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -24,15 +25,15 @@ public class OpenCmsConfiguration {
 	private static final String EXPORTPOINT_XPATH = "/opencms/modules/module/name[normalize-space(text())=\"%s\"]/../exportpoints/exportpoint";
 	private static final String MODULE_RESOURCE_XPATH = "/opencms/modules/module/name[normalize-space(text())=\"%s\"]/../resources/resource";
 
-	private String webappRoot;
+	private OpenCmsPluginConfigurationData config;
 	DocumentBuilder builder;
 	private XPathFactory xPathfactory;
 
 	private Document parsedModuleConfigurationFile;
 
 
-	public OpenCmsConfiguration(String webappRoot) {
-		this.webappRoot = webappRoot;
+	public OpenCmsConfiguration(OpenCmsPluginConfigurationData config) {
+		this.config = config;
 
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilderFactory.setValidating(false);
@@ -51,11 +52,13 @@ public class OpenCmsConfiguration {
 	}
 
 	private void parseConfiguration() {
-		try {
-			parsedModuleConfigurationFile = builder.parse(webappRoot + CONFIGPATH + MODULECONFIGFILE);
-		}
-		catch (Exception e) {
-			LOG.warn("Exception parsing the module configuration ", e);
+		if (config.getWebappRoot() != null) {
+			try {
+				parsedModuleConfigurationFile = builder.parse(config.getWebappRoot() + CONFIGPATH + MODULECONFIGFILE);
+			}
+			catch (Exception e) {
+				LOG.warn("Exception parsing the module configuration ", e);
+			}
 		}
 	}
 
@@ -66,47 +69,54 @@ public class OpenCmsConfiguration {
 
 	public List<OpenCmsModuleExportPoint> getExportPointsForModule(String moduleName) {
 		List<OpenCmsModuleExportPoint> exportPoints = new ArrayList<OpenCmsModuleExportPoint>();
-		try {
-			XPath xpath = xPathfactory.newXPath();
-			XPathExpression expr = xpath.compile(String.format(EXPORTPOINT_XPATH, moduleName));
+		Document configDocument = getParsedModuleConfigurationFile();
+		if (configDocument != null) {
+			try {
+				XPath xpath = xPathfactory.newXPath();
+				XPathExpression expr = xpath.compile(String.format(EXPORTPOINT_XPATH, moduleName));
 
-			NodeList nl = (NodeList) expr.evaluate(getParsedModuleConfigurationFile(), XPathConstants.NODESET);
-			int numExportPoints = nl.getLength();
+				NodeList nl = (NodeList) expr.evaluate(configDocument, XPathConstants.NODESET);
+				int numExportPoints = nl.getLength();
 
-			for (int i = 0; i < numExportPoints; i++) {
-				Node n = nl.item(i);
-				NamedNodeMap attr = n.getAttributes();
-				String uri = attr.getNamedItem("uri").getNodeValue();
-				String destination = attr.getNamedItem("destination").getNodeValue();
-				LOG.info("Exportpoint " + (i + 1) + ": uri=" + uri + " - destination=" + destination);
-				exportPoints.add(new OpenCmsModuleExportPoint(uri, destination));
+				for (int i = 0; i < numExportPoints; i++) {
+					Node n = nl.item(i);
+					NamedNodeMap attr = n.getAttributes();
+					String uri = attr.getNamedItem("uri").getNodeValue();
+					String destination = attr.getNamedItem("destination").getNodeValue();
+					LOG.info("Exportpoint " + (i + 1) + ": uri=" + uri + " - destination=" + destination);
+					exportPoints.add(new OpenCmsModuleExportPoint(uri, destination));
+				}
 			}
-		}
-		catch (Exception e) {
-			LOG.warn("There was an Exception initializing export points for module " + moduleName, e);
+			catch (Exception e) {
+				LOG.warn("There was an Exception initializing export points for module " + moduleName, e);
+			}
 		}
 		return exportPoints;
 	}
 
 	public List<String> getModuleResourcesForModule(String moduleName) {
 		List<String> moduleResources = new ArrayList<String>();
-		try {
-			XPath xpath = xPathfactory.newXPath();
-			XPathExpression expr = xpath.compile(String.format(MODULE_RESOURCE_XPATH, moduleName));
+		Document configDocument = getParsedModuleConfigurationFile();
 
-			NodeList nl = (NodeList) expr.evaluate(getParsedModuleConfigurationFile(), XPathConstants.NODESET);
-			int numExportPoints = nl.getLength();
+		if (configDocument != null) {
+			try {
+				XPath xpath = xPathfactory.newXPath();
+				XPathExpression expr = xpath.compile(String.format(MODULE_RESOURCE_XPATH, moduleName));
 
-			for (int i = 0; i < numExportPoints; i++) {
-				Node n = nl.item(i);
-				NamedNodeMap attr = n.getAttributes();
-				String uri = attr.getNamedItem("uri").getNodeValue();
-				LOG.info("Module Resource " + (i + 1) + ": uri=" + uri);
-				moduleResources.add(uri);
+				NodeList nl = (NodeList) expr.evaluate(configDocument, XPathConstants.NODESET);
+				int numExportPoints = nl.getLength();
+
+				for (int i = 0; i < numExportPoints; i++) {
+					Node n = nl.item(i);
+					NamedNodeMap attr = n.getAttributes();
+					String uri = attr.getNamedItem("uri").getNodeValue();
+					LOG.info("Module Resource " + (i + 1) + ": uri=" + uri);
+					moduleResources.add(uri);
+				}
 			}
-		}
-		catch (Exception e) {
-			LOG.warn("There was an Exception initializing export points for module " + moduleName, e);
+			catch (Exception e) {
+				LOG.warn("There was an Exception initializing export points for module " + moduleName, e);
+			}
 		}
 		return moduleResources;
 	}

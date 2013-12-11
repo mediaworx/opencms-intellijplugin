@@ -138,7 +138,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		OpenCmsMainMenu openCmsMainMenu = (OpenCmsMainMenu)actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMainMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
-			openCmsMainMenu = new OpenCmsMainMenu(this);
+			openCmsMainMenu = OpenCmsMainMenu.getInstance(this);
 			addAction(mainMenu, OPENCMS_MENU_ID, openCmsMainMenu, "_OpenCms", null, new Constraints(Anchor.BEFORE, "HelpMenu"));
 		}
 	}
@@ -196,7 +196,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public OpenCmsConfiguration getOpenCmsConfiguration() {
 		if (openCmsConfiguration == null) {
-			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
+			openCmsConfiguration = new OpenCmsConfiguration(config);
 		}
 		return openCmsConfiguration;
 	}
@@ -227,14 +227,13 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	private void initToolWindow() {
-		ToolWindowManager toolWindowManager = null;
-		try {
-			toolWindowManager =	ToolWindowManager.getInstance(project);
+		if (project == null) {
+			LOG.info("Unable to initialize the tool window since the project is null");
+			return;
 		}
-		catch (NullPointerException e) {
-			LOG.debug("Exception retrieving the ToolWindowManager instance (this may happen when closing IntelliJ)", e);
-		}
+		ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
 		if (toolWindowManager == null) {
+			LOG.info("ToolWindowManager could not be retrieved from the project, it may not be registered yet.");
 			return;
 		}
 		toolWindow = toolWindowManager.registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);

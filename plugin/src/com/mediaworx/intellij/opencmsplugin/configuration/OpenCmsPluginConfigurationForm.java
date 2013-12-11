@@ -8,6 +8,9 @@ import java.awt.event.FocusListener;
 
 public class OpenCmsPluginConfigurationForm implements ActionListener, FocusListener {
 
+	private static final String NEWLINE = System.getProperty("line.separator");
+
+
 	private JPanel rootComponent;
 
 	private JPanel formPanel;
@@ -18,10 +21,12 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	private JTextField password;
 	private JTextField webappRoot;
 	private JTextField defaultLocalVfsRoot;
+	private JComboBox defaultSyncMode;
+	private JTextArea ignoredFiles;
+	private JTextArea ignoredPaths;
 	private JCheckBox usePluginConnectorCheckBox;
 	private JTextField connectorUrl;
 	private JTextField manifestRoot;
-	private JComboBox defaultSyncMode;
 	private JPanel connectorOptionsPanel;
 	private JCheckBox pullMetaDataCheckbox;
 	private JComboBox autoPublishMode;
@@ -60,13 +65,6 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 				defaultSyncMode.setSelectedIndex(2);
 		}
 
-		usePluginConnectorCheckBox.setSelected(data.isPluginConnectorEnabled());
-		connectorOptionsPanel.setVisible(data.isPluginConnectorEnabled());
-		FormTools.setConfiguredOrKeepDefault(connectorUrl, data.getConnectorUrl());
-		pullMetaDataCheckbox.setSelected(data.isPullMetadataEnabled());
-		manifestRoot.setEnabled(data.isPullMetadataEnabled());
-		FormTools.setConfiguredOrKeepDefault(manifestRoot, data.getManifestRoot());
-
 		switch (data.getAutoPublishMode()) {
 			case OFF:
 				autoPublishMode.setSelectedIndex(0);
@@ -77,6 +75,16 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			case ALL:
 				autoPublishMode.setSelectedIndex(2);
 		}
+
+		FormTools.setConfiguredOrKeepDefault(ignoredFiles, data.getIgnoredFiles());
+		FormTools.setConfiguredOrKeepDefault(ignoredPaths, data.getIgnoredPaths());
+
+		usePluginConnectorCheckBox.setSelected(data.isPluginConnectorEnabled());
+		connectorOptionsPanel.setVisible(data.isPluginConnectorEnabled());
+		FormTools.setConfiguredOrKeepDefault(connectorUrl, data.getConnectorUrl());
+		pullMetaDataCheckbox.setSelected(data.isPullMetadataEnabled());
+		manifestRoot.setEnabled(data.isPullMetadataEnabled());
+		FormTools.setConfiguredOrKeepDefault(manifestRoot, data.getManifestRoot());
 	}
 
 
@@ -88,6 +96,8 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		data.setWebappRoot(webappRoot.getText());
 		data.setDefaultLocalVfsRoot(defaultLocalVfsRoot.getText());
 		data.setDefaultSyncMode(FormTools.getSyncModeFromComboBox(defaultSyncMode));
+		data.setIgnoredFiles(ignoredFiles.getText());
+		data.setIgnoredPaths(ignoredPaths.getText());
 		data.setPluginConnectorEnabled(usePluginConnectorCheckBox.isSelected());
 		data.setConnectorUrl(connectorUrl.getText());
 		data.setPullMetadataEnabled(pullMetaDataCheckbox.isSelected());
@@ -105,11 +115,13 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			FormTools.isTextFieldModified(webappRoot, data.getWebappRoot()) ||
 			FormTools.isTextFieldModified(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot()) ||
 			!FormTools.getSyncModeFromComboBox(defaultSyncMode).equals(data.getDefaultSyncMode()) ||
+			FormTools.isTextFieldModified(ignoredFiles, data.getIgnoredFiles()) ||
+			FormTools.isTextFieldModified(ignoredPaths, data.getIgnoredPaths()) ||
+			!FormTools.getAutoPublishModeFromCombobox(autoPublishMode).equals(data.getAutoPublishMode()) ||
 			usePluginConnectorCheckBox.isSelected() != data.isPluginConnectorEnabled() ||
 			FormTools.isTextFieldModified(connectorUrl, data.getConnectorUrl()) ||
 			pullMetaDataCheckbox.isSelected() != data.isPullMetadataEnabled() ||
-			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot()) ||
-			!FormTools.getAutoPublishModeFromCombobox(autoPublishMode).equals(data.getAutoPublishMode())
+			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot())
 		;
 	}
 

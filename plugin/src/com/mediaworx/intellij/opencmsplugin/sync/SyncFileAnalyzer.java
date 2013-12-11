@@ -105,8 +105,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			return;
 		}
 
-		if (fileOrPathIsIgnored(ideaVFile)) {
-			LOG.info("File is ignored: " + ideaVFile.getPath() + " " + ideaVFile.getName());
+		if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), ideaVFile)) {
 			return;
 		}
 

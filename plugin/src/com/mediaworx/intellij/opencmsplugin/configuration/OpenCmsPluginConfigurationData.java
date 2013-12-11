@@ -2,6 +2,7 @@ package com.mediaworx.intellij.opencmsplugin.configuration;
 
 import com.mediaworx.intellij.opencmsplugin.connector.AutoPublishMode;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
+import org.apache.commons.lang.StringUtils;
 
 public class OpenCmsPluginConfigurationData {
 
@@ -12,6 +13,10 @@ public class OpenCmsPluginConfigurationData {
     private String webappRoot;
 	private String defaultLocalVfsRoot;
 	private SyncMode defaultSyncMode;
+	private String ignoredFiles;
+	private String[] ignoredFilesArray;
+	private String ignoredPaths;
+	private String[] ignoredPathsArray;
 	private boolean pluginConnectorEnabled;
 	private String connectorUrl;
 	private boolean pullMetadataEnabled;
@@ -72,6 +77,42 @@ public class OpenCmsPluginConfigurationData {
 
 	public void setDefaultSyncMode(SyncMode defaultSyncMode) {
 		this.defaultSyncMode = defaultSyncMode;
+	}
+
+	public String getIgnoredFiles() {
+		return ignoredFiles;
+	}
+
+	public String[] getIgnoredFilesArray() {
+		return ignoredFilesArray;
+	}
+
+	public void setIgnoredFiles(String ignoredFiles) {
+		this.ignoredFiles = ignoredFiles;
+		if (ignoredFiles != null && ignoredFiles.length() > 0) {
+			ignoredFilesArray = StringUtils.split(ignoredFiles.trim());
+		}
+		else {
+			ignoredFilesArray = new String[0];
+		}
+	}
+
+	public String getIgnoredPaths() {
+		return ignoredPaths;
+	}
+
+	public String[] getIgnoredPathsArray() {
+		return ignoredPathsArray;
+	}
+
+	public void setIgnoredPaths(String ignoredPaths) {
+		this.ignoredPaths = ignoredPaths;
+		if (ignoredPaths != null && ignoredPaths.length() > 0) {
+			ignoredPathsArray = StringUtils.split(ignoredPaths.trim());
+		}
+		else {
+			ignoredPathsArray = new String[0];
+		}
 	}
 
 	public boolean isPluginConnectorEnabled() {

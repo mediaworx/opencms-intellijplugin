@@ -45,12 +45,21 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	private DefaultActionGroup syncModuleActions;
 	private DefaultActionGroup publishModuleActions;
 
+	private static OpenCmsMainMenu instance;
+
 	Project currentProject;
 
-	public OpenCmsMainMenu(OpenCmsPlugin plugin) {
+	private OpenCmsMainMenu(OpenCmsPlugin plugin) {
 		super(plugin, false);
 		currentProject = plugin.getProject();
 		registerModuleActions();
+	}
+
+	public static OpenCmsMainMenu getInstance(OpenCmsPlugin plugin) {
+		if (instance == null) {
+			instance = new OpenCmsMainMenu(plugin);
+		}
+		return instance;
 	}
 
 	private void registerKeyboardShortcuts() {
@@ -114,7 +123,6 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		if (eventProject != currentProject) {
 			if (isPluginEnabled()) {
 				LOG.info("project switched, reinitializing module actions");
-				registerModuleActions();
 				currentProject = eventProject;
 				registerModuleActions();
 			}

@@ -5,6 +5,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 
 import java.util.*;
@@ -38,12 +39,16 @@ public class OpenCmsModules {
 			ocmsModule.init(moduleConfig);
 			OCMSMODULE_BY_IDEAMODULE.put(ideaModule, ocmsModule);
 		}
+		// TODO: think about using an event instead
+		OpenCmsMainMenu.getInstance(plugin).registerModuleActions();
 	}
 
 	public void unregisterModule(Module ideaModule) {
 		LOG.info("unregistering module: " + ideaModule.getName());
 		allExportPoints = null;
 		OCMSMODULE_BY_IDEAMODULE.remove(ideaModule);
+		// TODO: think about using an event instead
+		OpenCmsMainMenu.getInstance(plugin).registerModuleActions();
 	}
 
 	public Collection<OpenCmsModule> getAllModules() {

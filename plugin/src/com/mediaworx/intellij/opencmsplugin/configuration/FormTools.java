@@ -49,7 +49,7 @@ public class FormTools {
 		field.setText(fieldValue);
 	}
 
-	public static boolean isTextFieldModified(JTextField textField, String configuredText) {
+	public static boolean isTextFieldModified(JTextComponent textField, String configuredText) {
 		if (textField.getText() == null) {
 			return configuredText != null;
 		}

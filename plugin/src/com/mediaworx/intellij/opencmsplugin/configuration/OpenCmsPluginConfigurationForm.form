@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="800" height="500"/>
+      <xy x="20" y="20" width="800" height="581"/>
     </constraints>
     <properties>
       <minimumSize width="800" height="500"/>
@@ -45,6 +45,10 @@
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
+            <rowspec value="top:4dlu:noGrow"/>
+            <rowspec value="top:max(m;116px):noGrow"/>
+            <rowspec value="top:4dlu:noGrow"/>
+            <rowspec value="top:max(d;84px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
@@ -136,7 +140,7 @@
                   <forms/>
                 </constraints>
                 <properties>
-                  <text value="Default Local VFS Root"/>
+                  <text value="Default &amp;Local VFS Root"/>
                 </properties>
               </component>
               <component id="cce4e" class="javax.swing.JTextField" binding="defaultLocalVfsRoot">
@@ -172,22 +176,22 @@
               </component>
               <hspacer id="77a22">
                 <constraints>
-                  <grid row="0" column="0" row-span="16" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="20" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false"/>
                 </constraints>
               </hspacer>
               <component id="b8c62" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="16" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
-                  <text value="Plugin Connector"/>
+                  <text value="Plugin &amp;Connector"/>
                 </properties>
               </component>
               <component id="afe50" class="javax.swing.JCheckBox" binding="usePluginConnectorCheckBox">
                 <constraints>
-                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="16" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -206,7 +210,7 @@
                 <colspec value="left:4dlu:noGrow"/>
                 <colspec value="fill:d:grow"/>
                 <constraints>
-                  <grid row="14" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="18" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties>
@@ -220,7 +224,7 @@
                       <forms/>
                     </constraints>
                     <properties>
-                      <text value="Connector URL"/>
+                      <text value="Connector &amp;URL"/>
                     </properties>
                   </component>
                   <component id="7004" class="javax.swing.JTextField" binding="connectorUrl">
@@ -241,7 +245,7 @@
                       <forms/>
                     </constraints>
                     <properties>
-                      <text value="Manifest Root"/>
+                      <text value="&amp;Manifest Root"/>
                     </properties>
                   </component>
                   <component id="202ad" class="javax.swing.JTextField" binding="manifestRoot">
@@ -262,7 +266,7 @@
                       <forms/>
                     </constraints>
                     <properties>
-                      <text value="Pull Meta Data"/>
+                      <text value="Pull Meta &amp;Data"/>
                     </properties>
                   </component>
                   <component id="fd0d0" class="javax.swing.JCheckBox" binding="pullMetaDataCheckbox">
@@ -306,7 +310,7 @@
                   <forms/>
                 </constraints>
                 <properties>
-                  <text value="Default Sync &amp;Mode"/>
+                  <text value="&amp;Default Sync Mode"/>
                 </properties>
               </component>
               <component id="f07b4" class="javax.swing.JComboBox" binding="defaultSyncMode">
@@ -322,6 +326,59 @@
                   </model>
                 </properties>
               </component>
+              <component id="a4758" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="&amp;Ignored Files"/>
+                </properties>
+              </component>
+              <component id="918f5" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="Ignored &amp;Paths"/>
+                </properties>
+              </component>
+              <scrollpane id="5ddd">
+                <constraints>
+                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="d7c7d" class="javax.swing.JTextArea" binding="ignoredFiles">
+                    <constraints/>
+                    <properties>
+                      <text value=".gitignore&#10;#SyncJob.txt&#10;sass&#10;.config&#10;manifest.xml&#10;log4j.properties"/>
+                    </properties>
+                    <clientProperties>
+                      <html.disable class="java.lang.Boolean" value="true"/>
+                    </clientProperties>
+                  </component>
+                </children>
+              </scrollpane>
+              <scrollpane id="840dc">
+                <constraints>
+                  <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="9ee8d" class="javax.swing.JTextArea" binding="ignoredPaths">
+                    <constraints/>
+                    <properties>
+                      <text value=".git&#10;.svn&#10;.cvs&#10;.sass-cache"/>
+                    </properties>
+                  </component>
+                </children>
+              </scrollpane>
             </children>
           </grid>
         </children>

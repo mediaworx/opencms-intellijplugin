@@ -4,6 +4,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
@@ -31,9 +32,8 @@ public abstract class VfsFileAnalyzer {
 				}
 
 				// file/folder is ignored
-				if (fileOrPathIsIgnored(file)) {
+				if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), file)) {
 					// do nothing (filter VCS files and OpenCms Sync Metadata)
-					LOG.info("file/folder is ignored");
 					continue;
 				}
 
@@ -90,18 +90,23 @@ public abstract class VfsFileAnalyzer {
 
 	protected abstract void handleModuleResourcePath(OpenCmsModule ocmsModule, String moduleResource);
 
-	public static boolean fileOrPathIsIgnored(final VirtualFile virtualFile) {
-		final String pathLC = virtualFile.getPath().toLowerCase();
-		return pathLC.contains(".git")
-				|| pathLC.contains(".svn")
-				|| pathLC.contains(".cvs")
-				|| pathLC.contains(".sass-cache")
-				|| virtualFile.getName().equals("#SyncJob.txt")
-				|| virtualFile.getName().equals("sass")
-				|| virtualFile.getName().equals(".config")
-				|| virtualFile.getName().equals("manifest.xml")
-				|| virtualFile.getName().equals("log4j.properties")
-				|| virtualFile.getName().equals(".gitignore");
+	public static boolean fileOrPathIsIgnored(OpenCmsPluginConfigurationData config, final VirtualFile ideaVFile) {
+		final String path = ideaVFile.getPath();
+		for (String ignoredPath : config.getIgnoredPathsArray()) {
+			if (path.matches(".*/"+ignoredPath+"(/.*)?")) {
+				LOG.info("path " + ignoredPath + " is ignored");
+				return true;
+			}
+		}
+
+		final String filename = ideaVFile.getName();
+		for (String ignoredFilename : config.getIgnoredFilesArray()) {
+			if (filename.equals(ignoredFilename)) {
+				LOG.info("file " + ignoredFilename + " is ignored");
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean hasWarnings() {
