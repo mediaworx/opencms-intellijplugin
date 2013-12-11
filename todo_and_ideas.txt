@@ -1,0 +1,58 @@
+GO ON:
+- Excluded Files/Folders konfigurierbar
+- Sync file / publish file in Editor + Tab Menü nur anbieten, wenn das file auch eine Modulressource ist, ansonsten disablen
+- Nachdenken, ob für die mehrfach verwendeten Actions nicht jeweils eine einzige Instanz ausreichen würde. Wie machen?
+  Über statische getInstance-Methoden? Oder ActionFactory/ActionManager? Würde einige Objekte sparen, besonders bei
+  vielen Modulen.
+- Idee: Version des OpenCms-Moduls konfigurierbar in IntelliJ-Modul: Keep Module Version from OpenCms / Use specific
+  Version (dort dann unsere Maven-Versions-Variable einbinden)
+- Refactoring: alle Referenzen auf Project und Plugin aus Constructoren entfernen, jeweils dynamisch ermitteln, bloss
+  nicht statisch, immer beim Event bzw. bei der Action! PRÜFEN, OB DAS NÖTIG IST, scheint doch so zu funktionieren,
+  aber sollte eben geprüft werden.
+  Kandidaten für Probleme: ToolWindow und Console. Hat jede IntelliJ-Instanz eine eigene Console?
+- Testen, testen, testen
+- Dokumentation!
+- Idee: Sync/Publish einer Java-Klasse unter src triggert Sync/Publish der entsprechenden kompilierten Klasse
+- Idee: Integration OpenCms-Logfile in ToolWindow (analog zu Logfile-Integration von IntelliJ)
+- Idee: VFS-Browser im ToolWindow (als zusätzlicher Tab neben Console), Preview eines selektierten Files.
+- Idee: Clear Modules Before Sync (dafür muss man dann aber auf die Publizierung der Löschung warten, wohl eher zu viel Aufwand!)
+- Mit Kara klären: Was machen wir mit der Modul-Version im Manifest-Stub?
+- Native2ASCII in IntelliJ Build integrieren
+
+DONE
+- Check behaviour if plugin is activated/deactivated in a project (all menus and the ToolWindow should be enabled/disabled)
+- Idee: Watchdog überwacht Project switches und aktiviert/deaktiviert OpenCms Submenüs => anders umgesetzt, aber DONE
+- Refactoring: OpenCms-Menüs aus OpenCmsPlugin gelöst und in eigene Klassen ausgelagert
+- Refactoring: Neu-Strukturierung der Actions (alle gemeinsamen Funktionalitäten in abstrakte Superklassen, individuelle
+  Funktionen jeweils in Sub-Klassen)
+- Refactoring: PullMetaData Actions zusammenziehen?
+- Refactoring: Actions neu organisieren (analog zu PublishAction), Funktionalitäten zusammenziehen. Erkennen von wo der
+  Aufruf kommt über event.place() oder wie das heißt? Eventuell pro Typ je ein ActionHandler mit einer Instanz, aber
+  viele schlanke Action-Instanzen?
+- Nachdenken, ob wirklich einzelne Action-Instanzen benötigt werden, oder ob eine Instanz alle Menü-Einträge bedienen
+  kann => Ja, es werden einzelne Instanzen benötigt (IntelliJ benötigt je Menü-Eintrag eine Instanz). => FALSCH, es
+  werden keine eigenen Instanzen benötigt, eine Action kann auch in mehreren Menüs eingebunden werden, aber ich müsste
+  meine gesamte Architektur umstellen, um Actions mehrfach zu verwenden. Mal darüber nachdenken (neuer Punkt oben)
+- Refactoring: FileChangeComponent wegwerfen, den Kram im OpenCmsPlugin direkt machen
+- Publizierung aus dem OpenCms-Menü ermöglichen
+- Rechtsklick-Publizierung ermöglichen
+- OpenCms-Optionen als Submenü in ProjectPopup
+- Automatisierte Publizierung (FILECHANGE bzw. ALL)
+- Überarbeitung Konfiguration für Plugin-Connector:
+    - neue Checkbox: Pull Metadata (das dann auch im Code berücksichtigen!)
+    - neue Checkbox: Auto publish after file changes (delete/move/rename)
+    - alle Connector-spezifischen Felder ausblenden, wenn Connector nicht aktiv.
+- Bestätigungs-Dialog bei "Pull Metadata for Module" überspringen.
+- Kriegt man die einzelnen Module "Sync [modulname]" in das OpenCms-Menü? => Ja, krigt man, DONE
+- Refactoring action initialization (alles aus XML raus, dynamisch in Java)
+- SyncJob parallelisieren, in console streamen (wie macht man sowas in Swing ohne Warnings?)
+- Neue Action "Pull all meta infos" im Menü und bei Rechtsklick auf Modul (sofern Connector konfiguriert ist)
+- Refactor OnFileChangeComponent, split into methods (delete/move/rename...)
+- Refresh Meta Data after file change events
+- Wenn nicht in ModuleResource, dann alle ModuleResources unterhalb des gewählten Pfads suchen und syncen
+- System.out auf Logging umstellen (schon teilweise gemacht)
+- Neue Action für File-Tab-Leiste: Sync all open tabs
+- Swing Thread Probleme lösen (Warnigs im IDEA-Log). Wie macht man das richtig? Im IntelliJ Source-Code kucken, wie die
+  das machen => Eventuell in LogConsoleBase
+- PluginConnector-Modul für OpenCms umsetzen
+    - Verarbeitung Resource-Metadaten (Properties, Relations, ACLs)

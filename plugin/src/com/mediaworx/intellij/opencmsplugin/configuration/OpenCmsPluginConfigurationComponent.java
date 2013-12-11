@@ -79,6 +79,8 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 
 	public void apply() throws ConfigurationException {
 		if (form != null) {
+			boolean pluginActivationWasModified = form.isPluginActivationModified(configurationData.isOpenCmsPluginEnabled());
+
 			// Get data from editor to component
 			form.getData(configurationData);
 
@@ -102,6 +104,15 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 			}
 			else {
 				plugin.setPluginConnector(null);
+			}
+
+			if (pluginActivationWasModified) {
+				if (configurationData.isOpenCmsPluginEnabled()) {
+					plugin.enable();
+				}
+				else {
+					plugin.disable();
+				}
 			}
 		}
 	}

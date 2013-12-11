@@ -98,7 +98,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 
 	public boolean isModified(OpenCmsPluginConfigurationData data) {
 		return
-			enabledCheckBox.isSelected() != data.isOpenCmsPluginEnabled() ||
+			isPluginActivationModified(data.isOpenCmsPluginEnabled()) ||
 			FormTools.isTextFieldModified(repository, data.getRepository()) ||
 			FormTools.isTextFieldModified(username, data.getUsername()) ||
 			FormTools.isTextFieldModified(password, data.getPassword()) ||
@@ -111,6 +111,10 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot()) ||
 			!FormTools.getAutoPublishModeFromCombobox(autoPublishMode).equals(data.getAutoPublishMode())
 		;
+	}
+
+	public boolean isPluginActivationModified(boolean wasActivated) {
+		return enabledCheckBox.isSelected() != wasActivated;
 	}
 
 	private void createUIComponents() {

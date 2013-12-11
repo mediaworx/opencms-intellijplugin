@@ -51,6 +51,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private OpenCmsToolWindowConsole console;
 	private ActionManager actionManager;
 
+	private boolean wasInitialized = false;
+
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
 		openCmsModules = new OpenCmsModules(this);
@@ -61,23 +63,39 @@ public class OpenCmsPlugin implements ProjectComponent {
 		LOG.warn("initComponent called, project: " + project.getName());
 		actionManager = ActionManager.getInstance();
 		config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getConfigurationData();
-
-		if (config != null && config.isOpenCmsPluginEnabled()) {
-			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
-			if (config.isPluginConnectorEnabled()) {
-				pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword());
-			}
-		}
 	}
 
 	public void projectOpened() {
 		if (config != null && config.isOpenCmsPluginEnabled()) {
-			registerMenus();
-			registerListeners();
+			enable();
 		}
 	}
 
 	public void projectClosed() {
+	}
+
+	public void enable() {
+		if (!wasInitialized) {
+			if (config != null && config.isOpenCmsPluginEnabled()) {
+				if (config.isPluginConnectorEnabled()) {
+					pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword());
+				}
+			}
+			registerMenus();
+			registerListeners();
+			wasInitialized = true;
+		}
+		else {
+			setToolWindowAvailable(true);
+		}
+	}
+
+	public void disable() {
+		if (wasInitialized) {
+			// menus are auto disabled because all actions are hidden if the plugin is deactivated, so only the
+			// ToolWindow has to be disabled
+			setToolWindowAvailable(false);
+		}
 	}
 
 	private void registerMenus() {
@@ -177,6 +195,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	public OpenCmsConfiguration getOpenCmsConfiguration() {
+		if (openCmsConfiguration == null) {
+			openCmsConfiguration = new OpenCmsConfiguration(config.getWebappRoot());
+		}
 		return openCmsConfiguration;
 	}
 
@@ -228,6 +249,11 @@ public class OpenCmsPlugin implements ProjectComponent {
 			initToolWindow();
 		}
 		return toolWindow;
+	}
+
+	public void setToolWindowAvailable(boolean available) {
+		ToolWindow toolWindow = getToolWindow();
+		toolWindow.setAvailable(available, null);
 	}
 
 	public void showConsole() {

@@ -4,7 +4,7 @@ Menu Actions
 		Sync all open Editor Tabs
 		Sync all Modules
 		--------
-		[Sync Module X xxx] für alle OpenCmsModule im Projekt
+		[Sync Module X xxx] for all OpenCmsModules in the project
 		--------
 		Pull Meta Data for selected Modules
 		Pull all Meta Data
@@ -13,7 +13,7 @@ Menu Actions
 		Publish all open Editor Tabs
 		Publish all Modules
 		--------
-		[Publish Module X xxx] für alle OpenCmsModule im Projekt
+		[Publish Module X xxx] for all OpenCmsModules in the project
 
 	Project Popup Menu
 		Sync selected Modules/Folders/Files (dynamic text depending on selection)
@@ -30,6 +30,18 @@ Menu Actions
 		Publish File
 		Publish all open Tabs
 
+
+Plugin Activation
+	Case 1:
+		Start IntelliJ with a project that has the plugin deactivated => No OpenCms menus visible?
+		Activate Plugin => OpenCms menus visible and enabled?
+		Deactivate Plugin => OpenCms menus visible and disabled?
+		Reactivate Plugin => OpenCms menus visible and enabled?
+
+	Case 2:
+		Start IntelliJ with a project that has the plugin activated => OpenCms menus visible and enabled?
+		Deactivate Plugin => OpenCms menus visible and disabled?
+		Reactivate Plugin => OpenCms menus visible and enabled?
 
 
 
@@ -57,7 +69,11 @@ FILE EVENTS
 	    a) within the same module
 	    b) from one module to another
 	    c) out of a module (to some folder outside of any module)
+	    d) moving a file from outside of a module to a module folder is not handled since the file does not exits on
+	       the VFS yet
 	6. Move Folder
 	    a) within the same module
 	    b) from one module to another
 	    c) out of a module (to some folder outside of any module)
+	    d) moving a folder from outside of a module to a module folder is not handled since the file does not exits on
+	       the VFS yet

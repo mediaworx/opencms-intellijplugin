@@ -30,7 +30,7 @@
             </constraints>
             <properties>
               <actionCommand value="Active"/>
-              <text value="Activate Plugin for this Project (Restart IntelliJ after changing this setting)"/>
+              <text value="Activate Plugin for this Project"/>
             </properties>
           </component>
           <grid id="a22aa" binding="formPanel" layout-manager="FormLayout">
