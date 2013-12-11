@@ -13,7 +13,7 @@ public class OpenCmsProjectPopupMenu extends OpenCmsMenu {
 	private static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.ProjectPopupPublishAction";
 
 	public OpenCmsProjectPopupMenu(OpenCmsPlugin plugin) {
-		super(plugin, true);
+		super(plugin, "Project specific OpenCms actions", true);
 	}
 
 	@Override

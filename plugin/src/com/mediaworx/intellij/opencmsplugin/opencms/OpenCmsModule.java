@@ -7,6 +7,7 @@ import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
 import com.mediaworx.intellij.opencmsplugin.tools.ModuleTools;
+import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
 
 import java.util.List;
 
@@ -129,6 +130,9 @@ public class OpenCmsModule {
 	}
 
 	public boolean isIdeaVFileInVFSPath(VirtualFile ideaVFile) {
+		if (VfsFileAnalyzer.fileOrPathIsIgnored(plugin.getPluginConfiguration(), ideaVFile)) {
+			return false;
+		}
 		String filePath = ideaVFile.getPath();
 		return filePath.startsWith(localVfsRoot);
 	}

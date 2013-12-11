@@ -44,27 +44,29 @@ public class ActionTools {
 	}
 
 	public static void setSelectionSpecificActionText(AnActionEvent event, OpenCmsPlugin plugin, String prefix) {
+		boolean enableAction = false;
 		String actionPlace = event.getPlace();
-		if (!actionPlace.equals(ActionPlaces.EDITOR_POPUP) && !actionPlace.equals(ActionPlaces.EDITOR_TAB_POPUP)) {
-			VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
-			FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
 
-			boolean enableAction = false;
-			if (selectedFiles != null && selectedFiles.length > 0) {
-				fileTypeCounter.count(selectedFiles);
-				if (fileTypeCounter.hasEntities()) {
-					enableAction = true;
-				}
+		VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+		FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
+
+		if (selectedFiles != null && selectedFiles.length > 0) {
+			fileTypeCounter.count(selectedFiles);
+			if (fileTypeCounter.hasEntities()) {
+				enableAction = true;
 			}
+		}
 
+		if (!actionPlace.equals(ActionPlaces.EDITOR_POPUP) && !actionPlace.equals(ActionPlaces.EDITOR_TAB_POPUP)) {
 			String actionText = prefix + " selected " + fileTypeCounter.getEntityNames();
 			event.getPresentation().setText(actionText);
-			if (enableAction) {
-				event.getPresentation().setEnabled(true);
-			}
-			else {
-				event.getPresentation().setEnabled(false);
-			}
+		}
+
+		if (enableAction) {
+			event.getPresentation().setEnabled(true);
+		}
+		else {
+			event.getPresentation().setEnabled(false);
 		}
 	}
 

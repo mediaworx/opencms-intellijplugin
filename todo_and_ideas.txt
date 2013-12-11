@@ -1,5 +1,4 @@
 GO ON:
-- Sync file / publish file in Editor + Tab Menü nur anbieten, wenn das file auch eine Modulressource ist, ansonsten disablen
 - Nachdenken, ob für die mehrfach verwendeten Actions nicht jeweils eine einzige Instanz ausreichen würde. Wie machen?
   Über statische getInstance-Methoden? Oder ActionFactory/ActionManager? Würde einige Objekte sparen, besonders bei
   vielen Modulen.
@@ -19,6 +18,7 @@ GO ON:
 - Native2ASCII in IntelliJ Build integrieren
 
 DONE
+- Sync file / publish file in Editor + Tab Menü nur anbieten, wenn das file auch eine Modulressource ist, ansonsten disablen
 - Excluded Files/Folders konfigurierbar
 - Check behaviour if plugin is activated/deactivated in a project (all menus and the ToolWindow should be enabled/disabled)
 - Idee: Watchdog überwacht Project switches und aktiviert/deaktiviert OpenCms Submenüs => anders umgesetzt, aber DONE

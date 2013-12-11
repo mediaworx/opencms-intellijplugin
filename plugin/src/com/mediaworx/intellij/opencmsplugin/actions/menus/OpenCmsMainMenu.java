@@ -50,7 +50,7 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	Project currentProject;
 
 	private OpenCmsMainMenu(OpenCmsPlugin plugin) {
-		super(plugin, false);
+		super(plugin, "All OpenCms actions", false);
 		currentProject = plugin.getProject();
 		registerModuleActions();
 	}

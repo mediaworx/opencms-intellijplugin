@@ -15,7 +15,7 @@ public class OpenCmsEditorTabPopupMenu extends OpenCmsMenu {
 	private static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupPublishOpenTabsAction";
 
 	public OpenCmsEditorTabPopupMenu(OpenCmsPlugin plugin) {
-		super(plugin, true);
+		super(plugin, "Editor Tab specific OpenCms Actions", true);
 	}
 
 	@Override

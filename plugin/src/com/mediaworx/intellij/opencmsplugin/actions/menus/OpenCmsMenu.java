@@ -15,8 +15,9 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	protected OpenCmsPlugin plugin;
 	protected ActionManager actionManager;
 
-	protected OpenCmsMenu(OpenCmsPlugin plugin, boolean popup) {
+	protected OpenCmsMenu(OpenCmsPlugin plugin, String description, boolean popup) {
 		super("_OpenCms", popup);
+		getTemplatePresentation().setDescription(description);
 		this.plugin = plugin;
 		actionManager = ActionManager.getInstance();
 		registerActions();
@@ -57,4 +58,5 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	public boolean disableIfNoVisibleChildren() {
 		return true;
 	}
+
 }
