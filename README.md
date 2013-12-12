@@ -1,4 +1,5 @@
 opencms-intellij-plugin
 =======================
 
-OpenCms Plugin for IntelliJ IDE
+Plugin for the IntelliJ IDE that allows you to sync between your real file system and the OpenCms VFS. 
+Work in progress, not ready for public use yet. Documentation will follow in January 2014.
