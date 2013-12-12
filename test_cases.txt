@@ -26,7 +26,7 @@ Menu Actions
 
 	Editor Tab Popup Menu
 		Sync File
-		Sync all open Tabs
+		Sync all open Editor Tabs
 		Publish File
 		Publish all open Tabs
 
