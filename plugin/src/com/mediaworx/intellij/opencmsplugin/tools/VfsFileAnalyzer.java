@@ -31,16 +31,17 @@ public abstract class VfsFileAnalyzer {
 					return;
 				}
 
-				// file/folder is ignored
-				if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), file)) {
-					// do nothing (filter VCS files and OpenCms Sync Metadata)
-					continue;
-				}
-
 				// if the file does not belong to a module, ignore
 				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(file);
 				if (ocmsModule == null) {
 					LOG.info("file/folder is not within a configured OpenCms module, ignore");
+					continue;
+				}
+
+				// file/folder is ignored
+				if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), file)) {
+					// do nothing (filter VCS files and OpenCms Sync Metadata)
+					plugin.getConsole().info("File or path is ignored: " + file.getPath());
 					continue;
 				}
 
