@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="800" height="581"/>
+      <xy x="20" y="20" width="800" height="605"/>
     </constraints>
     <properties>
       <minimumSize width="800" height="500"/>
@@ -46,9 +46,8 @@
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="top:max(m;132px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="top:max(d;84px):noGrow"/>
+            <rowspec value="fill:d:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
@@ -63,7 +62,9 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
               <forms defaultalign-vert="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <minimumSize width="500" height="548"/>
+            </properties>
             <border type="none"/>
             <children>
               <component id="61a28" class="javax.swing.JLabel">
@@ -176,13 +177,13 @@
               </component>
               <hspacer id="77a22">
                 <constraints>
-                  <grid row="0" column="0" row-span="20" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="19" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false"/>
                 </constraints>
               </hspacer>
               <component id="b8c62" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="16" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="15" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -191,10 +192,11 @@
               </component>
               <component id="afe50" class="javax.swing.JCheckBox" binding="usePluginConnectorCheckBox">
                 <constraints>
-                  <grid row="16" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="15" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
+                  <minimumSize width="400" height="22"/>
                   <text value="Use the Plugin Connector (OpenCms Module providing meta information and publish functionality)"/>
                 </properties>
               </component>
@@ -210,11 +212,12 @@
                 <colspec value="left:4dlu:noGrow"/>
                 <colspec value="fill:d:grow"/>
                 <constraints>
-                  <grid row="18" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="17" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
+                  <minimumSize width="500" height="108"/>
                 </properties>
                 <border type="none"/>
                 <children>
@@ -229,7 +232,7 @@
                   </component>
                   <component id="7004" class="javax.swing.JTextField" binding="connectorUrl">
                     <constraints>
-                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                         <preferred-size width="150" height="-1"/>
                       </grid>
                       <forms defaultalign-horz="false"/>
@@ -275,6 +278,7 @@
                       <forms/>
                     </constraints>
                     <properties>
+                      <minimumSize width="400" height="22"/>
                       <text value="Enable Meta Data Pull (VFS module and resource meta data will be pulled to the manifest root)"/>
                     </properties>
                   </component>
@@ -298,6 +302,7 @@
                         <item value="FILECHANGE - File changes (delete, move and rename) will be published automatically"/>
                         <item value="ALL - All resources synced to the VFS will be published automatically"/>
                       </model>
+                      <preferredSize width="400" height="24"/>
                     </properties>
                   </component>
                 </children>
@@ -319,6 +324,7 @@
                   <forms/>
                 </constraints>
                 <properties>
+                  <minimumSize width="400" height="24"/>
                   <model>
                     <item value="PUSH - local FS is master, VFS resources not existing locally will be deleted from the VFS"/>
                     <item value="SYNC - sync files to and from the VFS based on the modification date"/>
@@ -326,59 +332,145 @@
                   </model>
                 </properties>
               </component>
-              <component id="a4758" class="javax.swing.JLabel">
+              <grid id="4df14" layout-manager="FormLayout">
+                <rowspec value="center:max(m;132px):noGrow"/>
+                <rowspec value="top:4dlu:noGrow"/>
+                <rowspec value="center:83px:noGrow"/>
+                <colspec value="fill:125px:noGrow"/>
+                <colspec value="left:4dlu:noGrow"/>
+                <colspec value="fill:d:grow"/>
+                <colspec value="left:4dlu:noGrow"/>
+                <colspec value="fill:300px:noGrow"/>
                 <constraints>
-                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms/>
+                  <grid row="13" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <text value="&amp;Ignored Files"/>
+                  <font swing-font="Label.font"/>
+                  <minimumSize width="450" height="221"/>
                 </properties>
-              </component>
-              <component id="918f5" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <text value="Ignored &amp;Folders"/>
-                </properties>
-              </component>
-              <scrollpane id="5ddd">
-                <constraints>
-                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                  <forms defaultalign-horz="false" defaultalign-vert="false"/>
-                </constraints>
-                <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="d7c7d" class="javax.swing.JTextArea" binding="ignoredFiles">
-                    <constraints/>
+                  <component id="a4758" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms defaultalign-vert="false"/>
+                    </constraints>
                     <properties>
-                      <text value=".gitignore&#10;.svnignore&#10;.cvsignore&#10;.config&#10;#SyncJob.txt&#10;manifest.xml&#10;desktop.ini&#10;sass"/>
-                    </properties>
-                    <clientProperties>
-                      <html.disable class="java.lang.Boolean" value="true"/>
-                    </clientProperties>
-                  </component>
-                </children>
-              </scrollpane>
-              <scrollpane id="840dc">
-                <constraints>
-                  <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                  <forms defaultalign-horz="false" defaultalign-vert="false"/>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children>
-                  <component id="9ee8d" class="javax.swing.JTextArea" binding="ignoredPaths">
-                    <constraints/>
-                    <properties>
-                      <text value=".git&#10;.svn&#10;.cvs&#10;.sass-cache"/>
+                      <text value="&amp;Ignored Files"/>
                     </properties>
                   </component>
+                  <component id="918f5" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms defaultalign-vert="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Ignored &amp;Folders"/>
+                    </properties>
+                  </component>
+                  <scrollpane id="5ddd">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="d7c7d" class="javax.swing.JTextArea" binding="ignoredFiles">
+                        <constraints/>
+                        <properties>
+                          <font swing-font="TextArea.font"/>
+                          <text value="\.gitignore&#10;\.svnignore&#10;\.cvsignore&#10;\.config&#10;#SyncJob\.txt&#10;manifest\.xml&#10;desktop\.ini&#10;sass"/>
+                        </properties>
+                        <clientProperties>
+                          <html.disable class="java.lang.Boolean" value="true"/>
+                        </clientProperties>
+                      </component>
+                    </children>
+                  </scrollpane>
+                  <scrollpane id="840dc">
+                    <constraints>
+                      <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="9ee8d" class="javax.swing.JTextArea" binding="ignoredPaths">
+                        <constraints/>
+                        <properties>
+                          <font swing-font="TextArea.font"/>
+                          <text value="\.git&#10;\.svn&#10;\.cvs&#10;\.sass-cache"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </scrollpane>
+                  <grid id="443f8" layout-manager="FormLayout">
+                    <rowspec value="top:d:noGrow"/>
+                    <rowspec value="top:5px:noGrow"/>
+                    <rowspec value="fill:d:noGrow"/>
+                    <colspec value="fill:300px:noGrow"/>
+                    <constraints>
+                      <grid row="0" column="4" row-span="3" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="true"/>
+                    </properties>
+                    <border type="line">
+                      <color color="-16777216"/>
+                    </border>
+                    <children>
+                      <component id="8c534" class="javax.swing.JTextArea" binding="ignoredFilesAndFoldersTextArea" default-binding="true">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="50"/>
+                          </grid>
+                          <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                        </constraints>
+                        <properties>
+                          <background color="-986896"/>
+                          <editable value="false"/>
+                          <enabled value="true"/>
+                          <focusable value="false"/>
+                          <font swing-font="EditorPane.font"/>
+                          <lineWrap value="true"/>
+                          <maximumSize width="298" height="2147483647"/>
+                          <minimumSize width="298" height="64"/>
+                          <opaque value="false"/>
+                          <preferredSize width="298" height="64"/>
+                          <requestFocusEnabled value="false"/>
+                          <text value="Ignored files and folders use Regular Expressions. &#10;Dots (&quot;.&quot;) have to be escaped (&quot;\.&quot;) if meant literally.&#10;&#10;You can use the full Regular Expression syntax, e.g.:"/>
+                          <wrapStyleWord value="true"/>
+                        </properties>
+                      </component>
+                      <component id="f9ce5" class="javax.swing.JTextArea" binding="canBeUsedAsTextArea" default-binding="true">
+                        <constraints>
+                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="8" fill="2" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="50"/>
+                          </grid>
+                          <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                        </constraints>
+                        <properties>
+                          <background color="15790320"/>
+                          <editable value="false"/>
+                          <focusable value="false"/>
+                          <font swing-font="EditorPane.font"/>
+                          <lineWrap value="true"/>
+                          <maximumSize width="298" height="2147483647"/>
+                          <minimumSize width="298" height="128"/>
+                          <opaque value="false"/>
+                          <preferredSize width="298" height="128"/>
+                          <requestFocusEnabled value="false"/>
+                          <text value="  • &quot;.*&quot; can be used as wildcard&#10;  • &quot;.+&quot; matches at least one character&#10;  • &quot;[0-9]+&quot; matches 1-n numbers&#10;  • &quot;[a-z]+&quot; matches 1-n lowercase letters&#10;  • &quot;[A-Z]+&quot; matches 1-n uppercase letters&#10;&#10;Use the search engine of your choice to find out more about the power of Regular Expressions."/>
+                          <wrapStyleWord value="true"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
                 </children>
-              </scrollpane>
+              </grid>
             </children>
           </grid>
         </children>

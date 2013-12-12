@@ -113,7 +113,7 @@ public abstract class VfsFileAnalyzer {
 
 		final String filename = ideaVFile.getName();
 		for (String ignoredFilename : config.getIgnoredFilesArray()) {
-			if (filename.equals(ignoredFilename)) {
+			if (filename.matches(ignoredFilename)) {
 				LOG.info("file " + ignoredFilename + " is ignored");
 				return true;
 			}

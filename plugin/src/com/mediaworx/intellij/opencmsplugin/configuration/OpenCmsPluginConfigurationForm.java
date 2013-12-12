@@ -30,6 +30,8 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	private JPanel connectorOptionsPanel;
 	private JCheckBox pullMetaDataCheckbox;
 	private JComboBox autoPublishMode;
+	private JTextArea ignoredFilesAndFoldersTextArea;
+	private JTextArea canBeUsedAsTextArea;
 
 	public OpenCmsPluginConfigurationForm() {
 		formPanel.setVisible(false);
