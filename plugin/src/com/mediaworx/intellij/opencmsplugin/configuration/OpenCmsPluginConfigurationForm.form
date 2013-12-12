@@ -46,7 +46,7 @@
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="top:max(m;116px):noGrow"/>
+            <rowspec value="top:max(m;132px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="top:max(d;84px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
@@ -284,7 +284,7 @@
                       <forms/>
                     </constraints>
                     <properties>
-                      <text value="Auto Publish mode"/>
+                      <text value="Auto &amp;Publish Mode"/>
                     </properties>
                   </component>
                   <component id="f7bbf" class="javax.swing.JComboBox" binding="autoPublishMode">
@@ -341,7 +341,7 @@
                   <forms/>
                 </constraints>
                 <properties>
-                  <text value="Ignored &amp;Paths"/>
+                  <text value="Ignored &amp;Folders"/>
                 </properties>
               </component>
               <scrollpane id="5ddd">
@@ -355,7 +355,7 @@
                   <component id="d7c7d" class="javax.swing.JTextArea" binding="ignoredFiles">
                     <constraints/>
                     <properties>
-                      <text value=".gitignore&#10;#SyncJob.txt&#10;sass&#10;.config&#10;manifest.xml&#10;log4j.properties"/>
+                      <text value=".gitignore&#10;.svnignore&#10;.cvsignore&#10;.config&#10;#SyncJob.txt&#10;manifest.xml&#10;desktop.ini&#10;sass"/>
                     </properties>
                     <clientProperties>
                       <html.disable class="java.lang.Boolean" value="true"/>

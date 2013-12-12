@@ -1,4 +1,7 @@
 GO ON:
+- Bug: wenn zwei übergeordnete Ordner selektiert werden, werden geänderte Dateien doppelt verarbeitet und gesynct => ignorelist führen
+- Bug: Pull Meta Data ist nicht ausgegraut, obwohl connector aus ist
+- regex escape ignored paths
 - Testen, testen, testen
 - Dokumentation (auch im Wiki)!
 - Idee: Sync/Publish einer Java-Klasse unter src triggert Compilation und Sync/Publish der entsprechenden kompilierten Klasse
@@ -8,6 +11,8 @@ GO ON:
 - Grundsätzlich: Native2ASCII in IntelliJ Build integrieren
 
 DONE
+- ignored paths => ignored folders
+- Modul-Konfiguration: OpenCms Module Name => OpenCms Module Package Name
 - HAT SICH ERLEDIGT: Mit Kara klären: Was machen wir mit der Modul-Version im Manifest-Stub?
 - Idee: Version des OpenCms-Moduls konfigurierbar in IntelliJ-Modul: Keep Module Version from OpenCms / Use specific
   Version (dort dann unsere Maven-Versions-Variable einbinden)
