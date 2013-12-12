@@ -1,13 +1,19 @@
 GO ON:
 - Testen, testen, testen
 - Dokumentation (auch im Wiki)!
+- Idee: Generate manifest action
+- Idee: Generate OpenCms Module Zip action
+
+IDEEN FÜR ZUKÜNFTIGE VERSIONEN:
 - Idee: Sync/Publish einer Java-Klasse unter src triggert Compilation und Sync/Publish der entsprechenden kompilierten Klasse
 - Idee: Integration OpenCms-Logfile in ToolWindow (analog zu Logfile-Integration von IntelliJ)
 - Idee: VFS-Browser im ToolWindow (als zusätzlicher Tab neben Console), Preview eines selektierten Files.
 - Idee: Clear Modules Before Sync (dafür muss man dann aber auf die Publizierung der Löschung warten, wohl eher zu viel Aufwand!)
-- Grundsätzlich: Native2ASCII in IntelliJ Build integrieren
 
-DONE
+SONSTIGES:
+- Grundsätzlich für b4f-Projekt: Native2ASCII in IntelliJ Build integrieren
+
+DONE:
 - Bug: Pull Meta Data ist nicht ausgegraut, obwohl connector aus ist
 - Regex support für ignored files und ignored folders
 - Bug: wenn zwei übergeordnete Ordner selektiert werden, werden geänderte Dateien doppelt verarbeitet und gesynct => ignorelist führen
