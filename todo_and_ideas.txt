@@ -1,5 +1,4 @@
 GO ON:
-- Bug: Pull Meta Data ist nicht ausgegraut, obwohl connector aus ist
 - Testen, testen, testen
 - Dokumentation (auch im Wiki)!
 - Idee: Sync/Publish einer Java-Klasse unter src triggert Compilation und Sync/Publish der entsprechenden kompilierten Klasse
@@ -9,6 +8,7 @@ GO ON:
 - Grundsätzlich: Native2ASCII in IntelliJ Build integrieren
 
 DONE
+- Bug: Pull Meta Data ist nicht ausgegraut, obwohl connector aus ist
 - Regex support für ignored files und ignored folders
 - Bug: wenn zwei übergeordnete Ordner selektiert werden, werden geänderte Dateien doppelt verarbeitet und gesynct => ignorelist führen
 - ignored paths => ignored folders
