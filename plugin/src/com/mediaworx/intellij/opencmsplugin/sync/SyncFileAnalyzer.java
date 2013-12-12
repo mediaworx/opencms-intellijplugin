@@ -105,6 +105,15 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			return;
 		}
 
+		// the file has already been handled, so skip
+		if (handledPaths.contains(ideaVFile.getPath())) {
+			LOG.info("already handled " + ideaVFile.getPath() + ", skipping");
+			return;
+		}
+		else {
+			handledPaths.add(ideaVFile.getPath());
+		}
+
 		if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), ideaVFile)) {
 			return;
 		}

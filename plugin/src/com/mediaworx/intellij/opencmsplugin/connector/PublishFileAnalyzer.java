@@ -22,11 +22,13 @@ public class PublishFileAnalyzer extends VfsFileAnalyzer {
 	@Override
 	protected void handleModuleResource(OpenCmsModule ocmsModule, VirtualFile file) {
 		publishList.add(ocmsModule.getVfsPathForIdeaVFile(file));
+		handledPaths.add(file.getPath());
 	}
 
 	@Override
 	protected void handleModuleResourcePath(OpenCmsModule ocmsModule, String moduleResourceVfsPath) {
 		publishList.add(moduleResourceVfsPath);
+		handledPaths.add(ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
 	}
 
 	public List<String> getPublishList() {

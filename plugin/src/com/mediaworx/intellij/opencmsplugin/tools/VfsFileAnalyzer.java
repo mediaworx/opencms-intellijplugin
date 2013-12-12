@@ -8,6 +8,8 @@ import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigura
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
+import java.util.HashSet;
+
 public abstract class VfsFileAnalyzer {
 
 	private static final Logger LOG = Logger.getInstance(VfsFileAnalyzer.class);
@@ -15,12 +17,15 @@ public abstract class VfsFileAnalyzer {
 	protected final OpenCmsPlugin plugin;
 	protected final VirtualFile[] files;
 	protected final StringBuilder warnings;
+	protected HashSet<String> handledPaths;
 	protected ProgressIndicator progressIndicator;
+
 
 	public VfsFileAnalyzer(final OpenCmsPlugin plugin, final VirtualFile[] files) throws CmsConnectionException {
 		this.files = files;
 		this.plugin = plugin;
 		warnings = new StringBuilder();
+		handledPaths = new HashSet<String>();
 	}
 
 	public void analyzeFiles() {
@@ -31,17 +36,23 @@ public abstract class VfsFileAnalyzer {
 					return;
 				}
 
+				if (handledPaths.contains(file.getPath())) {
+					continue;
+				}
+
 				// if the file does not belong to a module, ignore
 				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(file);
 				if (ocmsModule == null) {
 					LOG.info("file/folder is not within a configured OpenCms module, ignore");
+					handledPaths.add(file.getPath());
 					continue;
 				}
 
 				// file/folder is ignored
 				if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), file)) {
-					// do nothing (filter VCS files and OpenCms Sync Metadata)
+					// do nothing (filter files defined in the file and folder ignore lists)
 					plugin.getConsole().info("File or path is ignored: " + file.getPath());
+					handledPaths.add(file.getPath());
 					continue;
 				}
 
