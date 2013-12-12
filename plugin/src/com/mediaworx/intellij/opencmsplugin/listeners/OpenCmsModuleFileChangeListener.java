@@ -166,12 +166,11 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 	private void handleFileDeleteEvent(VFileEvent event) throws CmsConnectionException {
 		VirtualFile ideaVFile = event.getFile();
 		if (ideaVFile != null) {
-			LOG.info("The following file was deleted: " + ideaVFile.getPath());
-
 			OpenCmsModule ocmsModule = openCmsModules.getModuleForIdeaModule(deletedFileModuleLookup.get(ideaVFile));
 
 			// check if the file belongs to an OpenCms module
 			if (ocmsModule  != null && ocmsModule.isIdeaVFileModuleResource(ideaVFile)) {
+				LOG.info("The following module resource was deleted: " + ideaVFile.getPath());
 				String vfsPath = ocmsModule.getVfsPathForIdeaVFile(ideaVFile);
 				if (getVfsAdapter().exists(vfsPath)) {
 					vfsFilesToBeDeleted.add(new VfsFileDeleteInfo(ocmsModule, vfsPath, ideaVFile.isDirectory()));
@@ -184,8 +183,6 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		VirtualFile ideaVFile = event.getFile();
 
 		if (ideaVFile != null) {
-			String newRfsPath = ideaVFile.getPath();
-			LOG.info("The following file was moved: " + newRfsPath);
 
 			VirtualFile oldParent = ((VFileMoveEvent)event).getOldParent();
 			VirtualFile newParent = ((VFileMoveEvent)event).getNewParent();
@@ -199,6 +196,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				String oldVfsPath = oldParentPath + "/" + ideaVFile.getName();
 				if (getVfsAdapter().exists(oldVfsPath)) {
 					String newParentPath = newOcmsModule.getVfsPathForIdeaVFile(newParent);
+					LOG.debug("A file was moved from " + oldParentPath + " to " + newParentPath);
 					vfsFilesToBeMoved.add(new VfsFileMoveInfo(oldOcmsModule, newOcmsModule, ideaVFile, ideaVFile.getName(), oldParentPath, newParentPath));
 				}
 			}
@@ -221,11 +219,10 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 	private void handleFileRenameEvent(VFileEvent event) throws CmsConnectionException {
 		VirtualFile ideaVFile = event.getFile();
 		if (ideaVFile != null) {
-			LOG.info("The following file was renamed: " + ideaVFile.getPath());
-
 			OpenCmsModule ocmsModule = openCmsModules.getModuleForIdeaVFile(ideaVFile);
 
 			if (ocmsModule != null) {
+				LOG.debug("The following file was renamed: " + ideaVFile.getPath());
 				String oldName = (String)((VFilePropertyChangeEvent)event).getOldValue();
 				String newName = (String)((VFilePropertyChangeEvent)event).getNewValue();
 				String newVfsPath = ocmsModule.getVfsPathForIdeaVFile(ideaVFile);
@@ -234,7 +231,6 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				if (ocmsModule.isPathModuleResource(ocmsModule.getLocalVfsRoot() + oldVfsPath) && getVfsAdapter().exists(oldVfsPath)) {
 					vfsFilesToBeRenamed.add(new VfsFileRenameInfo(ocmsModule, ideaVFile, oldVfsPath, newVfsPath, newName));
 				}
-
 			}
 		}
 	}
