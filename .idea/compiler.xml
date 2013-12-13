@@ -23,7 +23,6 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="ConnectorModule" />
-        <module name="manifestgenerator" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
