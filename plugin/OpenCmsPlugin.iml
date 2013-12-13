@@ -18,21 +18,13 @@
     <orderEntry type="library" name="Maven: org.apache.chemistry.opencmis:chemistry-opencmis-commons-impl:0.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.chemistry.opencmis:chemistry-opencmis-server-bindings:classes:0.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.chemistry.opencmis:chemistry-opencmis-server-support:0.7.0" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/slf4j-api-1.6.6.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="org.apache.httpcomponents:httpclient:4.3.1" level="application" />
-    <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="application" />
+    <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
+    <orderEntry type="library" name="org.apache.httpcomponents:httpclient:4.3.1" level="project" />
   </component>
   <component name="OpenCmsModuleConfigurationData">
     <option name="localVfsRoot" value="" />
     <option name="moduleName" value="" />
+    <option name="moduleVersion" value="" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
