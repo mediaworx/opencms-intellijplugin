@@ -62,7 +62,7 @@ public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 			}
 		}
 		catch (Throwable t) {
-			LOG.warn("Exception in OpenCmsSyncAction.actionPerformed: " + t.getMessage(), t);
+			LOG.warn("Exception in OpenCmsPublishAction.actionPerformed: " + t.getMessage(), t);
 		}
 	}
 
