@@ -1,5 +1,5 @@
 /out
-plugin/target/
+target/
 plugin/OpenCmsPlugin.zip
 .idea/dictionaries/widmann.xml
 .idea/findbugs-idea.xml
