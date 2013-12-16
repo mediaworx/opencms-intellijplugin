@@ -1,7 +1,5 @@
 package com.mediaworx.intellij.opencmsplugin.exceptions;
 
-import java.math.BigInteger;
-
 public class CmsPermissionDeniedException extends Exception {
 
 	public CmsPermissionDeniedException() {

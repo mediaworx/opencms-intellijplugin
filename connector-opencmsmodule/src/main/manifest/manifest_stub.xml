@@ -1,0 +1,30 @@
+<export>
+    <info>
+        <creator>Admin</creator>
+        <opencms_version>8.5.1</opencms_version>
+        <createdate>Mon, 16 Dec 2013 11:44:11 GMT</createdate>
+        <infoproject>Offline</infoproject>
+        <export_version>7</export_version>
+    </info>
+    <module>
+        <name>com.mediaworx.opencms.intellijconnector</name>
+        <nicename><![CDATA[IntelliJ Plugin Connector]]></nicename>
+        <class/>
+        <description><![CDATA[Connects the IntelliJ Plugin to OpenCms]]></description>
+        <version>0.1</version>
+        <authorname><![CDATA[Kai Widmann]]></authorname>
+        <authoremail><![CDATA[widmann@mediaworx.com]]></authoremail>
+        <datecreated/>
+        <userinstalled/>
+        <dateinstalled/>
+        <dependencies/>
+        <exportpoints>
+            <exportpoint uri="/system/modules/com.mediaworx.opencms.intellijconnector/classes/" destination="WEB-INF/classes/"/>
+        </exportpoints>
+        <resources>
+            <resource uri="/system/modules/com.mediaworx.opencms.intellijconnector/"/>
+        </resources>
+        <parameters/>
+    </module>
+    <files/>
+</export>

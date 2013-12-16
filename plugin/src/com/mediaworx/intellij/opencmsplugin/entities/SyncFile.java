@@ -3,13 +3,12 @@ package com.mediaworx.intellij.opencmsplugin.entities;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
+import com.mediaworx.opencms.moduleutils.manifestgenerator.OpenCmsModuleManifestGenerator;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 
 import java.util.Date;
 
 public class SyncFile extends SyncEntity {
-
-	public static final String METAINFO_FILE_SUFFIX = ".xml";
 
 	private Date lastChangeDate;
 
@@ -22,9 +21,8 @@ public class SyncFile extends SyncEntity {
 		return Type.FILE;
 	}
 
-	@Override
-	public String getMetaInfoFileSuffix() {
-		return METAINFO_FILE_SUFFIX;
+	public String getMetaInfoFilePath() {
+		return OpenCmsModuleManifestGenerator.getMetaInfoPath(getOcmsModule().getManifestRoot(), getVfsPath(), false);
 	}
 
 	public Date getLastChangeDate() {
@@ -32,6 +30,6 @@ public class SyncFile extends SyncEntity {
 	}
 
 	public void setLastChangeDate(Date lastChangeDate) {
-		this.lastChangeDate = (Date) lastChangeDate.clone();
+		this.lastChangeDate = (Date)lastChangeDate.clone();
 	}
 }

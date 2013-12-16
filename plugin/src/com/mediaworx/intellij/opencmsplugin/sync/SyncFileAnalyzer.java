@@ -235,7 +235,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			if (progressIndicator.isCanceled()) {
 				return;
 			}
-			String childVfsPath = parentVfsPath + "/" + vfsChild.getName();
+			String childVfsPath = parentVfsPath + vfsChild.getName();
 
 			// files
 			if (vfsChild.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
@@ -360,7 +360,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			LOG.info("Get children of VFS folder " + vfsPath);
 			ItemIterable<CmisObject> vfsChildren = ((Folder) vfsObject).getChildren();
 			for (CmisObject child : vfsChildren) {
-				String childVfsPath = vfsPath + "/" + child.getName();
+				String childVfsPath = vfsPath + child.getName();
 
 				// files
 				if (child.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
@@ -390,7 +390,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		LOG.info("Get children of VFS folder " + vfsPath);
 		ItemIterable<CmisObject> vfsChildren = ((Folder) vfsObject).getChildren();
 		for (CmisObject child : vfsChildren) {
-			String childVfsPath = vfsPath + "/" + child.getName();
+			String childVfsPath = vfsPath + child.getName();
 
 			// files
 			if (child.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {

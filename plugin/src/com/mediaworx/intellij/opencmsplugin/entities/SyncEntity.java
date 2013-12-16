@@ -28,7 +28,7 @@ public abstract class SyncEntity {
 
 	public abstract Type getType();
 
-	public abstract String getMetaInfoFileSuffix();
+	public abstract String getMetaInfoFilePath();
 
 	public OpenCmsModule getOcmsModule() {
 		return ocmsModule;
@@ -48,10 +48,6 @@ public abstract class SyncEntity {
 
 	public String getRfsPath() {
 		return ocmsModule.getLocalVfsRoot() + vfsPath;
-	}
-
-	public String getMetaInfoFilePath() {
-		return ocmsModule.getManifestRoot() + vfsPath + getMetaInfoFileSuffix();
 	}
 
 	public File getRealFile() {

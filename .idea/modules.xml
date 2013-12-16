@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/connector/ConnectorModule.iml" filepath="$PROJECT_DIR$/connector/ConnectorModule.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugin/OpenCmsPlugin.iml" filepath="$PROJECT_DIR$/plugin/OpenCmsPlugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/connector-opencmsmodule/connector-opencmsmodule.iml" filepath="$PROJECT_DIR$/connector-opencmsmodule/connector-opencmsmodule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/manifestgenerator/manifestgenerator.iml" filepath="$PROJECT_DIR$/manifestgenerator/manifestgenerator.iml" />
       <module fileurl="file://$PROJECT_DIR$/opencmsplugin-parent.iml" filepath="$PROJECT_DIR$/opencmsplugin-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xmlutils/xmlutils.iml" filepath="$PROJECT_DIR$/xmlutils/xmlutils.iml" />
     </modules>
   </component>
 </project>

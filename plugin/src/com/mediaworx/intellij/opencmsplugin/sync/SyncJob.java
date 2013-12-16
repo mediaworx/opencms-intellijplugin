@@ -46,7 +46,6 @@ public class SyncJob implements Runnable {
 		this.exportList = new ArrayList<ExportEntity>();
 		this.publishList = new ArrayList<String>();
 		setSyncList(syncList);
-		this.pullMetadataOnly = syncList.isPullMetaDataOnly();
 	}
 
 	public void run() {
@@ -162,6 +161,7 @@ public class SyncJob implements Runnable {
 
 	public void setSyncList(SyncList syncList) {
 		this.syncList = syncList;
+		this.pullMetadataOnly = syncList.isPullMetaDataOnly();
 
 		if (!syncList.isPullMetaDataOnly()) {
 			for (SyncEntity entity : syncList) {
@@ -393,7 +393,7 @@ public class SyncJob implements Runnable {
 				}
 			}
 			try {
-				FileUtils.writeStringToFile(metaInfoFile, metaInfos.get(entity.getVfsPath()), Charset.forName("UTF-8"));
+				FileUtils.writeStringToFile(metaInfoFile, metaInfos.get(entity.getVfsPath()), "UTF-8");
 			}
 			catch (IOException e) {
 				String message = "ERROR: cant create meta info file " + metaInfoFilePath;

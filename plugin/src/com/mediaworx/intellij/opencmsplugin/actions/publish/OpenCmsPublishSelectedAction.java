@@ -17,7 +17,6 @@ public class OpenCmsPublishSelectedAction extends OpenCmsPublishAction {
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);
-
 		if (isPluginEnabled() && isConnectorEnabled()) {
 			ActionTools.setSelectionSpecificActionText(event, plugin, "_Publish");
 		}

@@ -22,13 +22,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="ConnectorModule" />
+        <module name="connector-opencmsmodule" />
+        <module name="manifestgenerator" />
+        <module name="xmlutils" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="ConnectorModule" target="1.7" />
-      <module name="opencmsplugin-parent" target="1.7" />
-    </bytecodeTargetLevel>
   </component>
 </project>
 

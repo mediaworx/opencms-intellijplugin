@@ -16,8 +16,6 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.AutoPublishMode;
-import com.mediaworx.intellij.opencmsplugin.entities.SyncFile;
-import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
@@ -25,6 +23,7 @@ import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
+import com.mediaworx.opencms.moduleutils.manifestgenerator.OpenCmsModuleManifestGenerator;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
@@ -266,14 +265,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 	}
 
 	private String getMetaDataFilePath(OpenCmsModule ocmsModule, String vfsPath, boolean isDirectory) {
-		StringBuilder path = new StringBuilder(getMetaDataFilePathWithoutSuffix(ocmsModule, vfsPath));
-		if (isDirectory) {
-			path.append(SyncFolder.METAINFO_FILE_SUFFIX);
-		}
-		else {
-			path.append(SyncFile.METAINFO_FILE_SUFFIX);
-		}
-		return path.toString();
+		return OpenCmsModuleManifestGenerator.getMetaInfoPath(ocmsModule.getManifestRoot(), vfsPath, isDirectory);
 	}
 
 	private void deleteFiles() throws CmsConnectionException {

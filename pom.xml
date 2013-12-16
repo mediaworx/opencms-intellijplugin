@@ -16,39 +16,22 @@
 	</properties>
 
 	<modules>
-		<module>connector</module>
+		<module>connector-opencmsmodule</module>
+		<module>manifestgenerator</module>
+		<module>xmlutils</module>
 	</modules>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.opencms</groupId>
-				<artifactId>opencms-core</artifactId>
-				<version>8.5.1</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>jsp-api</artifactId>
-				<version>2.0</version>
-				<scope>provided</scope>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.1</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>2.4</version>
-				<scope>compile</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.chemistry.opencmis</groupId>
-				<artifactId>chemistry-opencmis-client-api</artifactId>
-				<version>0.10.0</version>
-				<scope>compile</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.chemistry.opencmis</groupId>
-				<artifactId>chemistry-opencmis-client-impl</artifactId>
-				<version>0.10.0</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
@@ -60,6 +43,11 @@
 				<groupId>com.googlecode.json-simple</groupId>
 				<artifactId>json-simple</artifactId>
 				<version>1.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.7.5</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

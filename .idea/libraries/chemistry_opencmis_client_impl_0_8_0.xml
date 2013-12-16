@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="chemistry-opencmis-client-impl-0.8.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/plugin/lib/chemistry-opencmis-client-impl-0.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugin/lib/chemistry-opencmis-client-api-0.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugin/lib/chemistry-opencmis-client-bindings-0.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugin/lib/chemistry-opencmis-commons-api-0.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugin/lib/chemistry-opencmis-commons-impl-0.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugin/lib/slf4j-api-1.6.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

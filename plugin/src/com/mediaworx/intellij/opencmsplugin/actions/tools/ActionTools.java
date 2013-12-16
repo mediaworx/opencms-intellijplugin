@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
@@ -43,7 +44,7 @@ public class ActionTools {
 		return publishFiles;
 	}
 
-	public static void setSelectionSpecificActionText(AnActionEvent event, OpenCmsPlugin plugin, String prefix) {
+	public static void setSelectionSpecificActionText(AnActionEvent event, OpenCmsPlugin plugin, String textPrefix) {
 		boolean enableAction = false;
 		String actionPlace = event.getPlace();
 
@@ -58,11 +59,47 @@ public class ActionTools {
 		}
 
 		if (!actionPlace.equals(ActionPlaces.EDITOR_POPUP) && !actionPlace.equals(ActionPlaces.EDITOR_TAB_POPUP)) {
-			String actionText = prefix + " selected " + fileTypeCounter.getEntityNames();
+			String actionText = textPrefix + " selected " + fileTypeCounter.getEntityNames();
 			event.getPresentation().setText(actionText);
 		}
 
 		if (enableAction) {
+			event.getPresentation().setEnabled(true);
+		}
+		else {
+			event.getPresentation().setEnabled(false);
+		}
+	}
+
+	public static void setOnlyModulesSelectedPresentation(AnActionEvent event, String textPrefix) {
+		boolean enableAction = true;
+
+		Project project = event.getProject();
+		if (project == null) {
+			return;
+		}
+
+		OpenCmsPlugin plugin = project.getComponent(OpenCmsPlugin.class);
+		VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+
+		if (selectedFiles != null) {
+			// check if only module roots have been selected
+			for (VirtualFile ideaVFile : selectedFiles) {
+				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
+				if (ocmsModule == null || !ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
+					enableAction = false;
+					break;
+				}
+			}
+		}
+		else {
+			enableAction = false;
+		}
+
+		if (enableAction) {
+			FileTypeCounter fileTypeCounter = new FileTypeCounter(plugin);
+			fileTypeCounter.count(selectedFiles);
+			event.getPresentation().setText(textPrefix + " selected " + fileTypeCounter.getEntityNames());
 			event.getPresentation().setEnabled(true);
 		}
 		else {
