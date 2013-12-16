@@ -1,6 +1,7 @@
 package com.mediaworx.intellij.opencmsplugin.connector;
 
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleResource;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -15,7 +16,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class OpenCmsPluginConnector {
 
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(OpenCmsPluginConnector.class);
+	private static final Logger LOG = Logger.getInstance(OpenCmsPluginConnector.class);
 
 	private static final String ACTION_MODULEMANIFESTS = "moduleManifests";
 	private static final String ACTION_RESOURCEINFOS = "resourceInfos";

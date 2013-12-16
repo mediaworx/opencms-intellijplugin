@@ -1,5 +1,6 @@
 package com.mediaworx.intellij.opencmsplugin.sync;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
@@ -21,8 +22,6 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisNameConstraintViolat
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
@@ -36,7 +35,7 @@ import java.util.Map;
  */
 public class VfsAdapter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(VfsAdapter.class);
+	private static final Logger LOG = Logger.getInstance(VfsAdapter.class);
 
 	/** the CMIS session */
 	private Session session;
