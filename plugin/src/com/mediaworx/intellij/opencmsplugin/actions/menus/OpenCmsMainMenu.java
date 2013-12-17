@@ -157,13 +157,20 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 			unregisterCurrentPublishModuleActions();
 		}
 
-		Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
-		for (OpenCmsModule ocmsModule : ocmsModules) {
-			registerSyncModuleAction(ocmsModule);
+		try {
+			Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
+			for (OpenCmsModule ocmsModule : ocmsModules) {
+				registerSyncModuleAction(ocmsModule);
+			}
+			for (OpenCmsModule ocmsModule : ocmsModules) {
+				registerPublishModuleAction(ocmsModule);
+			}
 		}
-
-		for (OpenCmsModule ocmsModule : ocmsModules) {
-			registerPublishModuleAction(ocmsModule);
+		catch (NullPointerException e) {
+			LOG.warn("NullPointerException during OpenCms module registration in the main menu.", e);
+			LOG.warn("plugin: " + plugin);
+			LOG.warn("plugin.getOpenCmsModules(): " + plugin.getOpenCmsModules());
+			LOG.warn("plugin.getOpenCmsModules().getAllModules(): " + plugin.getOpenCmsModules().getAllModules());
 		}
 	}
 
