@@ -76,16 +76,17 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	protected void registerActions() {
 		keymap = KeymapManager.getInstance().getActiveKeymap();
 		syncModuleActions = new DefaultActionGroup();
+		syncModuleActions.getTemplatePresentation().setText("Sync &Module");
+		syncModuleActions.setPopup(true);
 		publishModuleActions = new DefaultActionGroup();
+		publishModuleActions.getTemplatePresentation().setText("Publish Module");
+		publishModuleActions.setPopup(true);
 
 		registerKeyboardShortcuts();
 
 		plugin.addAction(this, SYNC_SELECTED_ID, new OpenCmsSyncSelectedAction(), "_Sync selected Modules/Folders/Files");
 		plugin.addAction(this, SYNC_OPEN_TABS_ID, new OpenCmsSyncOpenEditorTabsAction(), "Sync all open Editor _Tabs");
 		plugin.addAction(this, SYNC_ALL_MODULES_ID, new OpenCmsSyncAllModulesAction(), "Sync _all Modules");
-
-		add(Separator.getInstance());
-
 		add(syncModuleActions);
 
 		add(Separator.getInstance());
@@ -103,9 +104,6 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		plugin.addAction(this, PUBLISH_SELECTED_ID, new OpenCmsPublishSelectedAction(), "_Publish selected Modules/Folders/Files");
 		plugin.addAction(this, PUBLISH_OPEN_TABS_ID, new OpenCmsPublishOpenEditorTabsAction(), "Publish all open Editor Tabs");
 		plugin.addAction(this, PUBLSH_ALL_MODULES_ID, new OpenCmsPublishAllModulesAction(), "Publish all Modules");
-
-		add(Separator.getInstance());
-
 		add(publishModuleActions);
 	}
 
@@ -175,17 +173,17 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	}
 
 	public void registerSyncModuleAction(OpenCmsModule ocmsModule) {
-		registerModuleAction(ocmsModule, syncModuleActions, new OpenCmsSyncModuleAction(), SYNC_MODULE_ID_PREFIX, "Sync", syncModuleActions.getChildrenCount() < 10);
+		registerModuleAction(ocmsModule, syncModuleActions, new OpenCmsSyncModuleAction(), SYNC_MODULE_ID_PREFIX);
 	}
 
 	public void registerPublishModuleAction(OpenCmsModule ocmsModule) {
-		registerModuleAction(ocmsModule, publishModuleActions, new OpenCmsPublishModuleAction(), PUBLISH_MODULE_ID_PREFIX, "Publish", false);
+		registerModuleAction(ocmsModule, publishModuleActions, new OpenCmsPublishModuleAction(), PUBLISH_MODULE_ID_PREFIX);
 	}
 
-	public void registerModuleAction(OpenCmsModule ocmsModule, DefaultActionGroup group, OpenCmsPluginAction action, String idPrefix, String textPrefix, boolean addShortcut) {
+	public void registerModuleAction(OpenCmsModule ocmsModule, DefaultActionGroup group, OpenCmsPluginAction action, String idPrefix) {
 		int moduleNo = group.getChildrenCount() + 1;
 		String actionId = idPrefix + ocmsModule.getIntelliJModuleRoot();
-		String text = textPrefix + " Module " + (addShortcut ? "_" : "") + moduleNo + " " + ocmsModule.getModuleName();
+		String text = (moduleNo < 10 ? "_" : "") + moduleNo + " " + ocmsModule.getModuleName();
 		plugin.addAction(group, actionId, action, text);
 	}
 
