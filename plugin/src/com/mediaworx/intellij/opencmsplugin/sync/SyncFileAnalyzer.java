@@ -390,6 +390,10 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		LOG.info("Get children of VFS folder " + vfsPath);
 		ItemIterable<CmisObject> vfsChildren = ((Folder) vfsObject).getChildren();
 		for (CmisObject child : vfsChildren) {
+			if (progressIndicator.isCanceled()) {
+				executeSync = false;
+				return;
+			}
 			String childVfsPath = vfsPath + child.getName();
 
 			// files
