@@ -2,7 +2,7 @@
     <info>
         <creator>Admin</creator>
         <opencms_version>8.5.1</opencms_version>
-        <createdate>Mon, 16 Dec 2013 11:44:11 GMT</createdate>
+        <createdate>Tue, 17 Dec 2013 14:04:17 GMT</createdate>
         <infoproject>Offline</infoproject>
         <export_version>7</export_version>
     </info>
@@ -11,7 +11,7 @@
         <nicename><![CDATA[IntelliJ Plugin Connector]]></nicename>
         <class/>
         <description><![CDATA[Connects the IntelliJ Plugin to OpenCms]]></description>
-        <version>0.1</version>
+        <version>0.2</version>
         <authorname><![CDATA[Kai Widmann]]></authorname>
         <authoremail><![CDATA[widmann@mediaworx.com]]></authoremail>
         <datecreated/>
