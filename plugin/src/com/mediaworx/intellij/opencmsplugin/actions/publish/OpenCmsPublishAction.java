@@ -7,6 +7,7 @@ import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.connector.PublishFileAnalyzer;
+import com.mediaworx.intellij.opencmsplugin.exceptions.OpenCmsConnectorException;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,16 +46,15 @@ public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 
 				OpenCmsPluginConnector connector = plugin.getPluginConnector();
 				try {
-					if (connector.publishResources(publishList, true)) {
-						console.info("Direct publish session started");
-					}
-					else {
-						console.error(connector.getMessage());
-					}
+					connector.publishResources(publishList, true);
+					console.info("Direct publish session started");
 				}
 				catch (IOException e) {
 					LOG.warn("There was an exception while publishing resources", e);
 					console.error("There was an exception while publishing resources. Is OpenCms running? Please have a look at the OpenCms log file and/or the IntelliJ log file.");
+				}
+				catch (OpenCmsConnectorException e) {
+					console.error(e.getMessage());
 				}
 			}
 			else {

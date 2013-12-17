@@ -18,6 +18,7 @@ import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigura
 import com.mediaworx.intellij.opencmsplugin.connector.AutoPublishMode;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
+import com.mediaworx.intellij.opencmsplugin.exceptions.OpenCmsConnectorException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
@@ -468,12 +469,11 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 		if (affectedResourcePaths.size() > 0) {
 			try {
-				if (plugin.getPluginConnector().publishResources(affectedResourcePaths, false)) {
-					console.info("PUBLISH: A direct publish session was started successfully");
-				}
-				else {
-					console.error("PUBLISH: " + plugin.getPluginConnector().getMessage());
-				}
+				plugin.getPluginConnector().publishResources(affectedResourcePaths, false);
+				console.info("PUBLISH: A direct publish session was started successfully");
+			}
+			catch (OpenCmsConnectorException e) {
+				console.error(e.getMessage());
 			}
 			catch (IOException e) {
 				LOG.warn("There was an exception while publishing resources after a file change event", e);

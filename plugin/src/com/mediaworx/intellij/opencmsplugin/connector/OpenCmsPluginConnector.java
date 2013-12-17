@@ -2,6 +2,7 @@ package com.mediaworx.intellij.opencmsplugin.connector;
 
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.mediaworx.intellij.opencmsplugin.exceptions.OpenCmsConnectorException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleResource;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -36,8 +37,6 @@ public class OpenCmsPluginConnector {
 	private String password;
 	private CloseableHttpClient httpClient;
 	private JSONParser jsonParser;
-
-	private String message;
 
 	public OpenCmsPluginConnector(String connectorUrl, String user, String password) {
 		this.connectorUrl = connectorUrl;
@@ -75,8 +74,7 @@ public class OpenCmsPluginConnector {
 		}
 	}
 
-	public HashMap<String, String> getModuleResourceInfos(List<OpenCmsModuleResource> moduleResources) throws IOException {
-		message = null;
+	public HashMap<String, String> getModuleResourceInfos(List<OpenCmsModuleResource> moduleResources) throws IOException, OpenCmsConnectorException {
 		List<String> resourcePaths = new ArrayList<String>(moduleResources.size());
 		for (OpenCmsModuleResource moduleResource : moduleResources) {
 			resourcePaths.add(moduleResource.getResourcePath());
@@ -85,37 +83,26 @@ public class OpenCmsPluginConnector {
 	}
 
 
-	public HashMap<String, String> getResourceInfos(List<String> resourcePaths) throws IOException {
-		message = null;
+	public HashMap<String, String> getResourceInfos(List<String> resourcePaths) throws IOException, OpenCmsConnectorException {
 		return getActionResponseMap(resourcePaths, ACTION_RESOURCEINFOS);
 	}
 
-	public HashMap<String, String> getModuleManifests(List<String> moduleNames) throws IOException {
-		message = null;
+	public HashMap<String, String> getModuleManifests(List<String> moduleNames) throws IOException, OpenCmsConnectorException {
 		return getActionResponseMap(moduleNames, ACTION_MODULEMANIFESTS);
 	}
 
-	public boolean publishResources(List<String> resourcePaths, boolean publishSubResources) throws IOException {
-		message = null;
-
+	public void publishResources(List<String> resourcePaths, boolean publishSubResources) throws IOException, OpenCmsConnectorException {
 		Map<String, String> additionalParams = new HashMap<String, String>();
 		additionalParams.put("publishSubResources", String.valueOf(publishSubResources));
 
 		String response = getActionResponseString(resourcePaths, ACTION_PUBLISH, additionalParams);
-		if (response == null) {
-			return false;
-		}
 		response = response.trim();
 		if (!response.equals("OK")) {
-			message = "There were warnings during publish:\n" + response + "\nCheck the OpenCms log file.";
-			return false;
-		}
-		else {
-			return true;
+			throw new OpenCmsConnectorException("There were warnings during publish:\n" + response + "\nCheck the OpenCms log file.");
 		}
 	}
 
-	public String getActionResponseString(List<String> identifiers, String action, Map<String, String> additionalParameters) throws IOException {
+	public String getActionResponseString(List<String> identifiers, String action, Map<String, String> additionalParameters) throws IOException, OpenCmsConnectorException {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("requesting connector response");
 			LOG.debug("connectorUrl: " + connectorUrl);
@@ -154,34 +141,36 @@ public class OpenCmsPluginConnector {
 			if (entity != null && status >= 200 && status < 300) {
 				return EntityUtils.toString(entity);
 			}
+			else if (status == 404) {
+				throw new OpenCmsConnectorException("The connector was not found.\nIs the connector module installed in OpenCms?");
+			}
 			else {
-				message = "An invalid http status was returned: " + status;
+				throw new OpenCmsConnectorException("An invalid http status was returned: " + status);
 			}
 		}
 		finally {
 			response.close();
 		}
-
-		return null;
 	}
 
-	public HashMap<String, String> getActionResponseMap(List<String> identifiers, String action) throws IOException {
+	public HashMap<String, String> getActionResponseMap(List<String> identifiers, String action) throws IOException, OpenCmsConnectorException {
 
 		HashMap<String, String> resourceInfos = new HashMap<String, String>();
 		String jsonString = getActionResponseString(identifiers, action, null);
-
-		try {
-			JSONArray jsonArray = (JSONArray)jsonParser.parse(jsonString);
-			for (Object o : jsonArray) {
-				JSONObject metaJson = (JSONObject)o;
-				String id = (String)metaJson.get("id");
-				String xml = (String)metaJson.get("xml");
-				resourceInfos.put(id, xml);
+		if (jsonString != null) {
+			try {
+				JSONArray jsonArray = (JSONArray)jsonParser.parse(jsonString);
+				for (Object o : jsonArray) {
+					JSONObject metaJson = (JSONObject)o;
+					String id = (String)metaJson.get("id");
+					String xml = (String)metaJson.get("xml");
+					resourceInfos.put(id, xml);
+				}
 			}
-		}
-		catch (ParseException e) {
-			LOG.warn("There was an exception parsing the JSON response for the action " + action, e);
-			LOG.warn("JSON:\n" + jsonString);
+			catch (ParseException e) {
+				LOG.warn("There was an exception parsing the JSON response for the action " + action, e);
+				LOG.warn("JSON:\n" + jsonString);
+			}
 		}
 		return resourceInfos;
 	}
@@ -192,9 +181,5 @@ public class OpenCmsPluginConnector {
 		JSONArray jsonArray = new JSONArray();
 		jsonArray.addAll(list);
 		return jsonArray.toJSONString();
-	}
-
-	public String getMessage() {
-		return message;
 	}
 }

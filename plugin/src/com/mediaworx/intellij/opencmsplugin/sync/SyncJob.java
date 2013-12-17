@@ -6,10 +6,13 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.AutoPublishMode;
-import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
-import com.mediaworx.intellij.opencmsplugin.entities.*;
+import com.mediaworx.intellij.opencmsplugin.entities.ExportEntity;
+import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
+import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
+import com.mediaworx.intellij.opencmsplugin.exceptions.OpenCmsConnectorException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleResource;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.apache.commons.io.FileUtils;
@@ -110,12 +113,11 @@ public class SyncJob implements Runnable {
 
 				if (publishList.size() > 0) {
 					try {
-						if (plugin.getPluginConnector().publishResources(publishList, false)) {
-							console.info("A direct publish session was started successfully");
-						}
-						else {
-							console.error(plugin.getPluginConnector().getMessage());
-						}
+						plugin.getPluginConnector().publishResources(publishList, false);
+						console.info("A direct publish session was started successfully");
+					}
+					catch (OpenCmsConnectorException e) {
+						console.error(e.getMessage());
 					}
 					catch (IOException e) {
 						LOG.warn("There was an exception while publishing resources after sync", e);
@@ -346,23 +348,18 @@ public class SyncJob implements Runnable {
 			}
 		}
 
-		HashMap<String, String> metaInfos;
-
 		try {
-			metaInfos = plugin.getPluginConnector().getResourceInfos(pullEntityList);
+			HashMap<String, String> metaInfos = plugin.getPluginConnector().getResourceInfos(pullEntityList);
+			for (SyncEntity entity : syncList) {
+				doMetaInfoHandling(console, metaInfos, entity);
+			}
+		}
+		catch (OpenCmsConnectorException e) {
+			console.error(e.getMessage());
 		}
 		catch (IOException e) {
 			console.error("There was an error retrieving resource meta infos from OpenCms");
 			LOG.warn("IOException while trying to retrieve meta infos", e);
-			return;
-		}
-
-		int numMetaEntities = syncList.size();
-
-		if (numMetaEntities > 0) {
-			for (SyncEntity entity : syncList) {
-				doMetaInfoHandling(console, metaInfos, entity);
-			}
 		}
 	}
 
@@ -429,6 +426,9 @@ public class SyncJob implements Runnable {
 					doMetaInfoHandling(console, resourceInfos, syncFolder);
 				}
 			}
+			catch (OpenCmsConnectorException e) {
+				console.error(e.getMessage());
+			}
 			catch (IOException e) {
 				Messages.showDialog("There was an error pulling the meta information for module resource ancestor folders from OpenCms.\nIs the connector module installed?",
 						"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
@@ -482,6 +482,9 @@ public class SyncJob implements Runnable {
 						LOG.warn("No manifest found for module " + ocmsModule.getModuleName());
 					}
 				}
+			}
+			catch (OpenCmsConnectorException e) {
+				console.error(e.getMessage());
 			}
 			catch (IOException e) {
 				Messages.showDialog("There was an error pulling the module manifest files from OpenCms.\nIs the connector module installed?",
