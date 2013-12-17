@@ -37,4 +37,7 @@
 			<version>1.6.1</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<outputDirectory>src/main/vfs/system/modules/com.mediaworx.opencms.intellijconnector/classes</outputDirectory>
+	</build>
 </project>
