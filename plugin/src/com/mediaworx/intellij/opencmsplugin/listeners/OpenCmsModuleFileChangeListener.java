@@ -67,7 +67,8 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 
 	public void before(@NotNull List<? extends VFileEvent> vFileEvents) {
 
-		if (config == null || !config.isOpenCmsPluginEnabled()) {
+		// sometimes file events occur before the plugin was initialized, so lets make sure we have a plugin, a project and a configuration
+		if (plugin == null || plugin.getProject() == null || config == null || !config.isOpenCmsPluginEnabled()) {
 			return;
 		}
 

@@ -32,7 +32,7 @@ public class OpenCmsEditorPopupMenu extends OpenCmsMenu {
 		boolean enableMenu;
 		if (selectedFiles != null && selectedFiles.length == 1) {
 			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(selectedFiles[0]);
-			enableMenu = ocmsModule.isIdeaVFileInVFSPath(selectedFiles[0]);
+			enableMenu = ocmsModule != null && ocmsModule.isIdeaVFileInVFSPath(selectedFiles[0]);
 		}
 		else {
 			enableMenu = false;
