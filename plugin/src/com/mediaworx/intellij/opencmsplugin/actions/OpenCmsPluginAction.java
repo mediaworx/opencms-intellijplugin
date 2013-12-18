@@ -54,4 +54,9 @@ public abstract class OpenCmsPluginAction extends AnAction {
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		return config != null && config.isOpenCmsPluginEnabled();
 	}
+
+	protected boolean isPullMetaDataEnabled() {
+		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
+		return config != null && config.isPluginConnectorEnabled() && config.isPullMetadataEnabled();
+	}
 }

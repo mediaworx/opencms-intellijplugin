@@ -55,7 +55,15 @@ public class XmlHelper {
 	}
 
 	public Document parseFile(String path, String encoding) throws IOException, SAXException {
-		InputStreamReader in = new InputStreamReader(new FileInputStream(path), encoding);
+		return parseFile(new File(path), encoding);
+	}
+
+	public Document parseFile(File file) throws IOException, SAXException {
+		return parseFile(file, DEFAULT_ENCODING);
+	}
+
+	public Document parseFile(File file, String encoding) throws IOException, SAXException {
+		InputStreamReader in = new InputStreamReader(new FileInputStream(file), encoding);
 		BufferedReader reader = new BufferedReader(in);
 		Document document = builder.parse(new InputSource(reader));
 		cleanEmptyTextNodes(document);

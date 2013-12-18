@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPublishModuleAction extends OpenCmsPublishAction {
@@ -16,4 +17,11 @@ public class OpenCmsPublishModuleAction extends OpenCmsPublishAction {
 		publishFiles[0] = LocalFileSystem.getInstance().findFileByPath(moduleRoot);
 		return publishFiles;
 	}
+
+	@Override
+	public void update(@NotNull AnActionEvent event) {
+		super.update(event);
+		event.getPresentation().setVisible(isPluginEnabled() && isPullMetaDataEnabled());
+	}
+
 }

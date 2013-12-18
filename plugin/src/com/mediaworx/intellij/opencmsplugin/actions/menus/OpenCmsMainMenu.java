@@ -8,7 +8,9 @@ import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.actions.generatemanifest.OpenCmsGenerateAllManifestsAction;
-import com.mediaworx.intellij.opencmsplugin.actions.generatemanifest.OpenCmsGenerateSelectedModuleManifestAction;
+import com.mediaworx.intellij.opencmsplugin.actions.generatemanifest.OpenCmsGenerateSelectedModuleManifestsAction;
+import com.mediaworx.intellij.opencmsplugin.actions.packagemodule.OpenCmsPackageAllModulesAction;
+import com.mediaworx.intellij.opencmsplugin.actions.packagemodule.OpenCmsPackageSelectedModulesAction;
 import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishAllModulesAction;
 import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishModuleAction;
 import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishOpenEditorTabsAction;
@@ -33,15 +35,17 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	private static final String SYNC_SELECTED_ID = "OpenCmsPlugin.SyncAction";
 	private static final String SYNC_OPEN_TABS_ID = "OpenCmsPlugin.SyncOpenTabsAction";
 	private static final String SYNC_ALL_MODULES_ID = "OpenCmsPlugin.SyncAllAction";
+	public static final String SYNC_MODULE_ID_PREFIX = "OpenCmsPlugin.SyncModule.";
 	private static final String PULL_MODULE_METADATA_ID = "OpenCmsPlugin.PullModuleMetaDataAction";
 	private static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
-	private static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.PublishAction";
-	private static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.PublishOpenTabsAction";
-	public static final String SYNC_MODULE_ID_PREFIX = "OpenCmsPlugin.SyncModule.";
-	private static final String PUBLSH_ALL_MODULES_ID = "OpenCmsPlugin.PublishAllModules";
-	public static final String PUBLISH_MODULE_ID_PREFIX = "OpenCmsPlugin.PublishModule.";
 	private static final String GENERATE_SELECTED_MODULE_MANIFEST_ID = "OpenCmsPlugin.GenerateManifestAction";
 	private static final String GENERATE_ALL_MANIFESTS_ID = "OpenCmsPlugin.GenerateAllManifestsAction";
+	private static final String PACKAGE_SELECTED_MODULE_ID = "OpenCmsPlugin.PackageModuleAction";
+	private static final String PACKAGE_ALL_MODULES_ID = "OpenCmsPlugin.PackageAllModulesAction";
+	private static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.PublishAction";
+	private static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.PublishOpenTabsAction";
+	private static final String PUBLSH_ALL_MODULES_ID = "OpenCmsPlugin.PublishAllModules";
+	public static final String PUBLISH_MODULE_ID_PREFIX = "OpenCmsPlugin.PublishModule.";
 
 	private static final Shortcut SYNC_SHORTCUT = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK), null);
 
@@ -96,8 +100,13 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 		add(Separator.getInstance());
 
-		plugin.addAction(this, GENERATE_SELECTED_MODULE_MANIFEST_ID, new OpenCmsGenerateSelectedModuleManifestAction(), "_Generate manifest.xml for selected Modules");
+		plugin.addAction(this, GENERATE_SELECTED_MODULE_MANIFEST_ID, new OpenCmsGenerateSelectedModuleManifestsAction(), "_Generate manifest.xml for selected Modules");
 		plugin.addAction(this, GENERATE_ALL_MANIFESTS_ID, new OpenCmsGenerateAllManifestsAction(), "Generate manifest.xml for all Modules");
+
+		add(Separator.getInstance());
+
+		plugin.addAction(this, PACKAGE_SELECTED_MODULE_ID, new OpenCmsPackageSelectedModulesAction(), "Package Module _Zip for selected Modules");
+		plugin.addAction(this, PACKAGE_ALL_MODULES_ID, new OpenCmsPackageAllModulesAction(), "Package Module Zip for all Modules");
 
 		add(Separator.getInstance());
 

@@ -24,7 +24,11 @@
         <processorPath useClasspath="true" />
         <module name="connector-opencmsmodule" />
         <module name="manifestgenerator" />
+        <module name="manifestgenerator (1)" />
+        <module name="modulepackager" />
         <module name="xmlutils" />
+        <module name="xmlutils (1)" />
+        <module name="ziputils" />
       </profile>
     </annotationProcessing>
   </component>

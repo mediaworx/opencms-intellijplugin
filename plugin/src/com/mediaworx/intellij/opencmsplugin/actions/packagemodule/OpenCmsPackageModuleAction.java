@@ -1,4 +1,4 @@
-package com.mediaworx.intellij.opencmsplugin.actions.generatemanifest;
+package com.mediaworx.intellij.opencmsplugin.actions.packagemodule;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -6,9 +6,8 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
-import com.mediaworx.opencms.moduleutils.manifestgenerator.OpenCmsModuleManifestGenerator;
-import com.mediaworx.opencms.moduleutils.manifestgenerator.exceptions.OpenCmsMetaXmlFileWriteException;
-import com.mediaworx.opencms.moduleutils.manifestgenerator.exceptions.OpenCmsMetaXmlParseException;
+import com.mediaworx.opencms.moduleutils.packager.OpenCmsModulePackager;
+import com.mediaworx.opencms.moduleutils.packager.exceptions.OpenCmsModulePackagerException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -18,9 +17,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 @SuppressWarnings("ComponentNotRegistered")
-public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction {
+public abstract class OpenCmsPackageModuleAction extends OpenCmsPluginAction {
 
-	private static final Logger LOG = Logger.getInstance(OpenCmsGenerateManifestAction.class);
+	private static final Logger LOG = Logger.getInstance(OpenCmsPackageModuleAction.class);
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
@@ -30,33 +29,26 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 		VirtualFile[] ideaVFiles = getModuleFileArray(event);
 		final List<File> filesToBeRefreshed = new ArrayList<File>(ideaVFiles.length);
 
-		OpenCmsModuleManifestGenerator manifestGenerator = new OpenCmsModuleManifestGenerator();
+		OpenCmsModulePackager packager = new OpenCmsModulePackager();
 		plugin.showConsole();
 		for (VirtualFile ideaVFile : ideaVFiles) {
 			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
 			if (ocmsModule == null || !ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
 				continue;
 			}
+
+			String zipTargetPath = ocmsModule.getIntelliJModuleRoot();
 			try {
-				manifestGenerator.generateManifest(new File(ocmsModule.getManifestRoot()));
-				plugin.getConsole().info("manifest.xml created at " + ocmsModule.getManifestRoot());
+				String packageName = packager.packageModule(ocmsModule.getManifestRoot(), ocmsModule.getLocalVfsRoot(), zipTargetPath);
+				plugin.getConsole().info(packageName + " was saved at " + zipTargetPath);
 			}
-			catch (OpenCmsMetaXmlParseException e) {
-				String message = "There was an error parsing the meta information for module " + ocmsModule.getModuleName();
-				plugin.getConsole().error(message);
-				LOG.error(message, e);
+			catch (OpenCmsModulePackagerException e) {
+				String message = "Error packaging module " + ocmsModule.getModuleName();
+				LOG.warn(message, e);
+				plugin.getConsole().error(message + "\n" + e.getMessage());
 			}
-			catch (OpenCmsMetaXmlFileWriteException e) {
-				String message = "There was an error writing the manifest.xml for module " + ocmsModule.getModuleName();
-				plugin.getConsole().error(message);
-				LOG.error(message, e);
-			}
-			catch (Exception e) {
-				String message = "Error generating manifest.xml for the module " + ocmsModule.getModuleName() + " (" + e.getMessage() + ")";
-				plugin.getConsole().error(message + "; Please have a look at the IntelliJ log file and/or the OpenCms log file.");
-				LOG.error(message, e);
-			}
-			filesToBeRefreshed.add(new File(ideaVFile.getPath()));
+
+			filesToBeRefreshed.add(new File(zipTargetPath));
 		}
 		new Timer().schedule(new TimerTask() {
 			@Override
@@ -78,5 +70,4 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 			event.getPresentation().setEnabled(false);
 		}
 	}
-
 }
