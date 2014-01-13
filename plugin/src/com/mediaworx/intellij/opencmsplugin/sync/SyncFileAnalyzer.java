@@ -223,7 +223,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		}
 
 		// Handle files/folders that exist only on the vfs
-		if (!pullAllMetaInformation) {
+		if (!pullAllMetaInformation && vfsChildMap.size() > 0) {
 			handleVfsOnlyChildren(ocmsModule, vfsObject.getPath(), vfsChildMap);
 		}
 	}
@@ -360,7 +360,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			LOG.info("Get children of VFS folder " + vfsPath);
 			ItemIterable<CmisObject> vfsChildren = ((Folder) vfsObject).getChildren();
 			for (CmisObject child : vfsChildren) {
-				String childVfsPath = vfsPath + child.getName();
+				String childVfsPath = vfsPath + "/" + child.getName();
 
 				// files
 				if (child.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
