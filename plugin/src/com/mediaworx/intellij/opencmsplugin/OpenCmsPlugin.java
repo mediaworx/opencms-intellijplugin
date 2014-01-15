@@ -236,11 +236,14 @@ public class OpenCmsPlugin implements ProjectComponent {
 			LOG.info("ToolWindowManager could not be retrieved from the project, it may not be registered yet.");
 			return;
 		}
-		toolWindow = toolWindowManager.registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
-		toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
-		toolWindow.setAvailable(config.isOpenCmsPluginEnabled(), null);
-		OpenCmsPluginToolWindowFactory toolWindowFactory = new OpenCmsPluginToolWindowFactory();
-		toolWindowFactory.createToolWindowContent(project, toolWindow);
+		toolWindow = toolWindowManager.getToolWindow(OpenCmsPlugin.TOOLWINDOW_ID);
+		if (toolWindow == null) {
+			toolWindow = toolWindowManager.registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
+			toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
+			toolWindow.setAvailable(config.isOpenCmsPluginEnabled(), null);
+			OpenCmsPluginToolWindowFactory toolWindowFactory = new OpenCmsPluginToolWindowFactory();
+			toolWindowFactory.createToolWindowContent(project, toolWindow);
+		}
 	}
 
 	public ToolWindow getToolWindow() {

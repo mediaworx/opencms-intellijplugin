@@ -45,8 +45,10 @@ public abstract class OpenCmsPluginAction extends AnAction {
 		}
 		plugin = project.getComponent(OpenCmsPlugin.class);
 		config = plugin.getPluginConfiguration();
-		if (plugin.getConsole() != null) {
-			plugin.getConsole().clear();
+		if (config.isOpenCmsPluginEnabled()) {
+			if (plugin.getConsole() != null) {
+				plugin.getConsole().clear();
+			}
 		}
 	}
 
