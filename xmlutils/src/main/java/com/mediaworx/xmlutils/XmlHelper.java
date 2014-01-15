@@ -23,8 +23,8 @@ import java.io.*;
 
 /**
  * Class used to create helper objects that simplify parsing and modifying XML files. To retrieve single nodes or
- * multiple nodes from the XML XPath is used, see
- * <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/xpath/XPath.html">The Java API documentation on XPath</a>
+ * multiple nodes from the XML XPath is used, see the 
+ * <a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/xpath/XPath.html">Java API documentation on XPath</a>
  * for more information.
  */
 public class XmlHelper {
