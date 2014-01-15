@@ -15,24 +15,68 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Creates the zip file for OpenCms modules
+ */
 public class OpenCmsModulePackager {
 
+	/** OpenCms resource type for folders */
 	private static final String RESOURCE_TYPE_FOLDER = "folder";
 
+	/** file name of the module manifest xml file */
 	private static final String MANIFEST_FILENAME = "manifest.xml";
+
+	/** xml helper used to parse the manifest xml file */
 	private XmlHelper xmlHelper;
+
+	/** xml contained in the manifest file as Document */
 	private Document manifestXml;
+
+	/** String contained in the manifest file */
 	private String manifestString;
+
+	/** zipper used to package the module zip */
 	private Zipper zipper;
+
+	/** root path to the VFS files / folders */
 	private String vfsRootPath;
 
-	public OpenCmsModulePackager() {
-	}
-
+	/**
+	 * Creates the zip file for the module described in the manifest file at the given <code>manifestRootPath</code>.
+	 * The VFS files are retrieved from the given <code>vfsRootPath</code>. The resulting zip file is placed at the
+	 * given <code>moduleZipTargetFolder</code>.
+	 * @param manifestRootPath      path containing the module's manifest xml file (parent folder without the manifest's
+	 *                              file name)
+	 * @param vfsRootPath           root path under which the VFS files to be packaged are stored
+	 * @param moduleZipTargetFolder target folder where the module zip is to be placed
+	 * @return  the file name of the created module zip (containing the version), e.g.
+	 *          com.mycompany.mypackege.mymodule_1.0.zip
+	 * @throws  OpenCmsModulePackagerException  thrown in case of any error (e.g. xml parse exception, file
+	 *                                          write exception). The exception's message contains detailed information
+	 *                                          about what went wrong.
+	 */
 	public String packageModule(String manifestRootPath, String vfsRootPath, String moduleZipTargetFolder) throws OpenCmsModulePackagerException {
 		return packageModule(manifestRootPath, vfsRootPath, moduleZipTargetFolder, null);
 	}
 
+	/**
+	 * Creates the zip file for the module described in the manifest file at the given <code>manifestRootPath</code>.
+	 * The VFS files are retrieved from the given <code>vfsRootPath</code>. The resulting zip file is placed at the
+	 * given <code>moduleZipTargetFolder</code>.
+	 * @param manifestRootPath      path containing the module's manifest xml file (parent folder without the manifest's
+	 *                              file name)
+	 * @param vfsRootPath           root path under which the VFS files to be packaged are stored
+	 * @param moduleZipTargetFolder target folder where the module zip is to be placed
+	 * @param moduleVersion         module version to be used (overrides the module version in the manifest file), may
+	 *                              be <code>null</code> (then the module version from the manifest file is used). If
+	 *                              provided, the syntax must match <code>[0-9]+(\.[0-9]+)?</code> (e.g. "1" or "1.2").
+	 *                              Any String not matching this syntax will be replaced by "1.0".
+	 * @return  the file name of the created module zip (containing the version), e.g.
+	 *          com.mycompany.mypackege.mymodule_1.4.zip
+	 * @throws  OpenCmsModulePackagerException  thrown in case of any error (e.g. xml parse exception, file
+	 *                                          write exception). The exception's message contains detailed information
+	 *                                          about what went wrong.
+	 */
 	public String packageModule(String manifestRootPath, String vfsRootPath, String moduleZipTargetFolder, String moduleVersion) throws OpenCmsModulePackagerException {
 
 		try {
@@ -83,10 +127,21 @@ public class OpenCmsModulePackager {
 		return packageName;
 	}
 
+	/**
+	 * Converts all file separators to "/" (as needed for zip paths).
+	 * @param path  the original path
+	 * @return  the original path with all file separators replaced by "/"
+	 */
 	private String ensureZipCompatibleFileSeparator(String path) {
 		return !File.separator.equals("/") ? path : path.replaceAll(File.separator, "/");
 	}
 
+	/**
+	 * Initializes the Zipper-Tool.
+	 * @param targetFolderPath  path to the folder under which the zip file is to be stored
+	 * @param packageName       name of the zip file
+	 * @throws OpenCmsModulePackagerException if the Zipper an not be initialized
+	 */
 	private void initializeZipper(String targetFolderPath, String packageName) throws OpenCmsModulePackagerException {
 		try {
 			zipper = new Zipper(packageName, targetFolderPath);
@@ -96,6 +151,12 @@ public class OpenCmsModulePackager {
 		}
 	}
 
+	/**
+	 * Retrieves the XML Document from the content of the manifest file.
+	 * @param manifestFile  the module manifest file
+	 * @return  the manifest file's xml as a Document
+	 * @throws OpenCmsModulePackagerException if the module manifest file can not be read or parsed
+	 */
 	private Document getManifestDocument(File manifestFile) throws OpenCmsModulePackagerException {
 		Document manifestXml;
 		try {
@@ -110,6 +171,12 @@ public class OpenCmsModulePackager {
 		return manifestXml;
 	}
 
+	/**
+	 * Reads the module's name from the manifest xml.
+	 * @param manifestXml   the manifest file's xml as a Document
+	 * @return  the module name
+	 * @throws OpenCmsModulePackagerException
+	 */
 	private String readModuleNameFromManifest(Document manifestXml) throws OpenCmsModulePackagerException {
 		try {
 			return xmlHelper.getStringValueForXpath(manifestXml, "/export/module/name");
@@ -119,6 +186,12 @@ public class OpenCmsModulePackager {
 		}
 	}
 
+	/**
+	 * Reads the String content of the manifest file.
+	 * @param manifestFile  the manifest file
+	 * @return  the content of the manifest file as String
+	 * @throws OpenCmsModulePackagerException if the manifest file can not be read
+	 */
 	private String getManifestString(File manifestFile) throws OpenCmsModulePackagerException {
 		String manifestString;
 		try {
@@ -130,6 +203,12 @@ public class OpenCmsModulePackager {
 		return manifestString;
 	}
 
+	/**
+	 * Reads the module's version from the manifest xml.
+	 * @param manifestXml   the manifest file's xml as a Document
+	 * @return  the module version
+	 * @throws OpenCmsModulePackagerException
+	 */
 	private String readModuleVersionFromManifest(Document manifestXml) throws OpenCmsModulePackagerException {
 		try {
 			String version =  xmlHelper.getStringValueForXpath(manifestXml, "/export/module/version");
@@ -141,6 +220,11 @@ public class OpenCmsModulePackager {
 		}
 	}
 
+	/**
+	 * ensures that the given version String is valid
+	 * @param version   the version String to check
+	 * @return  the original version String or "1.0" if it was invalid (did not match the regex [0-9]+(\.[0-9]+)?)
+	 */
 	private String ensureValidModuleVersionString(String version) {
 		if (!version.matches("[0-9]+(\\.[0-9]+)?")) {
 			version = "1.0";
@@ -149,21 +233,28 @@ public class OpenCmsModulePackager {
 		return version;
 	}
 
+	/**
+	 * Creates the zip file, adds the manifest and all VFS resources.
+	 * @throws OpenCmsModulePackagerException
+	 */
 	private void packageZip() throws OpenCmsModulePackagerException {
-		// first add the manifest to the zip
+		// add the manifest to the zip
 		try {
 			zipper.addStringAsFile(MANIFEST_FILENAME, manifestString);
 		}
 		catch (IOException e) {
 			throw new OpenCmsModulePackagerException(MANIFEST_FILENAME + " could not be added to the zip file, abort", e);
 		}
-		handleFiles();
-
+		addVfsResourcesToZip();
 	}
 
-	private void handleFiles() throws OpenCmsModulePackagerException {
-		// then find all file nodes in the manifest xml
-		NodeList fileNodes = null;
+	/**
+	 * Adds all VFS resources (files and folders) to the zip file.
+	 * @throws OpenCmsModulePackagerException if the file nodes can not be read from the XML
+	 */
+	private void addVfsResourcesToZip() throws OpenCmsModulePackagerException {
+		// find all file nodes in the manifest xml
+		NodeList fileNodes;
 		try {
 			fileNodes = xmlHelper.getNodeListForXPath(manifestXml, "/export/files/file");
 		}
@@ -179,11 +270,16 @@ public class OpenCmsModulePackager {
 		}
 	}
 
+	/**
+	 * adds the resource (file or folder) for the given file node to the module zip
+	 * @param fileNode  the file describing the resource to be added to the zip file
+	 * @throws OpenCmsModulePackagerException
+	 */
 	private void addResourceToZip(Node fileNode) throws OpenCmsModulePackagerException {
 		String destination = getStringValueForXpath(fileNode, "destination");
 		String type = getStringValueForXpath(fileNode, "type");
 		if (type.equals(RESOURCE_TYPE_FOLDER)) {
-			addDirectoryToZip(ensureZipCompatibleFileSeparator(destination));
+			addFolderToZip(ensureZipCompatibleFileSeparator(destination));
 		}
 		else {
 			String source = null;
@@ -191,7 +287,7 @@ public class OpenCmsModulePackager {
 				source = getStringValueForXpath(fileNode, "source");
 			}
 			catch (OpenCmsModulePackagerException e) {
-				// do nothing
+				// do nothing; if there is no source node, source stays null and the following if will be false
 			}
 
 			if (StringUtils.isNotBlank(source)) {
@@ -200,6 +296,13 @@ public class OpenCmsModulePackager {
 		}
 	}
 
+	/**
+	 * Reads the String value from the sub node at the given XPath.
+	 * @param fileNode  the file node containing the requested sub node
+	 * @param xpath xpath for the sub node
+	 * @return  the String value from the sub node at the given XPath
+	 * @throws OpenCmsModulePackagerException if the xpath can not be read from the file node
+	 */
 	private String getStringValueForXpath(Node fileNode, String xpath) throws OpenCmsModulePackagerException {
 		String value;
 		try {
@@ -214,15 +317,27 @@ public class OpenCmsModulePackager {
 		return value;
 	}
 
-	private void addDirectoryToZip(String directoryPath) throws OpenCmsModulePackagerException {
+	/**
+	 * Adds the VFS folder at the given <code>folderPath</code> to the zip file.
+	 * @param folderPath path of the folder to be added (relative to the zip root)
+	 * @throws OpenCmsModulePackagerException in case the directory can not be added to the zip file
+	 */
+	private void addFolderToZip(String folderPath) throws OpenCmsModulePackagerException {
 		try {
-			zipper.addDirectory(directoryPath);
+			zipper.addDirectory(folderPath);
 		}
 		catch (IOException e) {
-			throw new OpenCmsModulePackagerException("Directory " + directoryPath + " could not be added to module zip, abort", e);
+			throw new OpenCmsModulePackagerException("Directory " + folderPath + " could not be added to module zip, abort", e);
 		}
 	}
 
+	/**
+	 * Adds a VFS from the given source path to the zip file (at the given destination). Source and destination are
+	 * taken from the manifest file and are usually equal.
+	 * @param source        source VFS path
+	 * @param destination   target VFS path
+	 * @throws OpenCmsModulePackagerException in case the source file is not found or the file can not be added to the zip
+	 */
 	private void addFileToZip(String source, String destination) throws OpenCmsModulePackagerException {
 		String sourceFilePath = vfsRootPath + source;
 		File sourceFile = new File(sourceFilePath);

@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 
 /**
- * Convenience class providing an easy way to create zip files and add files to it. Uses Apache commons-compress under
- * the hood
+ * Convenience class providing an easy way to create zip files and add files or folders to it. Uses Apache
+ * commons-compress under the hood.
  */
 public class Zipper {
 
@@ -21,10 +21,10 @@ public class Zipper {
 	private static final String DEFAULT_ENCODING = "UTF-8";
 
 	private OutputStream zipOutputStream;
-	ArchiveOutputStream zip;
+	private ArchiveOutputStream zip;
 
 	/**
-	 * creates a new zip file
+	 * Creates a new zip file.
 	 * @param zipFilename           filename for the zip
 	 * @param zipTargetFolderPath   path of the target folder where the zip should be stored (it will be created if it
 	 *                              doesn't exist)
@@ -51,7 +51,7 @@ public class Zipper {
 	}
 
 	/**
-	 * adds the file to the zip archive using the given relative path
+	 * Adds the given file to the zip archive using the given relative path.
 	 * @param zipRelativePath   the path of the file relative to the zip root
 	 * @param file              the file to be added
 	 * @throws IOException Exceptions from the underlying package framework are bubbled up
@@ -63,7 +63,7 @@ public class Zipper {
 	}
 
 	/**
-	 * adds a directory entry with the given relative path to the zip
+	 * Adds a directory entry with the given relative path to the zip.
 	 * @param zipRelativePath   the path of the directory relative to the zip root
 	 * @throws IOException Exceptions from the underlying package framework are bubbled up
 	 */
@@ -76,7 +76,8 @@ public class Zipper {
 	}
 
 	/**
-	 * adds the file to the zip archive using the given relative path
+	 * Adds the given plaintextContent as a file to the zip archive using the given relative path using the default
+	 * encoding (UTF-8).
 	 * @param zipRelativePath   the path of the file relative to the zip root
 	 * @param plaintextContent  text content to be added as a file
 	 * @throws IOException Exceptions from the underlying package framework are bubbled up
@@ -86,7 +87,8 @@ public class Zipper {
 	}
 
 	/**
-	 * adds the file to the zip archive using the given relative path
+	 * Adds the given plaintextContent as a file to the zip archive using the given relative path using the given
+	 * encoding.
 	 * @param zipRelativePath   the path of the file relative to the zip root
 	 * @param plaintextContent  text content to be added as a file
 	 * @param encoding          the encoding to be used
@@ -99,7 +101,7 @@ public class Zipper {
 	}
 
 	/**
-	 * finalizes the zip file and writes it to the disk. It may be wise to call this method in a <code>finally</code>
+	 * Finalizes the zip file and writes it to the disk. It may be wise to call this method in a <code>finally</code>
 	 * block to avoid dangling file streams.
 	 */
 	public void finish() {
