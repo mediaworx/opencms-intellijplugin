@@ -5,6 +5,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
 import com.mediaworx.intellij.opencmsplugin.tools.ModuleTools;
 import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
@@ -34,13 +35,17 @@ public class OpenCmsModule {
 
 	public void init(OpenCmsModuleConfigurationData moduleConfig) {
 		this.moduleConfig = moduleConfig;
-		exportPoints = plugin.getOpenCmsConfiguration().getExportPointsForModule(moduleConfig.getModuleName());
-		moduleResources = plugin.getOpenCmsConfiguration().getModuleResourcesForModule(moduleConfig.getModuleName());
+		OpenCmsConfiguration openCmsConfig = plugin.getOpenCmsConfiguration();
+		OpenCmsPluginConfigurationData pluginConfig = plugin.getPluginConfiguration();
+		String moduleName = moduleConfig.getModuleName();
+
+		exportPoints = openCmsConfig.getExportPointsForModule(moduleName);
+		moduleResources = openCmsConfig.getModuleResourcesForModule(moduleName);
 
 		String relativeVfsRoot;
 
 		if (moduleConfig.isUseProjectDefaultVfsRootEnabled()) {
-			relativeVfsRoot = plugin.getPluginConfiguration().getDefaultLocalVfsRoot();
+			relativeVfsRoot = pluginConfig.getDefaultLocalVfsRoot();
 		}
 		else {
 			relativeVfsRoot = moduleConfig.getLocalVfsRoot();
@@ -59,7 +64,7 @@ public class OpenCmsModule {
 		}
 
 		if (moduleConfig.isUseProjectDefaultSyncModeEnabled()) {
-			syncMode = plugin.getPluginConfiguration().getDefaultSyncMode();
+			syncMode = pluginConfig.getDefaultSyncMode();
 		}
 		else {
 			syncMode = moduleConfig.getSyncMode();
