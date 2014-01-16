@@ -37,6 +37,14 @@
         <option value="$PROJECT_DIR$/manifestgenerator/pom.xml" />
       </list>
     </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/manifestgenerator/pom.xml" />
+        <option value="$PROJECT_DIR$/modulepackager/pom.xml" />
+        <option value="$PROJECT_DIR$/xmlutils/pom.xml" />
+        <option value="$PROJECT_DIR$/ziputils/pom.xml" />
+      </set>
+    </option>
   </component>
   <component name="ModuleEditorState">
     <option name="LAST_EDITED_MODULE_NAME" />

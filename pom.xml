@@ -17,9 +17,7 @@
 
 	<modules>
 		<module>connector-opencmsmodule</module>
-		<module>manifestgenerator</module>
 		<module>modulepackager</module>
-		<module>xmlutils</module>
 		<module>ziputils</module>
 	</modules>
 
