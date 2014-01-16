@@ -3,9 +3,7 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/connector-opencmsmodule" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/modulepackager" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugin" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ziputils" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

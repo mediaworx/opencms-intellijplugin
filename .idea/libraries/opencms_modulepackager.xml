@@ -10,6 +10,8 @@
       <root url="jar://$PROJECT_DIR$/plugin/lib/xz-1.4.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://D:/javadev/OpenCms/opencms-xmlutils/src/main/java" />
+    </SOURCES>
   </library>
 </component>
