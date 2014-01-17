@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/plugin/OpenCmsPlugin.iml" filepath="$PROJECT_DIR$/plugin/OpenCmsPlugin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/connector-opencmsmodule/connector-opencmsmodule.iml" filepath="$PROJECT_DIR$/connector-opencmsmodule/connector-opencmsmodule.iml" />
-      <module fileurl="file://$PROJECT_DIR$/opencmsplugin-parent.iml" filepath="$PROJECT_DIR$/opencmsplugin-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/OpenCmsPlugin.iml" filepath="$PROJECT_DIR$/OpenCmsPlugin.iml" />
     </modules>
   </component>
 </project>

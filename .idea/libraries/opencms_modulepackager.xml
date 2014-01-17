@@ -1,21 +1,21 @@
 <component name="libraryTable">
   <library name="opencms-modulepackager">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/plugin/lib/commons-compress-1.6.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugin/lib/commons-io-2.4.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugin/lib/commons-lang3-3.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-modulepackager-1.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-xmlutils-1.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugin/lib/slf4j-api-1.6.6.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugin/lib/xz-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-compress-1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-io-2.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-lang3-3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/opencms-modulepackager-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/opencms-xmlutils-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.6.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xz-1.4.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-modulepackager-1.0-javadoc.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-xmlutils-1.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/opencms-modulepackager-1.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/opencms-xmlutils-1.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-modulepackager-1.0-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-xmlutils-1.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/opencms-modulepackager-1.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/opencms-xmlutils-1.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
