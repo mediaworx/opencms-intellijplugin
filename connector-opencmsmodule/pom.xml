@@ -38,6 +38,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<outputDirectory>src/main/vfs/system/modules/com.mediaworx.opencms.intellijconnector/classes</outputDirectory>
+		<outputDirectory>src/main/vfs/system/modules/com.mediaworx.opencms.ideconnector/classes</outputDirectory>
 	</build>
 </project>

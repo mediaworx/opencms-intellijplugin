@@ -1,4 +1,4 @@
-package com.mediaworx.opencms.intellijconnector;
+package com.mediaworx.opencms.ideconnector;
 
 import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.commons.logging.Log;
@@ -27,9 +27,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-public class OpenCmsIntelliJConnector {
+public class OpenCmsIDEConnector {
 
-	private static final Log LOG = LogFactory.getLog(OpenCmsIntelliJConnector.class);
+	private static final Log LOG = LogFactory.getLog(OpenCmsIDEConnector.class);
 
 	private static final String ACTION_MODULEMANIFESTS = "moduleManifests";
 	private static final String ACTION_RESOURCEINFOS = "resourceInfos";
@@ -45,7 +45,7 @@ public class OpenCmsIntelliJConnector {
 	String action;
 	String json;
 
-	public OpenCmsIntelliJConnector(PageContext pageContext) throws IOException {
+	public OpenCmsIDEConnector(PageContext pageContext) throws IOException {
 		request = pageContext.getRequest();
 		out = pageContext.getResponse().getOutputStream();
 
@@ -167,7 +167,7 @@ public class OpenCmsIntelliJConnector {
 					hasWarnings = true;
 					break publish;
 				}
-				I_CmsReport report = new CmsLogReport(Locale.ENGLISH, OpenCmsIntelliJConnector.class);
+				I_CmsReport report = new CmsLogReport(Locale.ENGLISH, OpenCmsIDEConnector.class);
 				try {
 					List<CmsResource> resources = publishList.getAllResources();
 					for (CmsResource resource : resources) {

@@ -17,10 +17,7 @@ import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisNameConstraintViolationException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
+import org.apache.chemistry.opencmis.commons.exceptions.*;
 import org.apache.commons.io.FileUtils;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -288,7 +285,10 @@ public class VfsAdapter {
 			LOG.info("File not found.");
 		}
 		catch(CmisNameConstraintViolationException e) {
-			throw new CmsPushException("Could not push entity "+entity.getVfsPath()+".\n"+e.getMessage(), e);
+			throw new CmsPushException("Could not push entity "+entity.getVfsPath()+", there was a problem with the resource name.\n"+e.getMessage(), e);
+		}
+		catch(CmisRuntimeException e) {
+			throw new CmsPushException("Could not push entity "+entity.getVfsPath()+", there may be an issue with a lock.\n"+e.getMessage(), e);
 		}
 		finally {
 			try {

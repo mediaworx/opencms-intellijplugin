@@ -239,7 +239,7 @@
                     </constraints>
                     <properties>
                       <enabled value="true"/>
-                      <text value="http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.intellijconnector/connector.jsp"/>
+                      <text value="http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.ideconnector/connector.jsp"/>
                     </properties>
                   </component>
                   <component id="45698" class="javax.swing.JLabel">

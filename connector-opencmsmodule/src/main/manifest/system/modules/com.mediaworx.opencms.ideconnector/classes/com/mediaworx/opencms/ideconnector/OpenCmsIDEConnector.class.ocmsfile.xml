@@ -1,0 +1,18 @@
+<fileinfo>
+    <file>
+        <source>system/modules/com.mediaworx.opencms.ideconnector/classes/com/mediaworx/opencms/ideconnector/OpenCmsIDEConnector.class</source>
+        <destination>system/modules/com.mediaworx.opencms.ideconnector/classes/com/mediaworx/opencms/ideconnector/OpenCmsIDEConnector.class</destination>
+        <type>binary</type>
+        <uuidstructure>64a7fbc4-7f6d-11e3-b612-210cc9a3bba6</uuidstructure>
+        <uuidresource>64a7fbc5-7f6d-11e3-b612-210cc9a3bba6</uuidresource>
+        <datelastmodified>Fri, 17 Jan 2014 11:49:16 GMT</datelastmodified>
+        <userlastmodified>Admin</userlastmodified>
+        <datecreated>Fri, 17 Jan 2014 11:49:16 GMT</datecreated>
+        <usercreated>Admin</usercreated>
+        <flags>0</flags>
+        <properties/>
+        <relations/>
+        <accesscontrol/>
+    </file>
+    <siblingcount>1</siblingcount>
+</fileinfo>

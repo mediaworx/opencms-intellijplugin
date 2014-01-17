@@ -1,4 +1,4 @@
-package com.mediaworx.opencms.intellijconnector;
+package com.mediaworx.opencms.ideconnector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

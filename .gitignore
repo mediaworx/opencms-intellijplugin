@@ -10,4 +10,4 @@ plugin/OpenCmsPlugin.zip
 .idea/workspace.xml
 /atlassian-ide-plugin.xml
 /todo_and_ideas.txt
-connector-opencmsmodule/com.mediaworx.opencms.intellijconnector_*.zip
+connector-opencmsmodule/com.mediaworx.opencms.ideconnector_*.zip

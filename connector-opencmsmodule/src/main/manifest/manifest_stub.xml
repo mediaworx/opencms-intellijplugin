@@ -2,16 +2,17 @@
     <info>
         <creator>Admin</creator>
         <opencms_version>8.5.1</opencms_version>
-        <createdate>Tue, 17 Dec 2013 14:04:17 GMT</createdate>
+        <createdate>Fri, 17 Jan 2014 11:53:27 GMT</createdate>
         <infoproject>Offline</infoproject>
         <export_version>7</export_version>
     </info>
     <module>
-        <name>com.mediaworx.opencms.intellijconnector</name>
-        <nicename><![CDATA[IntelliJ Plugin Connector]]></nicename>
+        <name>com.mediaworx.opencms.ideconnector</name>
+        <nicename><![CDATA[Connector for IDEs]]></nicename>
+        <group>com.mediaworx.opencms</group>
         <class/>
-        <description><![CDATA[Connects the IntelliJ Plugin to OpenCms]]></description>
-        <version>0.2</version>
+        <description><![CDATA[Provides a connector for IDEs like IntelliJ, enables publishing functionality and provides meta data for VFS resources.]]></description>
+        <version>1.0</version>
         <authorname><![CDATA[Kai Widmann]]></authorname>
         <authoremail><![CDATA[widmann@mediaworx.com]]></authoremail>
         <datecreated/>
@@ -19,10 +20,10 @@
         <dateinstalled/>
         <dependencies/>
         <exportpoints>
-            <exportpoint uri="/system/modules/com.mediaworx.opencms.intellijconnector/classes/" destination="WEB-INF/classes/"/>
+            <exportpoint uri="/system/modules/com.mediaworx.opencms.ideconnector/classes/" destination="WEB-INF/classes/"/>
         </exportpoints>
         <resources>
-            <resource uri="/system/modules/com.mediaworx.opencms.intellijconnector/"/>
+            <resource uri="/system/modules/com.mediaworx.opencms.ideconnector/"/>
         </resources>
         <parameters/>
     </module>
