@@ -7,9 +7,13 @@
       <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-xmlutils-1.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugin/lib/slf4j-api-1.6.6.jar!/" />
     </CLASSES>
-    <JAVADOC />
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-manifestgenerator-1.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-xmlutils-1.0-javadoc.jar!/" />
+    </JAVADOC>
     <SOURCES>
-      <root url="file://D:/javadev/OpenCms/opencms-xmlutils/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-manifestgenerator-1.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugin/lib/opencms-xmlutils-1.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
