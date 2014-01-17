@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/OpenCmsPlugin.iml" filepath="$PROJECT_DIR$/OpenCmsPlugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/opencms-intellijplugin.iml" filepath="$PROJECT_DIR$/opencms-intellijplugin.iml" />
     </modules>
   </component>
 </project>

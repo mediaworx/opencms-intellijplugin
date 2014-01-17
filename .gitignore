@@ -1,6 +1,5 @@
 /out
 target/
-plugin/OpenCmsPlugin.zip
 .idea/dictionaries/widmann.xml
 .idea/findbugs-idea.xml
 .idea/inspectionProfiles/Project_Default.xml
@@ -10,4 +9,4 @@ plugin/OpenCmsPlugin.zip
 .idea/workspace.xml
 /atlassian-ide-plugin.xml
 /todo_and_ideas.txt
-connector-opencmsmodule/com.mediaworx.opencms.ideconnector_*.zip
+/opencms-intellijplugin.zip

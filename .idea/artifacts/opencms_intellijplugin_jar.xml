@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="opencms-intellijplugin:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/opencms_intellijplugin_jar</output-path>
+    <root id="archive" name="opencms-intellijplugin.jar">
+      <element id="module-output" name="opencms-intellijplugin" />
+    </root>
+  </artifact>
+</component>
