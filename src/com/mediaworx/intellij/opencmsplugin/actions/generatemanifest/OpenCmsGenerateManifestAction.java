@@ -38,6 +38,12 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 				continue;
 			}
 			try {
+				if (ocmsModule.isSetSpecificModuleVersionEnabled()) {
+					manifestGenerator.setModuleVersion(ocmsModule.getModuleVersion());
+				}
+				else {
+					manifestGenerator.setModuleVersion(null);
+				}
 				manifestGenerator.generateManifest(new File(ocmsModule.getManifestRoot()));
 				plugin.getConsole().info("manifest.xml created at " + ocmsModule.getManifestRoot());
 			}
