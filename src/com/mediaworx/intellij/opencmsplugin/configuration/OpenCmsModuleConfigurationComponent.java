@@ -110,7 +110,7 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	}
 
 	public void reset() {
-		if (form != null) {
+		if (form != null && configurationData != null) {
 			// Reset form data from component
 			form.setData(configurationData);
 		}

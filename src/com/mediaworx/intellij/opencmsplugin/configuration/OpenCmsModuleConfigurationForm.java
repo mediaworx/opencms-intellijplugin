@@ -47,47 +47,51 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	}
 
 	public void setData(OpenCmsModuleConfigurationData data) {
-		isOpenCmsModuleCheckbox.setSelected(data.isOpenCmsModuleEnabled());
-		formPanel.setVisible(data.isOpenCmsModuleEnabled());
-		FormTools.setConfiguredOrKeepDefault(moduleName, data.getModuleName());
+		if (data != null) {
+			isOpenCmsModuleCheckbox.setSelected(data.isOpenCmsModuleEnabled());
+			formPanel.setVisible(data.isOpenCmsModuleEnabled());
+			FormTools.setConfiguredOrKeepDefault(moduleName, data.getModuleName());
 
-		if (data.isUseProjectDefaultVfsRootEnabled()) {
-			useProjectDefaultVfsRootRadioButton.setSelected(true);
-			useModuleSpecificVfsRootRadioButton.setSelected(false);
-			localVfsRoot.setEnabled(false);
-		}
-		else {
-			useProjectDefaultVfsRootRadioButton.setSelected(false);
-			useModuleSpecificVfsRootRadioButton.setSelected(true);
-			localVfsRoot.setEnabled(true);
-		}
-		FormTools.setConfiguredOrKeepDefault(localVfsRoot, data.getLocalVfsRoot());
+			if (data.isUseProjectDefaultVfsRootEnabled()) {
+				useProjectDefaultVfsRootRadioButton.setSelected(true);
+				useModuleSpecificVfsRootRadioButton.setSelected(false);
+				localVfsRoot.setEnabled(false);
+			}
+			else {
+				useProjectDefaultVfsRootRadioButton.setSelected(false);
+				useModuleSpecificVfsRootRadioButton.setSelected(true);
+				localVfsRoot.setEnabled(true);
+			}
+			FormTools.setConfiguredOrKeepDefault(localVfsRoot, data.getLocalVfsRoot());
 
-		if (data.isUseProjectDefaultSyncModeEnabled()) {
-			useProjectDefaultSyncModeRadioButton.setSelected(true);
-			useModuleSpecificSyncModeRadioButton.setSelected(false);
-			syncMode.setEnabled(false);
-		}
-		else {
-			useProjectDefaultSyncModeRadioButton.setSelected(false);
-			useModuleSpecificSyncModeRadioButton.setSelected(true);
-			syncMode.setEnabled(true);
-		}
-		if (data.getSyncMode() == SyncMode.PUSH) {
-			syncMode.setSelectedIndex(0);
-		}
-		else if (data.getSyncMode() == SyncMode.SYNC) {
-			syncMode.setSelectedIndex(1);
-		}
-		else if (data.getSyncMode() == SyncMode.PULL) {
-			syncMode.setSelectedIndex(2);
-		}
+			if (data.isUseProjectDefaultSyncModeEnabled()) {
+				useProjectDefaultSyncModeRadioButton.setSelected(true);
+				useModuleSpecificSyncModeRadioButton.setSelected(false);
+				syncMode.setEnabled(false);
+			}
+			else {
+				useProjectDefaultSyncModeRadioButton.setSelected(false);
+				useModuleSpecificSyncModeRadioButton.setSelected(true);
+				syncMode.setEnabled(true);
+			}
+			if (data.getSyncMode() == SyncMode.PUSH) {
+				syncMode.setSelectedIndex(0);
+			}
+			else if (data.getSyncMode() == SyncMode.SYNC) {
+				syncMode.setSelectedIndex(1);
+			}
+			else if (data.getSyncMode() == SyncMode.PULL) {
+				syncMode.setSelectedIndex(2);
+			}
 
-		moduleVersionPanel.setVisible(config.isPluginConnectorEnabled() && config.isPullMetadataEnabled());
-		setSpecificModuleVersionCheckbox.setSelected(data.isSetSpecificModuleVersionEnabled());
+			if (config != null) {
+				moduleVersionPanel.setVisible(config.isPluginConnectorEnabled() && config.isPullMetadataEnabled());
+			}
+			setSpecificModuleVersionCheckbox.setSelected(data.isSetSpecificModuleVersionEnabled());
 
-		moduleVersion.setEnabled(data.isSetSpecificModuleVersionEnabled());
-		moduleVersion.setText(data.getModuleVersion());
+			moduleVersion.setEnabled(data.isSetSpecificModuleVersionEnabled());
+			moduleVersion.setText(data.getModuleVersion());
+		}
 	}
 
 

@@ -445,6 +445,10 @@ public class VfsAdapter {
 			LOG.info("Can't read CMIS repository root folder, not connected", e);
 			connected = false;
 		}
+		catch (CmisPermissionDeniedException e) {
+			LOG.info("CMIS says permission denied, not connected", e);
+			connected = false;
+		}
 	    return folder != null && connected;
 	}
 
