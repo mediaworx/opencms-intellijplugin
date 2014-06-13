@@ -119,13 +119,14 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 
 
 	public boolean isModified(OpenCmsModuleConfigurationData data) {
-		return
-				isOpenCmsModuleCheckbox.isSelected() != data.isOpenCmsModuleEnabled() ||
+		return isOpenCmsModuleCheckbox.isSelected() != data.isOpenCmsModuleEnabled() ||
 				FormTools.isTextFieldModified(moduleName, data.getModuleName()) ||
-				useProjectDefaultVfsRootRadioButton.isSelected() && !data.isUseProjectDefaultVfsRootEnabled() ||
+				useProjectDefaultVfsRootRadioButton.isSelected() != data.isUseProjectDefaultVfsRootEnabled() ||
 				FormTools.isTextFieldModified(localVfsRoot, data.getLocalVfsRoot()) ||
-				useProjectDefaultSyncModeRadioButton.isSelected() && !data.isUseProjectDefaultSyncModeEnabled() ||
-				!FormTools.getSyncModeFromComboBox(syncMode).equals(data.getSyncMode())
+				useProjectDefaultSyncModeRadioButton.isSelected() != data.isUseProjectDefaultSyncModeEnabled() ||
+				!FormTools.getSyncModeFromComboBox(syncMode).equals(data.getSyncMode()) ||
+				setSpecificModuleVersionCheckbox.isSelected() != data.isSetSpecificModuleVersionEnabled() ||
+				FormTools.isTextFieldModified(moduleVersion, data.getModuleVersion())
 		;
 	}
 
