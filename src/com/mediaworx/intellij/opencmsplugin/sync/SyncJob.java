@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.regex.Matcher;
 
 public class SyncJob implements Runnable {
 
@@ -473,7 +474,7 @@ public class SyncJob implements Runnable {
 						String manifestPath = ocmsModule.getManifestRoot() + "/manifest_stub.xml";
 						String manifest = manifestInfos.get(ocmsModule.getModuleName());
 						if (ocmsModule.isSetSpecificModuleVersionEnabled() && StringUtils.isNotEmpty(ocmsModule.getModuleVersion())) {
-							manifest = manifest.replaceFirst("<version>[^<]*</version>", "<version>" + ocmsModule.getModuleVersion() + "</version>");
+							manifest = manifest.replaceFirst("<version>[^<]*</version>", "<version>" + Matcher.quoteReplacement(ocmsModule.getModuleVersion()) + " </version>");
 						}
 						FileUtils.writeStringToFile(new File(manifestPath), manifest, Charset.forName("UTF-8"));
 						console.info("PULL: " + manifestPath + " pulled from OpenCms");
