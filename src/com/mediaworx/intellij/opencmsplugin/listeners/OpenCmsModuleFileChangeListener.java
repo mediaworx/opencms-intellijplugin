@@ -29,6 +29,7 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -173,8 +174,13 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 			if (ocmsModule  != null && ocmsModule.isIdeaVFileModuleResource(ideaVFile)) {
 				LOG.info("The following module resource was deleted: " + ideaVFile.getPath());
 				String vfsPath = ocmsModule.getVfsPathForIdeaVFile(ideaVFile);
-				if (getVfsAdapter().exists(vfsPath)) {
-					vfsFilesToBeDeleted.add(new VfsFileDeleteInfo(ocmsModule, vfsPath, ideaVFile.isDirectory()));
+				try {
+					if (getVfsAdapter().exists(vfsPath)) {
+						vfsFilesToBeDeleted.add(new VfsFileDeleteInfo(ocmsModule, vfsPath, ideaVFile.isDirectory()));
+					}
+				}
+				catch (CmisPermissionDeniedException e) {
+					throw new CmsConnectionException("A local file has been deleted, but it can't be checked if the file exists in the VFS (permission denied).\nPlease check manually: " + vfsPath);
 				}
 			}
 		}
