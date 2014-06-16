@@ -68,7 +68,7 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	}
 
 	public Icon getIcon() {
-        return IconLoader.getIcon("/icons/opencms.png");
+        return IconLoader.getIcon("/icons/opencms_13.png");
 	}
 
 	@Nullable
