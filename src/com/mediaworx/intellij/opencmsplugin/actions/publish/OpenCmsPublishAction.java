@@ -76,6 +76,6 @@ public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 
 	protected boolean isConnectorEnabled() {
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
-		return config != null && config.isPluginConnectorEnabled() && config.isPullMetadataEnabled();
+		return config != null && config.isPluginConnectorEnabled();
 	}
 }
