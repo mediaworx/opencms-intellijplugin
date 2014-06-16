@@ -128,7 +128,11 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	public void update(AnActionEvent event) {
 		super.update(event);
 
-		event.getPresentation().setEnabled(isPluginEnabled());
+		Presentation presentation = event.getPresentation();
+
+		if (presentation.isEnabled() != isPluginEnabled()) {
+			presentation.setEnabled(isPluginEnabled());
+		}
 
 		Project eventProject = event.getProject();
 
@@ -137,6 +141,9 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		}
 
 		if (eventProject != currentProject) {
+
+			unregisterModuleActions();
+
 			if (isPluginEnabled()) {
 				LOG.info("project switched, reinitializing module actions");
 				currentProject = eventProject;
@@ -156,13 +163,16 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		return false;
 	}
 
-	public void registerModuleActions() {
+	public void unregisterModuleActions() {
 		if (syncModuleActions.getChildrenCount() > 0) {
 			unregisterCurrentSyncModuleActions();
 		}
 		if (publishModuleActions.getChildrenCount() > 0) {
 			unregisterCurrentPublishModuleActions();
 		}
+	}
+
+	public void registerModuleActions() {
 
 		if (plugin.getPluginConfiguration() != null && plugin.getPluginConfiguration().isOpenCmsPluginEnabled()) {
 			try {
