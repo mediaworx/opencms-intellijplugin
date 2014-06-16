@@ -142,12 +142,13 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 		if (eventProject != currentProject) {
 
-			unregisterModuleActions();
-
 			if (isPluginEnabled()) {
 				LOG.info("project switched, reinitializing module actions");
 				currentProject = eventProject;
 				registerModuleActions();
+			}
+			else {
+				unregisterModuleActions();
 			}
 			plugin.setToolWindowAvailable(isPluginEnabled());
 		}
@@ -173,6 +174,8 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	}
 
 	public void registerModuleActions() {
+
+		unregisterModuleActions();
 
 		if (plugin.getPluginConfiguration() != null && plugin.getPluginConfiguration().isOpenCmsPluginEnabled()) {
 			try {
@@ -212,8 +215,10 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		AnAction[] allActions = syncModuleActions.getChildActionsOrStubs();
 		for (AnAction action : allActions) {
 			String actionId = actionManager.getId(action);
-			keymap.removeAllActionShortcuts(actionId);
-			actionManager.unregisterAction(actionId);
+			if (actionId != null) {
+				keymap.removeAllActionShortcuts(actionId);
+				actionManager.unregisterAction(actionId);
+			}
 		}
 		syncModuleActions.removeAll();
 	}
