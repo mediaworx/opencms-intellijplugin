@@ -32,28 +32,42 @@ import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The "mother" of all menu actions for the OpenCms plugin. Implemented by all of the plugin's actions except menu
+ * groups.
+ */
 public abstract class OpenCmsPluginAction extends AnAction {
 
 	protected Project project;
 	protected OpenCmsPlugin plugin;
 	protected OpenCmsPluginConfigurationData config;
 
+	/**
+	 * Method triggered by IntelliJ whenever a menu action is executed by the user. Does nothing by itself besides
+	 * initializing some variables needed for action execution. The actual action functionality can be found in
+	 * implementing classes.
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		init(event);
 	}
 
+	/**
+	 * Does nothing, called by IntelliJ
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
-	public void beforeActionPerformedUpdate(@NotNull AnActionEvent e) {
+	public void beforeActionPerformedUpdate(@NotNull AnActionEvent event) {
 		// Do nothing to avoid calling update() twice (default behaviour for AnAction)
 	}
 
 	/**
-	 * update method that hides the action if the IntelliJ plugin is not enabled. That way the OpenCms menus containing
+	 * Update method that hides the action if the IntelliJ plugin is not enabled. That way the OpenCms menus containing
 	 * the actions will be disabled automatically for projects that don't use the OpenCmsPlugin, because
 	 * <code>disableIfNoVisibleChildren()</code> returns <code>true</code> (see
 	 * {@link com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMenu#disableIfNoVisibleChildren()}).
-	 * @param event the event (provided by IntelliJ)
+	 * @param event the action event, provided by IntelliJ
 	 */
 	@Override
 	public void update(@NotNull AnActionEvent event) {
@@ -62,6 +76,10 @@ public abstract class OpenCmsPluginAction extends AnAction {
 		event.getPresentation().setVisible(isPluginEnabled());
 	}
 
+	/**
+	 * Initializes some references needed by the implementing actions (project, plugin, config)
+	 * @param event the action event, provided by IntelliJ
+	 */
 	private void init(AnActionEvent event) {
 		project = DataKeys.PROJECT.getData(event.getDataContext());
 		if (project == null) {
@@ -76,11 +94,21 @@ public abstract class OpenCmsPluginAction extends AnAction {
 		}
 	}
 
+	/**
+	 * Can be used for checks if the plugin is enabled.
+	 * @return  <code>true</code> if the OpenCms plugin is enabled in the project level configuration,
+	 *          <code>false</code> otherwise
+	 */
 	protected boolean isPluginEnabled() {
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		return config != null && config.isOpenCmsPluginEnabled();
 	}
 
+	/**
+	 * Can be used for checks if pulling module and resource meta data is enabled.
+	 * @return  <code>true</code> if pulling meta data is enabled in the project level configuration,
+	 *          <code>false</code> otherwise
+	 */
 	protected boolean isPullMetaDataEnabled() {
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		return config != null && config.isPluginConnectorEnabled() && config.isPullMetadataEnabled();
