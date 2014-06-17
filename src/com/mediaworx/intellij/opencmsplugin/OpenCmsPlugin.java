@@ -28,6 +28,32 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
+/**
+ * OpenCms plugin for IntelliJ providing IntelliJ menu actions to sync resources to and from the OpenCms VFS, to publish
+ * resources right from your IDE (using an additional OpenCms module), to create module manifest files and to package
+ * OpenCms modules into zips.
+ * OpenCms menu actions are provided in four different locations:
+ * <ul>
+ *     <li>At the main menu</li>
+ *     <li>In the project window (left)</li>
+ *     <li>In the main editor window (center)</li>
+ *     <li>In the file tabs (usually on top of the editor)</li>
+ * </ul>
+ *
+ * The configuration of the plugin is done on two levels:
+ * <br /><br />
+ * <strong>Project level</strong>
+ * <br />
+ * Some general options like the path to your local OpenCms webapp, your OpenCms user credentials or generic settings
+ * are done on the project level. These options can be found under File > Settings > OpenCms Plugin.
+ * <br /><br />
+ * <strong>Module level</strong>
+ * <br />
+ * Module specific settings are configured for each separate module under File > Project Structure > Modules > [name of
+ * the module] > Tab "OpenCms Module".
+ *
+ * @author Kai Widmann, 2007-2014 mediaworx berlin AG
+ */
 public class OpenCmsPlugin implements ProjectComponent {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
@@ -41,39 +67,83 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	private static final Icon MENU_ICON = new ImageIcon(OpenCmsPlugin.class.getResource("/icons/opencms_menu.png"));
 
+	/** The IntelliJ project */
 	private Project project;
+
+	/** Helper object to retrieve configuration data from the OpenCms configuration */
 	private OpenCmsConfiguration openCmsConfiguration;
+
+	/** Container for all OpenCms modules configured in the project */
 	private OpenCmsModules openCmsModules;
+
+	/** Adapter used to sync the RFS with the OpenCms VFS */
 	private VfsAdapter vfsAdapter;
+
+	/** The plugin's configuration */
 	private OpenCmsPluginConfigurationData config;
+
+	/**
+	 * Connector used to retrieve module or resource information from OpenCms and execute actions in OpenCms
+	 * (e.g. publishing), backed by the OpenCms module "com.mediaworx.opencms.ideconnector"
+	 */
 	private OpenCmsPluginConnector pluginConnector;
+
+	/**
+	 * ToolWindow for the OpenCms plugin
+	 */
 	private ToolWindow toolWindow;
+
+	/**
+	 * Console used to log OpenCms actions like sync or publish
+	 */
 	private OpenCmsToolWindowConsole console;
+
+	/** IntelliJ's action manager */
 	private ActionManager actionManager;
 
+	/**
+	 * Set to <code>true</code> the first time the OpenCms plugin is enabled
+	 */
 	private boolean wasInitialized = false;
 
+	/**
+	 * Creates a new plugin instance, called by IntelliJ
+	 * @param project   the IntelliJ project
+	 */
 	public OpenCmsPlugin(Project project) {
 		this.project = project;
 		openCmsModules = new OpenCmsModules(this);
-
 	}
 
+	/**
+	 * Initializes the plugin, called by IntelliJ
+	 */
 	public void initComponent() {
 		LOG.warn("initComponent called, project: " + project.getName());
 		actionManager = ActionManager.getInstance();
 		config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getConfigurationData();
 	}
 
+	/**
+	 * Enables the plugin (if it is enabled in the project level configuration), called by IntelliJ whenever a project
+	 * is opened.
+	 */
 	public void projectOpened() {
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			enable();
 		}
 	}
 
+	/**
+	 * Does nothing, called by IntelliJ whenever a project is closed.
+	 */
 	public void projectClosed() {
 	}
 
+	/**
+	 * Enables the plugin for the current project. Initializes the plugin and its actions if initialization was not
+	 * done before. If the plugin connector is activated in the project level configuration it gets initialized as well.
+	 */
 	public void enable() {
 		if (!wasInitialized) {
 			if (config != null && config.isOpenCmsPluginEnabled()) {
@@ -90,21 +160,31 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
+	/**
+	 * Disables the plugin. The only thing done here is deactivating the plugin's tool window, menus are disabled
+	 * automatically because all actions are hidden if the plugin is deactivated
+	 */
 	public void disable() {
 		if (wasInitialized) {
-			// menus are auto disabled because all actions are hidden if the plugin is deactivated, so only the
-			// ToolWindow has to be disabled
 			setToolWindowAvailable(false);
 		}
 	}
 
+	/**
+	 * Registers the OpenCms menus for MainMenu, ProjectPopup, EditorPopup and EditorTabPopup
+	 */
 	private void registerMenus() {
 		registerMainMenu();
 		registerProjectPopupMenu();
-		registerEditorPopupActions();
-		registerEditorTabPopupActions();
+		registerEditorPopupMenu();
+		registerEditorTabPopupMenu();
 	}
 
+	/**
+	 * Registers listeners for IntelliJ events. The listeners only listen for file change events and only file
+	 * deletions, renames and moves are handled (depending on the project level configuration these changes may
+	 * be synced back to OpenCms).
+	 */
 	private void registerListeners() {
 		MessageBus bus = ApplicationManager.getApplication().getMessageBus();
 		MessageBusConnection connection = bus.connect();
@@ -112,14 +192,39 @@ public class OpenCmsPlugin implements ProjectComponent {
 		connection.subscribe(VirtualFileManager.VFS_CHANGES, fileChangeListener);
 	}
 
+	/**
+	 * Adds a menu action to a given menu group.
+	 * @param group     the menu group the action should be added to
+	 * @param id        the action's identifier
+	 * @param action    the action itself
+	 * @param text      text to be displayed in the menu
+	 */
 	public void addAction(DefaultActionGroup group, String id, AnAction action, String text) {
 		addAction(group, id, action, text, null, null);
 	}
 
+	/**
+	 * Adds a menu action to a given menu group.
+	 * @param group     the menu group the action should be added to
+	 * @param id        the action's identifier
+	 * @param action    the action itself
+	 * @param text      text to be displayed in the menu
+	 * @param icon      icon to be displayed with the menu action (usually displayed befor the text)
+	 */
 	private void addAction(DefaultActionGroup group, String id, AnAction action, String text, Icon icon) {
 		addAction(group, id, action, text, icon, null);
 	}
 
+	/**
+	 *
+	 * Adds a menu action to a given menu group.
+	 * @param group         the menu group the action should be added to
+	 * @param id            the action's identifier
+	 * @param action        the action itself
+	 * @param text          text to be displayed in the menu
+	 * @param icon          icon to be displayed with the menu action (usually displayed befor the text)
+	 * @param constraints   constraints telling IntelliJ where to position the menu action
+	 */
 	private void addAction(DefaultActionGroup group, String id, AnAction action, String text, Icon icon, Constraints constraints) {
 		action.getTemplatePresentation().setText(text);
 		if (icon != null) {
@@ -134,6 +239,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
+	/**
+	 * Creates and registers the OpenCms menu for the main menu as an action group
+	 */
 	private void registerMainMenu() {
 		OpenCmsMainMenu openCmsMainMenu = (OpenCmsMainMenu)actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMainMenu == null) {
@@ -143,6 +251,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
+	/**
+	 * Creates and registers the OpenCms menu for the project popup as an action group
+	 */
 	private void registerProjectPopupMenu() {
 		OpenCmsProjectPopupMenu openCmsProjectPopupMenu = (OpenCmsProjectPopupMenu)actionManager.getAction(PROJECT_POPUP_MENU_ID);
 		if (openCmsProjectPopupMenu == null) {
@@ -153,7 +264,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
-	private void registerEditorPopupActions() {
+	/**
+	 * Creates and registers the OpenCms menu for the editor popup as an action group
+	 */
+	private void registerEditorPopupMenu() {
 		OpenCmsEditorPopupMenu openCmsEditorPopupMenu = (OpenCmsEditorPopupMenu)actionManager.getAction(EDITOR_POPUP_MENU_ID);
 		if (openCmsEditorPopupMenu == null) {
 			DefaultActionGroup editorPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_POPUP);
@@ -163,7 +277,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
-	private void registerEditorTabPopupActions() {
+	/**
+	 * Creates and registers the OpenCms menu for the editor tab popup as an action group
+	 */
+	private void registerEditorTabPopupMenu() {
 		OpenCmsEditorTabPopupMenu openCmsEditorTabPopupMenu = (OpenCmsEditorTabPopupMenu)actionManager.getAction(TAB_POPUP_MENU_ID);
 		if (openCmsEditorTabPopupMenu == null) {
 			DefaultActionGroup editorTabPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_TAB_POPUP);
@@ -173,6 +290,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
+	/**
+	 * Does some cleanup, called by IntelliJ.
+	 */
 	public void disposeComponent() {
 		project = null;
 		openCmsConfiguration = null;
@@ -185,15 +305,27 @@ public class OpenCmsPlugin implements ProjectComponent {
 		actionManager = null;
 	}
 
+	/**
+	 * Returns the component's name.
+	 * @return  "OpenCmsPlugin.MainComponent"
+	 */
 	@NotNull
 	public String getComponentName() {
 		return "OpenCmsPlugin.MainComponent";
 	}
 
+	/**
+	 * Returns the IntelliJ project
+	 * @return  the IntelliJ project
+	 */
 	public Project getProject() {
 		return project;
 	}
 
+	/**
+	 * Returns the helper object to retrieve configuration data from the OpenCms configuration
+	 * @return  the OpenCms configuration helper object
+	 */
 	public OpenCmsConfiguration getOpenCmsConfiguration() {
 		if (openCmsConfiguration == null) {
 			openCmsConfiguration = new OpenCmsConfiguration(config);
@@ -201,14 +333,26 @@ public class OpenCmsPlugin implements ProjectComponent {
 		return openCmsConfiguration;
 	}
 
+	/**
+	 * Returns the plugin's project level configuration data
+	 * @return  the project level configuration data
+	 */
 	public OpenCmsPluginConfigurationData getPluginConfiguration() {
 		return config;
 	}
 
+	/**
+	 * Returns the container for all OpenCms modules configured in the project
+	 * @return  the OpenCms module container
+	 */
 	public OpenCmsModules getOpenCmsModules() {
 		return openCmsModules;
 	}
 
+	/**
+	 * Returns the adapter used to sync the RFS with the OpenCms VFS
+	 * @return  the VFS adapter for sync actions
+	 */
 	public VfsAdapter getVfsAdapter() {
 		if (vfsAdapter == null) {
 			if (config != null && config.isOpenCmsPluginEnabled() && config.getPassword() != null && config.getPassword().length() > 0) {
@@ -218,14 +362,27 @@ public class OpenCmsPlugin implements ProjectComponent {
 		return vfsAdapter;
 	}
 
+	/**
+	 * Returns the connector used to retrieve module or resource information from OpenCms and execute actions in
+	 * OpenCms (e.g. publishing)
+	 * @return the OpenCms plugin connector for information retrieval and publishing
+	 */
 	public OpenCmsPluginConnector getPluginConnector() {
 		return pluginConnector;
 	}
 
+	/**
+	 * Sets the connector used to retrieve module or resource information from OpenCms and execute actions in
+	 * OpenCms (e.g. publishing)
+	 * @param pluginConnector   the OpenCms plugin connector for information retrieval and publishing
+	 */
 	public void setPluginConnector(OpenCmsPluginConnector pluginConnector) {
 		this.pluginConnector = pluginConnector;
 	}
 
+	/**
+	 * Initializes the plugin's tool window
+	 */
 	private void initToolWindow() {
 		if (project == null) {
 			LOG.info("Unable to initialize the tool window since the project is null");
@@ -246,6 +403,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 	}
 
+	/**
+	 * Returns the plugin's tool window
+	 * @return  the plugin's tool window
+	 */
 	public ToolWindow getToolWindow() {
 		if (toolWindow == null) {
 			initToolWindow();
@@ -253,17 +414,28 @@ public class OpenCmsPlugin implements ProjectComponent {
 		return toolWindow;
 	}
 
+	/**
+	 * Activates or deactivates the plugin's tool window
+	 * @param available <code>true</code> to activate and <code>false</code> to deactivate the tool window
+	 */
 	public void setToolWindowAvailable(boolean available) {
 		ToolWindow toolWindow = getToolWindow();
 		toolWindow.setAvailable(available, null);
 	}
 
+	/**
+	 * Activates the plugin's tool window to display the console
+	 */
 	public void showConsole() {
 		if (toolWindow == null || !toolWindow.isActive()) {
 			getToolWindow().activate(null);
 		}
 	}
 
+	/**
+	 * Returns the console used to log OpenCms actions like sync or publish
+	 * @return  the console used to log OpenCms actions like sync or publish
+	 */
 	public OpenCmsToolWindowConsole getConsole() {
 		// if the console has not been initialized ...
 		if (console == null) {
@@ -272,6 +444,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 		return console;
 	}
 
+	/**
+	 * Sets the console used to log OpenCms actions like sync or publish
+	 * @param console  the console used to log OpenCms actions like sync or publish
+	 */
 	public void setConsole(OpenCmsToolWindowConsole console) {
 		this.console = console;
 	}
