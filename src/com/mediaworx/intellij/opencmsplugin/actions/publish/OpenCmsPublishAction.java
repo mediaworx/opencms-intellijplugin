@@ -61,6 +61,7 @@ public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 			List<String> publishList = analyzer.getPublishList();
 
 			plugin.showConsole();
+			clearConsole();
 
 			if (publishList.size() > 0) {
 				console.info("Starting direct publish session for the following resources (and contained sub resources): ");

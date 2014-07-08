@@ -43,6 +43,9 @@ public abstract class OpenCmsSyncAction extends OpenCmsPluginAction {
 
 		try {
 			VirtualFile[] syncFiles = getSyncFileArray(event);
+			if (syncFiles.length > 0) {
+				clearConsole();
+			}
 			OpenCmsSyncer syncer = new OpenCmsSyncer(plugin);
 			setSyncerOptions(syncer);
 			syncer.syncFiles(syncFiles);

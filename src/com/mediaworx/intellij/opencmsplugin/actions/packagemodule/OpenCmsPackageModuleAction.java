@@ -55,6 +55,7 @@ public abstract class OpenCmsPackageModuleAction extends OpenCmsPluginAction {
 
 		OpenCmsModulePackager packager = new OpenCmsModulePackager();
 		plugin.showConsole();
+		clearConsole();
 		for (VirtualFile ideaVFile : ideaVFiles) {
 			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
 			if (ocmsModule == null || !ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {

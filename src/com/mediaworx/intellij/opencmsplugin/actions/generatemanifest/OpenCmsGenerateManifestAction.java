@@ -56,6 +56,8 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 
 		OpenCmsModuleManifestGenerator manifestGenerator = new OpenCmsModuleManifestGenerator();
 		plugin.showConsole();
+		clearConsole();
+
 		for (VirtualFile ideaVFile : ideaVFiles) {
 			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
 			if (ocmsModule == null || !ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
