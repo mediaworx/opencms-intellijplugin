@@ -23,6 +23,6 @@
  */
 
 /**
- * IntelliJ menu actions used to trigger the generation of OpenCms module manifests.
+ * IntelliJ menu actions used to trigger the generation of OpenCms module manifests (manifest.xml).
  */
 package com.mediaworx.intellij.opencmsplugin.actions.generatemanifest;

@@ -32,6 +32,17 @@ import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 
+/**
+ * Parent for all OpenCms menus in IntelliJ. Right now there are four OpenCms menus implemented. They can be found at
+ * the following locations:
+ * <ul>
+ *     <li>In the main menu</li>
+ *     <li>In the Project window</li>
+ *     <li>In the editor's right click popup menu</li>
+ *     <li>In the editor tab's right click popup menu</li>
+ * </ul>
+ * All menus are context aware, e.g. there's a difference if you click on a folder, a file or a module.
+ */
 public abstract class OpenCmsMenu extends DefaultActionGroup {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsMenu.class);
@@ -39,6 +50,12 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	protected OpenCmsPlugin plugin;
 	protected ActionManager actionManager;
 
+	/**
+	 * Creates a new OpenCms menu
+	 * @param plugin the OpenCms plugin instance
+	 * @param description A description of the menu that's displayed in the status bar
+	 * @param popup <code>true</code> if the menu is a popup menu, <code>false</code> otherwise
+	 */
 	protected OpenCmsMenu(OpenCmsPlugin plugin, String description, boolean popup) {
 		super("_OpenCms", popup);
 		getTemplatePresentation().setDescription(description);
@@ -47,13 +64,16 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 		registerActions();
 	}
 
+	/**
+	 * Registers the menu's actions, abstract method that must be implemented by subclasses
+	 */
 	protected abstract void registerActions();
 
-	@Override
-	public void actionPerformed(AnActionEvent event) {
-		LOG.warn("menu's actionPerformed called for " + event.getPlace() + " " + event.getPresentation().getText());
-	}
-
+	/**
+	 * Is called during updates. Used to update the plugin instance on project switches (if a different project is
+	 * opened or activated in another project window)
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
@@ -64,13 +84,17 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 		plugin = eventProject.getComponent(OpenCmsPlugin.class);
 	}
 
+	/**
+	 * Checks if the OpenCms plugin is enabled.
+	 * @return  <code>true</code> if the OpenCms plugin is enabled for the current project, <code>false</code> otherwise
+	 */
 	protected boolean isPluginEnabled() {
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		return config != null && config.isOpenCmsPluginEnabled();
 	}
 
 	/**
-	 * the disableIfNoVisibleChildren mechanism is activated, and since all actions are automatically hidden if the
+	 * The disableIfNoVisibleChildren mechanism is activated, and since all actions are automatically hidden if the
 	 * IntelliJ plugin is not enabled (see
 	 * {@link com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction#update(AnActionEvent)}),
 	 * the OpenCms menus containing the actions will be disabled automatically for projects that don't use the

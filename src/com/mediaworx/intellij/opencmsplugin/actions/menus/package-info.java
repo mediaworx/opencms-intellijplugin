@@ -23,6 +23,7 @@
  */
 
 /**
- * OpenCms IntalliJ action groups for the different locations (eg. main menu, project popup menu).
+ * OpenCms IntalliJ action groups for the different locations (main menu, project popup menu, editor popup menu,
+ * editor tab popup menu).
  */
 package com.mediaworx.intellij.opencmsplugin.actions.menus;

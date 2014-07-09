@@ -32,6 +32,10 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsGenerateAllManifestsAction extends OpenCmsGenerateManifestAction {
 
+	/**
+	 * @param event the action event, provided by IntelliJ
+	 * @return An Array of Virtual Files representing all OpenCms modules
+	 */
 	@Override
 	protected VirtualFile[] getModuleFileArray(@NotNull AnActionEvent event) {
 		return ActionTools.getAllModulesFileArray(plugin);

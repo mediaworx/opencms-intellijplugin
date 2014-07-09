@@ -51,6 +51,19 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
 
+/**
+ * Used to create the OpenCms menu located in the main menu bar containing the following actions:
+ * <ul>
+ *     <li>Sync actions (sync selected, sync all open tabs, sync all modules, sync specific module)</li>
+ *     <li>Pull Meta Data actions (Pull meta data for selected module, pull all meta data)</li>
+ *     <li>Generate Manifest actions (Generate manifest for selected module, Generate manifest for all modules)</li>
+ *     <li>Package Module Zip actions (Package module zip for selected module, Package Module Zip for all modules)</li>
+ *     <li>Publish actions (publish selected, publish all open tabs, publish all modules, publish specific module)</li>
+ * </ul>
+ *
+ * The actions are context aware, so a different text is displayed or an action is disabled depending on the selection
+ * in the project tree.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsMainMenu extends OpenCmsMenu {
 
@@ -81,12 +94,22 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 	Project currentProject;
 
+	/**
+	 * Creates the OpenCms menu for the main menu and registers the sync and publish actions for all OpenCms modules in
+	 * the project
+	 * @param plugin the OpenCms plugin instance
+	 */
 	private OpenCmsMainMenu(OpenCmsPlugin plugin) {
 		super(plugin, "All OpenCms actions", false);
 		currentProject = plugin.getProject();
 		registerModuleActions();
 	}
 
+	/**
+	 * Returns the OpenCmsMainMenu instance, creating a new one if necessary
+	 * @param plugin the OpenCms plugin instance
+	 * @return  the OpenCmsMainMenu instance
+	 */
 	public static OpenCmsMainMenu getInstance(OpenCmsPlugin plugin) {
 		if (instance == null) {
 			instance = new OpenCmsMainMenu(plugin);
@@ -94,12 +117,18 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		return instance;
 	}
 
+	/**
+	 * Registers the keyboard shortcut for "Sync selected file/folder/module" (Ctrl+Shift+D)
+	 */
 	private void registerKeyboardShortcuts() {
 		if (keymap.getShortcuts(SYNC_SELECTED_ID).length == 0) {
 			keymap.addShortcut(SYNC_SELECTED_ID, SYNC_SHORTCUT);
 		}
 	}
 
+	/**
+	 * Registers the main menu's actions
+	 */
 	@Override
 	protected void registerActions() {
 		keymap = KeymapManager.getInstance().getActiveKeymap();
@@ -188,6 +217,10 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		return false;
 	}
 
+	/**
+	 * Unregisters the current sync and publish module actions. Used to cleanup module actions on project switch before
+	 * re-initialization
+	 */
 	public void unregisterModuleActions() {
 		if (syncModuleActions.getChildrenCount() > 0) {
 			unregisterCurrentSyncModuleActions();
@@ -197,6 +230,9 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		}
 	}
 
+	/**
+	 * Registers sync and publish actions for all OpenCms modules in the current project
+	 */
 	public void registerModuleActions() {
 
 		unregisterModuleActions();
@@ -220,21 +256,39 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		}
 	}
 
-	public void registerSyncModuleAction(OpenCmsModule ocmsModule) {
+	/**
+	 * Registers a sync action for the given module
+	 * @param ocmsModule    an OpenCms module
+	 */
+	private void registerSyncModuleAction(OpenCmsModule ocmsModule) {
 		registerModuleAction(ocmsModule, syncModuleActions, new OpenCmsSyncModuleAction(), SYNC_MODULE_ID_PREFIX);
 	}
 
-	public void registerPublishModuleAction(OpenCmsModule ocmsModule) {
+	/**
+	 * Registers a publish action for the given module
+	 * @param ocmsModule    an OpenCms module
+	 */
+	private void registerPublishModuleAction(OpenCmsModule ocmsModule) {
 		registerModuleAction(ocmsModule, publishModuleActions, new OpenCmsPublishModuleAction(), PUBLISH_MODULE_ID_PREFIX);
 	}
 
-	public void registerModuleAction(OpenCmsModule ocmsModule, DefaultActionGroup group, OpenCmsPluginAction action, String idPrefix) {
+	/**
+	 * Internal method to register sync or publish actions for specific modules
+	 * @param ocmsModule    an OpenCms module
+	 * @param group         the parent action group the new action should be contained in
+	 * @param action        the action to be registered
+	 * @param idPrefix      the prefix to be used for the action identifier
+	 */
+	private void registerModuleAction(OpenCmsModule ocmsModule, DefaultActionGroup group, OpenCmsPluginAction action, String idPrefix) {
 		int moduleNo = group.getChildrenCount() + 1;
 		String actionId = idPrefix + ocmsModule.getIntelliJModuleRoot();
 		String text = (moduleNo < 10 ? "_" : "") + moduleNo + " " + ocmsModule.getModuleName();
 		plugin.addAction(group, actionId, action, text);
 	}
 
+	/**
+	 * Unregisters all current sync module actions
+	 */
 	private void unregisterCurrentSyncModuleActions() {
 		AnAction[] allActions = syncModuleActions.getChildActionsOrStubs();
 		for (AnAction action : allActions) {
@@ -247,6 +301,9 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		syncModuleActions.removeAll();
 	}
 
+	/**
+	 * Unregisters all current publish module actions
+	 */
 	private void unregisterCurrentPublishModuleActions() {
 		AnAction[] allActions = publishModuleActions.getChildActionsOrStubs();
 		for (AnAction action : allActions) {

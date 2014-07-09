@@ -30,6 +30,18 @@ import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishSelect
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncOpenEditorTabsAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncSelectedAction;
 
+/**
+ * Used to create the OpenCms menu located in the editor tab popup menu containing the following actions:
+ * <ul>
+ *     <li>Sync File</li>
+ *     <li>Sync all open Editor Tabs</li>
+ *     <li>Publish File</li>
+ *     <li>Publish all open Editor Tabs</li>
+ * </ul>
+ *
+ * The file actions are context aware, they are disabled if the right clicked tab's file is not within an OpenCms
+ * module's resource path.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsEditorTabPopupMenu extends OpenCmsMenu {
 
@@ -38,10 +50,18 @@ public class OpenCmsEditorTabPopupMenu extends OpenCmsMenu {
 	private static final String PUBLISH_FILE_ID = "OpenCmsPlugin.TabsPopupPublishAction";
 	private static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.TabsPopupPublishOpenTabsAction";
 
+	/**
+	 * Creates the OpenCms menu for the editor tab popup menu
+	 * @param plugin the OpenCms plugin instance
+	 */
 	public OpenCmsEditorTabPopupMenu(OpenCmsPlugin plugin) {
 		super(plugin, "Editor Tab specific OpenCms Actions", true);
 	}
 
+	/**
+	 * Registers the actions for the OpenCms menu in the editor tab popup menu (Sync file / open tabs, Pulish file /
+	 * open tabs).
+	 */
 	@Override
 	protected void registerActions() {
 		plugin.addAction(this, SYNC_FILE_ID, new OpenCmsSyncSelectedAction(), "_Sync File");

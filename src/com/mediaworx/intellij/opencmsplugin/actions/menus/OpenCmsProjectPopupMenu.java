@@ -31,6 +31,19 @@ import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishSelect
 import com.mediaworx.intellij.opencmsplugin.actions.pullmetadata.OpenCmsPullSelectedModuleMetaDataAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncSelectedAction;
 
+/**
+ * Used to create the OpenCms menu located in the project popup menu containing the following actions:
+ * <ul>
+ *     <li>Sync selected Module(s)/Folder(s)/File(s)</li>
+ *     <li>Pull Meta Data for selected Module(s)</li>
+ *     <li>Publish selected Module(s)/Folder(s)/File(s)</li>
+ *     <li>Generate manifest.xml for selected Module(s)</li>
+ *     <li>Package Module Zip for selected Module(s)</li>
+ * </ul>
+ *
+ * The actions are context aware, so a different text is displayed or an action is disabled depending on the selection
+ * in the project tree.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsProjectPopupMenu extends OpenCmsMenu {
 
@@ -40,10 +53,18 @@ public class OpenCmsProjectPopupMenu extends OpenCmsMenu {
 	private static final String GENERATE_SELECTED_MODULE_MANIFEST_ID = "OpenCmsPlugin.ProjectPopupGenerateManifestAction";
 	private static final String PACKAGE_SELECTED_MODULE_ID = "OpenCmsPlugin.ProjectPopupPackageModuleAction";
 
+	/**
+	 * Creates the OpenCms menu for the project popup menu
+	 * @param plugin the OpenCms plugin instance
+	 */
 	public OpenCmsProjectPopupMenu(OpenCmsPlugin plugin) {
 		super(plugin, "Project specific OpenCms actions", true);
 	}
 
+	/**
+	 * Registers the actions for the OpenCms menu in the project popup menu (Sync, Pull Meta Data, Pulish, Generate
+	 * manifest.xml, Package Module Zip).
+	 */
 	@Override
 	protected void registerActions() {
 		plugin.addAction(this, SYNC_SELECTED_ID, new OpenCmsSyncSelectedAction(), "_Sync selected Modules/Folders/Files");

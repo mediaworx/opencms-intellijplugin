@@ -41,11 +41,21 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Parent action for all actions used to generate module manifest files (manifest.xml)
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsGenerateManifestAction.class);
 
+	/**
+	 * Triggers the creation of module manifests depending on the menu entry the user chose. Which manifests are to
+	 * be created is determined by calling the abstract method
+	 * {@link #getModuleFileArray(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
+	 * For the manifest creation the OpenCmsModuleManifestGenerator is used that is provided as a separate library.
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		LOG.info("actionPerformed - event: " + event);
@@ -98,8 +108,18 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 		}, 1000);
 	}
 
+	/**
+	 * Abstract method to determine the manifests for what modules are to be created
+	 * @param event the action event, provided by IntelliJ
+	 * @return  An array with virtual files representing OpenCms modules
+	 */
 	protected abstract VirtualFile[] getModuleFileArray(@NotNull AnActionEvent event);
 
+	/**
+	 * Enables or disables the generate manifest actions. If "pull meta data" is enabled in the plugin configuration,
+	 * the actions are enabled, otherwise they are disabled.
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);

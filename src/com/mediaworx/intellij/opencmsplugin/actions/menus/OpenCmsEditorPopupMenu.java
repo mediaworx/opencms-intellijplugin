@@ -33,22 +33,43 @@ import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishSelect
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncSelectedAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
+/**
+ * Used to create the OpenCms menu located in the editor popup menu containing the following actions:
+ * <ul>
+ *     <li>Sync File</li>
+ *     <li>Publish File</li>
+ * </ul>
+ *
+ * The OpenCms menu is context aware, it is disabled if the file in the editor is not within an OpenCms module's
+ * resource path.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsEditorPopupMenu extends OpenCmsMenu {
 
 	private static final String SYNC_FILE_ID = "OpenCmsPlugin.EditorPopupSyncAction";
 	private static final String PUBLISH_FILE_ID = "OpenCmsPlugin.EditorPopupPublishAction";
 
+	/**
+	 * Creates the OpenCms menu for the editor popup menu
+	 * @param plugin the OpenCms plugin instance
+	 */
 	public OpenCmsEditorPopupMenu(OpenCmsPlugin plugin) {
 		super(plugin, "Editor specific OpenCms actions", true);
 	}
 
+	/**
+	 * Registers the actions for the OpenCms menu in the editor popup menu (Sync, Pulish).
+	 */
 	@Override
 	protected void registerActions() {
 		plugin.addAction(this, SYNC_FILE_ID, new OpenCmsSyncSelectedAction(), "_Sync File");
 		plugin.addAction(this, PUBLISH_FILE_ID, new OpenCmsPublishSelectedAction(), "_Publish File");
 	}
 
+	/**
+	 * Checks if the file in the editor is within an OpenCms module's resource path and disables the actions if not.
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
