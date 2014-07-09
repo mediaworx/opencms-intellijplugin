@@ -39,8 +39,14 @@ import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Collection of static utility methods used by actions
+ */
 public class ActionTools {
 
+	/**
+	 * @return  A file array containing all files open in editor tabs
+	 */
 	public static VirtualFile[] getOpenTabsFileArray() {
 		VirtualFile[] publishFiles = null;
 		Editor[] editors = EditorFactory.getInstance().getAllEditors();
@@ -58,16 +64,29 @@ public class ActionTools {
 		return publishFiles;
 	}
 
+	/**
+	 * @param plugin the current OpenCms plugin instance
+	 * @return  A file array containing files representing all the OpenCms modules in the current project.
+	 */
 	public static VirtualFile[] getAllModulesFileArray(OpenCmsPlugin plugin) {
-		VirtualFile[] publishFiles;Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
-		publishFiles = new VirtualFile[ocmsModules.size()];
+		VirtualFile[] moduleFiles;Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
+		moduleFiles = new VirtualFile[ocmsModules.size()];
 		int i = 0;
 		for (OpenCmsModule ocmsModule : ocmsModules) {
-			publishFiles[i++] = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getIntelliJModuleRoot());
+			moduleFiles[i++] = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getIntelliJModuleRoot());
 		}
-		return publishFiles;
+		return moduleFiles;
 	}
 
+	/**
+	 * Sets the text for the event's action depending on the user's selection in the project tree. E.g. if the user
+	 * selects mutiple files the resulting text is "[textPrefix] selected Files", if the user selects multiple folders
+	 * and one file the resulting text is "[textPrefix] selected Folders/File", if the user selects modules only the
+	 * resulting text is "[textPrefix] selected Modules".
+	 * @param event the action event provided by IntelliJ
+	 * @param plugin the current OpenCms plugin instance
+	 * @param textPrefix the text prefix to use
+	 */
 	public static void setSelectionSpecificActionText(AnActionEvent event, OpenCmsPlugin plugin, String textPrefix) {
 		boolean enableAction = false;
 		String actionPlace = event.getPlace();
@@ -95,6 +114,14 @@ public class ActionTools {
 		}
 	}
 
+	/**
+	 * Checks if only OpenCms modules are selected and enables or disables the event's action accordingly (if only
+	 * modules are selected the action is enabled, otherwise it is disabled). At the same time the action text is set
+	 * to "[textPrefix] selected module" if only one module is selected and to "[textPrefix] selected modules" if
+	 * multiple modules are selected.
+	 * @param event the action event provided by IntelliJ
+	 * @param textPrefix the text prefix to use
+	 */
 	public static void setOnlyModulesSelectedPresentation(AnActionEvent event, String textPrefix) {
 		boolean enableAction = true;
 

@@ -31,14 +31,26 @@ import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Action to sync all OpenCms resources selected in the project tree to/from the OpenCms VFS.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsSyncSelectedAction extends OpenCmsSyncAction {
 
+	/**
+	 * @param event the action event, provided by IntelliJ
+	 * @return An Array containing the file(s) selected in the project tree
+	 */
 	@Override
 	protected VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event) {
 		return event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 	}
 
+	/**
+	 * Sets the action text depending on the selection (e.g. "Sync selected Files", "Sync selected Folder",
+	 * "Sync selected Modules/Folders/Files").
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 
@@ -50,7 +62,8 @@ public class OpenCmsSyncSelectedAction extends OpenCmsSyncAction {
 	}
 
 	/**
-	 * sets the syncer option "showConfirmDialog" to true
+	 * Sets the syncer option "showConfirmDialog" to <code>true</code> so that the user has to confirm the files to
+	 * be synced.
 	 * @param syncer    the OpenCmsSyncer to configure
 	 */
 	@Override

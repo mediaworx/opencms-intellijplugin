@@ -29,9 +29,16 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Action to pull meta data for all resources in OpenCms module resource paths.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPullAllMetaDataAction extends OpenCmsPullMetaDataAction {
 
+	/**
+	 * @param event the action event, provided by IntelliJ
+	 * @return An Array of Virtual Files representing all OpenCms modules
+	 */
 	@Override
 	protected VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event) {
 		return ActionTools.getAllModulesFileArray(plugin);

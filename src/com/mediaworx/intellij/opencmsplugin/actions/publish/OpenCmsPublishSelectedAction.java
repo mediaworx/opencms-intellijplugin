@@ -30,14 +30,26 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Action to publish all OpenCms resources selected in the project tree.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPublishSelectedAction extends OpenCmsPublishAction {
 
+	/**
+	 * @param event the action event, provided by IntelliJ
+	 * @return An Array containing the file(s) selected in the project tree
+	 */
 	@Override
 	protected VirtualFile[] getPublishFileArray(AnActionEvent event) {
 		return event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 	}
 
+	/**
+	 * Sets the action text depending on the selection (e.g. "Publish selected Files", "Publish selected Folder",
+	 * "Publish selected Modules/Folders/Files").
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);

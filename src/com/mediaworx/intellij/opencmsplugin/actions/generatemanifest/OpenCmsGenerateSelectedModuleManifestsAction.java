@@ -30,6 +30,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Action to generate module manifests for the OpenCms modules selected in the project tree.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsGenerateSelectedModuleManifestsAction extends OpenCmsGenerateManifestAction {
 

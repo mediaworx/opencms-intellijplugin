@@ -23,6 +23,6 @@
  */
 
 /**
- * IntelliJ menu actions used to trigger the OpenCms module zips.
+ * IntelliJ menu actions used to trigger the generation of OpenCms module zips.
  */
 package com.mediaworx.intellij.opencmsplugin.actions.packagemodule;

@@ -30,13 +30,22 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Action to sync a specific module that was selected from the OpenCms "Sync Module" menu.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsSyncModuleAction extends OpenCmsSyncAction {
 
+	/**
+	 * Determines the module selected by the user and returns a corresponding file array containing one entry.
+	 * @param event the action event, provided by IntelliJ
+	 * @return Virtual file array containing exactly one file representing the module selected by the user
+	 */
 	@Override
 	protected VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event) {
 		VirtualFile[] syncFiles = new VirtualFile[1];
 		String actionId = event.getActionManager().getId(this);
+		// the module's root path is contained in the action id (after a prefix)
 		String moduleRoot = actionId.substring(OpenCmsMainMenu.SYNC_MODULE_ID_PREFIX.length());
 		syncFiles[0] = LocalFileSystem.getInstance().findFileByPath(moduleRoot);
 		return syncFiles;

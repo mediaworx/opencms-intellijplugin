@@ -109,7 +109,7 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 	}
 
 	/**
-	 * Abstract method to determine the manifests for what modules are to be created
+	 * Abstract method to determine the manifests for what modules are to be created, implemented in subclasses.
 	 * @param event the action event, provided by IntelliJ
 	 * @return  An array with virtual files representing OpenCms modules
 	 */

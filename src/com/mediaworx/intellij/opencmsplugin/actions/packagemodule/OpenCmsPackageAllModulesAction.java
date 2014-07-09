@@ -29,9 +29,16 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Action to package the zips for all OpenCms modules in the project.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPackageAllModulesAction extends OpenCmsPackageModuleAction {
 
+	/**
+	 * @param event the action event, provided by IntelliJ
+	 * @return An Array of Virtual Files representing all OpenCms modules
+	 */
 	@Override
 	protected VirtualFile[] getModuleFileArray(@NotNull AnActionEvent event) {
 		return ActionTools.getAllModulesFileArray(plugin);

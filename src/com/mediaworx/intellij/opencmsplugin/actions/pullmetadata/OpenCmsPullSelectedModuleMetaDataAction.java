@@ -30,14 +30,26 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Action to pull all meta data for the OpenCms modules selected in the project tree.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPullSelectedModuleMetaDataAction extends OpenCmsPullMetaDataAction {
 
+	/**
+	 * @param event the action event, provided by IntelliJ
+	 * @return An Array containing the file(s) selected in the project tree
+	 */
 	@Override
 	protected VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event) {
 		return event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 	}
 
+	/**
+	 * Activates the "Pull Meta Data" action if only modules are selected in the project tree. If other entities
+	 * (like regular files or folders) are selected, the "Pull Meta Data" action is disabled.
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);

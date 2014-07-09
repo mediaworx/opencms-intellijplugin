@@ -30,6 +30,23 @@ import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
 import java.util.ArrayList;
 
+/**
+ * Utility class used to analyze the files selected in IntelliJ's project tree. The following types of files are
+ * counted:
+ * <ul>
+ *     <li>OpenCms modules</li>
+ *     <li>Folders contained in module resource paths</li>
+ *     <li>Files contained in module resource paths</li>
+ * </ul>
+ *
+ * The result of the counting is used by the method {@link #getEntityNames()} to return the names of the entities
+ * contained in the selection. E.g.:
+ * <ul>
+ *     <li>"Modules/Folders/Files" if multiple modules, multiple folders and multiple files are selected</li>
+ *     <li>"Module/Folders" if one module, multiple folders and no files are selected</li>
+ *     <li>"File" if only one file is selected</li>
+ * </ul>
+ */
 public class FileTypeCounter {
 
 	private OpenCmsPlugin plugin;
@@ -37,6 +54,10 @@ public class FileTypeCounter {
 	private int numFolders;
 	private int numFiles;
 
+	/**
+	 * Creates a new FileTypeConter.
+	 * @param plugin    the current OpenCms plugin instance
+	 */
 	public FileTypeCounter(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
 		numModules = 0;
@@ -44,6 +65,10 @@ public class FileTypeCounter {
 		numFiles = 0;
 	}
 
+	/**
+	 * Counts the OpenCms modules, folders and files contained in the user's selection.
+	 * @param selectedFiles the virtual file array containing all files slected in the project tree
+	 */
 	public void count(VirtualFile[] selectedFiles) {
 		// calculate the number of selected modules, folders and files
 		for (VirtualFile ideaVFile : selectedFiles) {
@@ -72,10 +97,24 @@ public class FileTypeCounter {
 		}
 	}
 
+	/**
+	 * Checks if any OpenCms entity (module, folder or file) was selected.
+	 * @return <code>true</code> if at least one OpenCms module, folder or file was selected, <code>false</code>
+	 *         otherwise
+	 */
 	public boolean hasEntities() {
 		return numModules + numFolders + numFiles > 0;
 	}
 
+	/**
+	 * 	Returns the names of the entities contained in the user's selection. E.g.:
+	 * <ul>
+	 *     <li>"Modules/Folders/Files" if multiple modules, multiple folders and multiple files are selected</li>
+	 *     <li>"Module/Folders" if one module, multiple folders and no files are selected</li>
+	 *     <li>"File" if only one file is selected</li>
+	 * </ul>
+	 * @return  the names of the selected OpenCms entities
+	 */
 	public String getEntityNames() {
 		StringBuilder entityNames = new StringBuilder();
 		ArrayList<String> textElements = new ArrayList<String>(3);

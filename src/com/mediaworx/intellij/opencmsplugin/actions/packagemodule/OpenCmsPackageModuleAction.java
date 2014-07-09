@@ -40,11 +40,21 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Parent action for all actions used to package module zip files
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public abstract class OpenCmsPackageModuleAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPackageModuleAction.class);
 
+	/**
+	 * Triggers the packaging of module zips depending on the menu entry the user chose. Which modules are to
+	 * be packaged is determined by calling the abstract method
+	 * {@link #getModuleFileArray(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
+	 * For the module packaging the OpenCmsModulePackager is used that is provided as a separate library.
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		LOG.info("actionPerformed - event: " + event);
@@ -83,8 +93,18 @@ public abstract class OpenCmsPackageModuleAction extends OpenCmsPluginAction {
 		}, 1000);
 	}
 
+	/**
+	 * Abstract method to determine the modules to be packaged, implemented in subclasses.
+	 * @param event the action event, provided by IntelliJ
+	 * @return  An array with virtual files representing OpenCms modules
+	 */
 	protected abstract VirtualFile[] getModuleFileArray(@NotNull AnActionEvent event);
 
+	/**
+	 * Enables or disables the "package module zip" actions. If "pull meta data" is enabled in the plugin configuration,
+	 * the actions are enabled, otherwise they are disabled.
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);

@@ -30,22 +30,35 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Action to publish a specific module that was selected from the OpenCms "Publish Module" menu.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPublishModuleAction extends OpenCmsPublishAction {
 
+	/**
+	 * Determines the module selected by the user and returns a corresponding file array containing one entry.
+	 * @param event the action event, provided by IntelliJ
+	 * @return Virtual file array containing exactly one file representing the module selected by the user
+	 */
 	@Override
 	protected VirtualFile[] getPublishFileArray(AnActionEvent event) {
 		VirtualFile[] publishFiles = new VirtualFile[1];
 		String actionId = event.getActionManager().getId(this);
+		// the module's root path is contained in the action id (after a prefix)
 		String moduleRoot = actionId.substring(OpenCmsMainMenu.PUBLISH_MODULE_ID_PREFIX.length());
 		publishFiles[0] = LocalFileSystem.getInstance().findFileByPath(moduleRoot);
 		return publishFiles;
 	}
 
+	/**
+	 * Disables the action if the plugin connector is disabled in the plugin's configuration
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);
-		event.getPresentation().setVisible(isPluginEnabled() && isPullMetaDataEnabled());
+		event.getPresentation().setVisible(isPluginEnabled() && isConnectorEnabled());
 	}
 
 }

@@ -28,9 +28,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 
+/**
+ * Action to publish all OpenCms modules in the project.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPublishAllModulesAction extends OpenCmsPublishAction {
 
+	/**
+	 * @param event the action event, provided by IntelliJ
+	 * @return An Array of Virtual Files representing all OpenCms modules
+	 */
 	@Override
 	protected VirtualFile[] getPublishFileArray(AnActionEvent event) {
 		return ActionTools.getAllModulesFileArray(plugin);

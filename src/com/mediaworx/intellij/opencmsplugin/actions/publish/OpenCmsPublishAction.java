@@ -38,11 +38,19 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Parent action for all actions used to publish OpenCms resources
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPublishAction.class);
 
+	/**
+	 * Triggers the publishing of module resources depending on the menu entry the user chose. Which resources are to
+	 * be published is determined by calling the abstract method
+	 * {@link #getPublishFileArray(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
+	 */
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		LOG.info("actionPerformed - event: " + event);
@@ -91,14 +99,27 @@ public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 		}
 	}
 
+	/**
+	 * Abstract method to determine the module resources to be published, implemented in subclasses.
+	 * @param event the action event, provided by IntelliJ
+	 * @return  An array with virtual files representing OpenCms module resources
+	 */
 	protected abstract VirtualFile[] getPublishFileArray(AnActionEvent event);
 
+	/**
+	 * Enables the action if the OpenCms plugin connector is enabled in the plugin's configuration.
+	 * @param event the action event, provided by IntelliJ
+	 */
 	@Override
 	public void update(@NotNull AnActionEvent event) {
 		super.update(event);
 		event.getPresentation().setEnabled(isConnectorEnabled());
 	}
 
+	/**
+	 * Determines if the plugin connector is enabled in the plugin's configuration
+	 * @return <code>true</code> if the plugin connector is enabled, <code>false</code> otherwise
+	 */
 	protected boolean isConnectorEnabled() {
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		return config != null && config.isPluginConnectorEnabled();

@@ -31,11 +31,19 @@ import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Parent action for all actions used to sync module resources to/from the OpenCms VFS
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public abstract class OpenCmsSyncAction extends OpenCmsPluginAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsSyncAction.class);
 
+	/**
+	 * Triggers the sync of module resources depending on the menu entry the user chose. Which resources are to
+	 * be synced is determined by calling the abstract method
+	 * {@link #getSyncFileArray(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
+	 */
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		LOG.info("actionPerformed - event: " + event);
@@ -55,11 +63,16 @@ public abstract class OpenCmsSyncAction extends OpenCmsPluginAction {
 		}
 	}
 
+	/**
+	 * Abstract method to determine the module resources to be synced, implemented in subclasses.
+	 * @param event the action event, provided by IntelliJ
+	 * @return  An array with virtual files representing OpenCms module resources
+	 */
 	protected abstract VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event);
 
 	/**
-	 * sets options for the given OpenCmsSyncer. Does nothing by default (the syncer works with default actions)
-	 * but may be overridden by implementing classes
+	 * Sets options for the given OpenCmsSyncer. Does nothing by default (the syncer works with default actions)
+	 * but may be overridden by implementing classes.
 	 * @param syncer    the OpenCmsSyncer to configure
 	 */
 	protected void setSyncerOptions(@NotNull OpenCmsSyncer syncer) {

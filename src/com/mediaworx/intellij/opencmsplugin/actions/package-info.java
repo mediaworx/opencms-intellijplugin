@@ -26,7 +26,8 @@
  * IntelliJ menu actions for the OpenCms plugin. The following sub packages are provided:
  * <ul>
  *     <li>
- *         <strong>menus:</strong> OpenCms action groups for the different locations (eg. main menu, project popup menu)
+ *         <strong>menus:</strong> OpenCms action groups for the different locations (main menu, project popup menu,
+ *         editor popup menu, aditor tab popup menu)
  *     </li>
  *     <li>
  *         <strong>generatemanifest:</strong> menu actions used to trigger the generation of OpenCms module manifests

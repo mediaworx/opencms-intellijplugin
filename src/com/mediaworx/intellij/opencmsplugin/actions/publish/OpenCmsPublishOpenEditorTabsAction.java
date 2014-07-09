@@ -28,9 +28,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 
+/**
+ * Action to publish all OpenCms resources contained in open editor tabs.
+ */
 @SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsPublishOpenEditorTabsAction extends OpenCmsPublishAction {
 
+	/**
+	 * @param event the action event, provided by IntelliJ
+	 * @return An Array containing the file(s) that are open in editor tabs
+	 */
 	@Override
 	protected VirtualFile[] getPublishFileArray(AnActionEvent event) {
 		return ActionTools.getOpenTabsFileArray();
