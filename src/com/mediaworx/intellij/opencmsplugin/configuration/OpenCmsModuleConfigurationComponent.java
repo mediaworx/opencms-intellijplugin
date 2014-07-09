@@ -46,6 +46,10 @@ import javax.swing.*;
         @Storage(id = "OpenCmsPluginModuleConfiguration", file = "$MODULE_FILE$")
     }
 )
+/**
+ * Component for the module level configuration of the OpenCms plugin. The configuration data is stored in IntelliJ's
+ * module file (<code>[modulename].iml</code>.
+ */
 public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Configurable, PersistentStateComponent<OpenCmsModuleConfigurationData> {
 
 	private OpenCmsPlugin plugin;
@@ -53,14 +57,24 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	private OpenCmsModuleConfigurationForm form;
 	private OpenCmsModuleConfigurationData configurationData;
 
+	/**
+	 * Creates a new module level configuration component.
+	 * @param module the IntelliJ module
+	 */
 	public OpenCmsModuleConfigurationComponent(Module module) {
 		this.module = module;
 		plugin = module.getProject().getComponent(OpenCmsPlugin.class);
 	}
 
+	/**
+	 * Method called by IntelliJ whenever the module level configuration component is initialized, does nothing.
+	 */
 	public void initComponent() {
 	}
 
+	/**
+	 * Method called by IntelliJ whenever the module level configuration component is disposed, does some cleanup.
+	 */
 	public void disposeComponent() {
 		plugin = null;
 		module = null;
@@ -68,38 +82,67 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 		configurationData = null;
 	}
 
+	/**
+	 * Returns the component's name.
+	 * @return the component's name "OpenCmsPlugin.ModuleConfigurationComponent"
+	 */
 	@NotNull
 	public String getComponentName() {
 		return "OpenCmsPlugin.ModuleConfigurationComponent";
 	}
 
+	/**
+	 * Method called by IntelliJ whenever a project is opened, does nothing.
+	 */
 	public void projectOpened() {
 		// called when project is opened
 	}
 
+	/**
+	 * Method called by IntelliJ whenever a project is closed, does nothing.
+	 */
 	public void projectClosed() {
 		// called when project is being closed
 	}
 
+	/**
+	 * Method called by IntelliJ whenever a module is added to the project, does nothing.
+	 */
 	public void moduleAdded() {
 		// Invoked when the module corresponding to this component instance has been completely
 		// loaded and added to the project.
 	}
 
+	/**
+	 * Returns the component's display name that is used in the Settings dialog.
+	 * @return  the component's display name "OpenCms Module"
+	 */
 	@Nls
 	public String getDisplayName() {
 		return "OpenCms Module";
 	}
 
+	/**
+	 * Method called by IntelliJ to display an icon on the module configuration tab.
+	 * @return  path to the OpenCms icon, "/icons/opencms_13.png"
+	 */
 	public Icon getIcon() {
         return IconLoader.getIcon("/icons/opencms_13.png");
 	}
 
+	/**
+	 * There's no help topic for the OpenCms plugin, so <code>null</code> is returned.
+	 * @return  always returns <code>null</code>
+	 */
 	@Nullable
 	public String getHelpTopic() {
 		return null;  // Do nothing
 	}
 
+	/**
+	 * Creates the module level configuration component and initializes the corresponding configuration data object.
+	 * @return the module level configuration component
+	 */
 	@Nullable
 	public JComponent createComponent() {
 		if (configurationData == null) {
@@ -111,10 +154,18 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 		return form.getRootComponent();
 	}
 
+	/**
+	 * Checks if the module level configuration was modified
+	 * @return  <code>true</code> if the module level configuration was modified, <code>false</code> otherwise
+	 */
 	public boolean isModified() {
 		return form != null && form.isModified(configurationData);
 	}
 
+	/**
+	 * Applies the modifications made to the module level configuration.
+	 * @throws ConfigurationException required by the interface but never thrown
+	 */
 	public void apply() throws ConfigurationException {
 
 		if (form != null) {
@@ -124,6 +175,11 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 		}
 	}
 
+	/**
+	 * Registers and unregisters OpenCms modules depending on the setting "Is OpenCms Module". The OpenCms module 
+	 * registry (class <code>OpenCmsModules</code>) is a singleton kept by the plugin instance.
+	 * @see com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules
+	 */
 	private void handleOcmsModuleRegistration() {
 		if (configurationData.isOpenCmsModuleEnabled()) {
 			plugin.getOpenCmsModules().registerModule(module, configurationData);
@@ -133,6 +189,9 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 		}
 	}
 
+	/**
+	 * Resets the configuration form to the last saved state after modifications were made.
+	 */
 	public void reset() {
 		if (form != null && configurationData != null) {
 			// Reset form data from component
@@ -140,15 +199,26 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 		}
 	}
 
+	/**
+	 * Clears UI resources used by the module level configuration component.
+	 */
 	public void disposeUIResources() {
 		form = null;
 	}
 
+	/**
+	 * Returns the current module level configuration state.
+	 * @return the OpenCmsPluginConfigurationData object
+	 */
 	@Nullable
 	public OpenCmsModuleConfigurationData getState() {
 		return this.configurationData;
 	}
 
+	/**
+	 * Loads the module level configuration state contained in the given configuration data.
+	 * @param configurationData the module level configuration data to load
+	 */
 	public void loadState(OpenCmsModuleConfigurationData configurationData) {
 		if (this.configurationData == null) {
 			this.configurationData = new OpenCmsModuleConfigurationData();

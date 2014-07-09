@@ -32,6 +32,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+/**
+ * The Swing form used for the module level configuration of the OpenCms plugin. This form is included for all
+ * IntelliJ modules under File > Project Structure > Project Settings > Modules > [Module Name] > Tab "OpenCms Module".
+ */
 public class OpenCmsModuleConfigurationForm implements ActionListener, FocusListener {
 
 	private OpenCmsPluginConfigurationData config;
@@ -50,6 +54,9 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	private JTextField moduleVersion;
 
 
+	/**
+	 * Creates a new module level configuration form and initializes listeners for form actions
+	 */
 	public OpenCmsModuleConfigurationForm(OpenCmsPluginConfigurationData config) {
 		this.config = config;
 		formPanel.setVisible(false);
@@ -65,11 +72,18 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		setSpecificModuleVersionCheckbox.addActionListener(this);
 	}
 
-	// Method returns the root component of the form
+	/**
+	 * Returns the root component of the configuration form
+	 * @return  the root component of the configuration form
+	 */
 	public JComponent getRootComponent() {
 		return rootComponent;
 	}
 
+	/**
+	 * Fills the configuration form with the given data
+	 * @param data  the configuration data to be used to fill the form
+	 */
 	public void setData(OpenCmsModuleConfigurationData data) {
 		if (data != null) {
 			isOpenCmsModuleCheckbox.setSelected(data.isOpenCmsModuleEnabled());
@@ -119,6 +133,10 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	}
 
 
+	/**
+	 * Reads the configuration data from the form and sets it to the given data object
+	 * @param data the configuration data object to be filled with the form data
+	 */
 	public void getData(OpenCmsModuleConfigurationData data) {
 		data.setOpenCmsModuleEnabled(isOpenCmsModuleCheckbox.isSelected());
 		data.setModuleName(moduleName.getText());
@@ -142,6 +160,11 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	}
 
 
+	/**
+	 * Checks if any configuration settings in the form have been modified since the last save
+	 * @param data the last saved data object
+	 * @return  <code>true</code> if the configuration form has been modified, <code>false</code> otherwise
+	 */
 	public boolean isModified(OpenCmsModuleConfigurationData data) {
 		return isOpenCmsModuleCheckbox.isSelected() != data.isOpenCmsModuleEnabled() ||
 				FormTools.isTextFieldModified(moduleName, data.getModuleName()) ||
@@ -154,6 +177,9 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		;
 	}
 
+	/**
+	 * does nothing
+	 */
 	private void createUIComponents() {
 	}
 
@@ -179,10 +205,17 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		}
 	}
 
+	/**
+	 * does nothing
+	 */
 	public void focusGained(FocusEvent e) {
 		// do nothing
 	}
 
+	/**
+	 * Does some cleanup after fields containing paths lose focus
+	 * @param e the action event provided by IntelliJ
+	 */
 	public void focusLost(FocusEvent e) {
 		JTextField textField = (JTextField)e.getSource();
 		if (textField == localVfsRoot) {

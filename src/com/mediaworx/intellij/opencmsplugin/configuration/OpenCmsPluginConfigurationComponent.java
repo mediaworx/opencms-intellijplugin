@@ -46,6 +46,10 @@ import java.util.Collection;
 		@Storage( file = "$PROJECT_CONFIG_DIR$/opencms.xml", scheme = StorageScheme.DIRECTORY_BASED)
 	}
 )
+/**
+ * Component for the project level configuration of the OpenCms plugin. The configuration data is stored in the file
+ * <code>opencms.xml</code> in the IntelliJ configuration folder (<code>.idea</code>).
+ */
 public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Configurable, PersistentStateComponent<OpenCmsPluginConfigurationData> {
 
    	private OpenCmsPluginConfigurationForm form;
@@ -53,40 +57,73 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 
 	Project project;
 
+	/**
+	 * Creates a new project level configuration component.
+	 * @param project the IntelliJ project
+	 */
 	public OpenCmsPluginConfigurationComponent(Project project) {
 		this.project = project;
 	}
 
+	/**
+	 * Method called by IntelliJ whenever a project is opened, does nothing.
+	 */
 	public void projectOpened() {
 		// Do nothing
 	}
 
+	/**
+	 * Method called by IntelliJ whenever a project is closed, does nothing.
+	 */
 	public void projectClosed() {
 		// Do nothing
 	}
 
+	/**
+	 * Method called by IntelliJ whenever the project level configuration component is initialized, does nothing.
+	 */
 	public void initComponent() {
 		// Do nothing
 	}
 
+	/**
+	 * Method called by IntelliJ whenever the project level configuration component is disposed, does some cleanup.
+	 */
 	public void disposeComponent() {
-		// Do nothing
+		form = null;
+		configurationData = null;
 	}
 
+	/**
+	 * Returns the component's name.
+	 * @return the component's name "OpenCmsPlugin.ConfigurationComponent"
+	 */
 	@NotNull
 	public String getComponentName() {
 		return "OpenCmsPlugin.ConfigurationComponent";
 	}
 
+	/**
+	 * Returns the component's display name that is used in the Settings dialog.
+	 * @return  the component's display name "OpenCms Plugin"
+	 */
 	@Nls
 	public String getDisplayName() {
 		return "OpenCms Plugin";
 	}
 
+	/**
+	 * There's no help topic for the OpenCms plugin, so <code>null</code> is returned.
+	 * @return  always returns <code>null</code>
+	 */
 	public String getHelpTopic() {
 		return null;  // Do nothing
 	}
 
+	/**
+	 * Creates the project level configuration component and initializes the corresponding configuration data object.
+	 * @return the project level configuration component
+	 */
 	public JComponent createComponent() {
 		if (configurationData == null) {
 			configurationData = new OpenCmsPluginConfigurationData();
@@ -97,10 +134,18 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 		return form.getRootComponent();
 	}
 
+	/**
+	 * Checks if the project level configuration was modified
+	 * @return  <code>true</code> if the project level configuration was modified, <code>false</code> otherwise
+	 */
 	public boolean isModified() {
 		return form != null && form.isModified(configurationData);
 	}
 
+	/**
+	 * Applies the modifications made to the project level configuration.
+	 * @throws ConfigurationException required by the interface but never thrown
+	 */
 	public void apply() throws ConfigurationException {
 		if (form != null) {
 			boolean pluginActivationWasModified = form.isPluginActivationModified(configurationData.isOpenCmsPluginEnabled());
@@ -141,6 +186,9 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 		}
 	}
 
+	/**
+	 * Resets the configuration form to the last saved state after modifications were made.
+	 */
 	public void reset() {
 		if (form != null) {
 			// Reset form data from component
@@ -148,15 +196,26 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 		}
 	}
 
+	/**
+	 * Clears UI resources used by the project level configuration component.
+	 */
 	public void disposeUIResources() {
 		form = null;
 	}
 
+	/**
+	 * Returns the current project level configuration state.
+	 * @return the OpenCmsPluginConfigurationData object
+	 */
 	@Nullable
 	public OpenCmsPluginConfigurationData getState() {
-		return this.configurationData;
+		return configurationData;
 	}
 
+	/**
+	 * Loads the project level configuration state contained in the given configuration data.
+	 * @param configurationData the project level configuration data to load
+	 */
 	public void loadState(OpenCmsPluginConfigurationData configurationData) {
 		if (this.configurationData == null) {
 			this.configurationData = new OpenCmsPluginConfigurationData();
@@ -164,7 +223,4 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 		XmlSerializerUtil.copyBean(configurationData, this.configurationData);
 	}
 
-	public OpenCmsPluginConfigurationData getConfigurationData() {
-		return configurationData;
-	}
 }

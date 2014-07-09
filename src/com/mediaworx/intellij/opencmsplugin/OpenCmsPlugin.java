@@ -145,7 +145,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public void initComponent() {
 		LOG.warn("initComponent called, project: " + project.getName());
 		actionManager = ActionManager.getInstance();
-		config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getConfigurationData();
+		config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getState();
 	}
 
 	/**
