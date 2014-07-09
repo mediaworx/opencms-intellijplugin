@@ -22,24 +22,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.mediaworx.intellij.opencmsplugin.opencms;
-
-public class OpenCmsModuleResource {
-
-	private OpenCmsModule openCmsModule;
-	private String resourcePath;
-
-	public OpenCmsModuleResource(OpenCmsModule openCmsModule, String resourcePath) {
-		this.openCmsModule = openCmsModule;
-		this.resourcePath = resourcePath;
-	}
-
-	public OpenCmsModule getOpenCmsModule() {
-		return openCmsModule;
-	}
-
-	public String getResourcePath() {
-		return resourcePath.replaceFirst("/$", ""); // strip trailing slash
-	}
-
-}
+/**
+ * This package contains XXX
+ */
+package com.mediaworx.intellij.opencmsplugin.connector;

@@ -33,28 +33,51 @@ import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * VFS file analyzer used to analyze which of the files selected in the IntelliJ project tree are to be published
+ */
 public class PublishFileAnalyzer extends VfsFileAnalyzer {
 
 	List<String> publishList;
 
+	/**
+	 * Creates a new PublishFileAnalyzer
+	 * @param plugin the OpenCms plugin instance
+	 * @param files Virtual file array containing the files selected in IntelliJ's project tree
+	 * @throws CmsConnectionException is needed because of the abstract classe's interface, but never thrown
+	 */
 	public PublishFileAnalyzer(OpenCmsPlugin plugin, VirtualFile[] files) throws CmsConnectionException {
 		super(plugin, files);
 
 		publishList = new ArrayList<String>();
 	}
 
+	/**
+	 * handles module resources, adds the file's VFS path to the publish list
+	 * @param ocmsModule the OpenCms module containing the file
+	 * @param file IntelliJ's virtual file
+	 */
 	@Override
 	protected void handleModuleResource(OpenCmsModule ocmsModule, VirtualFile file) {
 		publishList.add(ocmsModule.getVfsPathForIdeaVFile(file));
 		handledPaths.add(file.getPath());
 	}
 
+	/**
+	 * handles module resource paths, adds the given VFS path to the publish list
+	 * @param ocmsModule the OpenCms module containing the file
+	 * @param moduleResourceVfsPath the VFS file path
+	 */
 	@Override
 	protected void handleModuleResourcePath(OpenCmsModule ocmsModule, String moduleResourceVfsPath) {
 		publishList.add(moduleResourceVfsPath);
 		handledPaths.add(ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
 	}
 
+	/**
+	 * returns the list of VFS resource paths to be published
+	 * @return the list of VFS resource paths to be published
+	 */
 	public List<String> getPublishList() {
 		return publishList;
 	}

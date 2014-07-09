@@ -48,6 +48,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The connector to OpenCms used for publishing and pulling module and resource meta data. The Plugin Connector is
+ * dependent on the OpenCms module "com.mediaworx.opencms.ideconnector" that must be installed on the local OpenCms
+ * instance. The module contains a JSP handling requests.<br />
+ * <br />
+ * The Plugin Connector must be enabled and configured in the project level configuration
+ * (see {@link com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData#isPluginConnectorEnabled()}).
+ * The Plugin Connector supports three actions:
+ * <ul>
+ *     <li>moduleManifests: used to pull Module Manifest stubs from OpenCms</li>
+ *     <li>resourceInfos: used to pull resource meta data from OpenCms</li>
+ *     <li>publishResources: used to start a direct publish session in OpenCms</li>
+ * </ul>
+ *
+ * Communication between the plugin and the connector JSP is done via http by sending JSON requests. Responses from
+ * the connector module are in JSON format as well.
+ */
 public class OpenCmsPluginConnector {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPluginConnector.class);
@@ -62,6 +79,12 @@ public class OpenCmsPluginConnector {
 	private CloseableHttpClient httpClient;
 	private JSONParser jsonParser;
 
+	/**
+	 * Creates a new Plugin Connector
+	 * @param connectorUrl  the Url under which the connector JSP cam be called
+	 * @param user          OpenCms user to be used for communication with the connector
+	 * @param password      The OpenCms user's password
+	 */
 	public OpenCmsPluginConnector(String connectorUrl, String user, String password) {
 		this.connectorUrl = connectorUrl;
 		this.user = user;
@@ -74,6 +97,9 @@ public class OpenCmsPluginConnector {
 		jsonParser = new JSONParser();
 	}
 
+	/**
+	 * Internal method to reset the HttpClient.
+	 */
 	private void resetClient() {
 		// TODO: reset the client or the session or whatever, if necessary
 	}
@@ -84,6 +110,10 @@ public class OpenCmsPluginConnector {
 		}
 	}
 
+	/**
+	 * Sets the OpenCms user to be used for communication with the connector
+	 * @param user an OpenCms user
+	 */
 	public void setUser(String user) {
 		if (this.user == null || !this.user.equals(user)) {
 			this.user = user;
@@ -91,6 +121,10 @@ public class OpenCmsPluginConnector {
 		}
 	}
 
+	/**
+	 * Sets the OpenCms users's password
+	 * @param password the OpenCms users's password
+	 */
 	public void setPassword(String password) {
 		if (this.password == null || !this.password.equals(password)) {
 			this.password = password;
@@ -98,6 +132,14 @@ public class OpenCmsPluginConnector {
 		}
 	}
 
+	/**
+	 * Gets the resource meta data for the given module resources
+	 * @param moduleResources   a list of module resources for which meta data is to be retrieved
+	 * @return a map containing the resource path as key and the corresponding resource meta data (XML String) as value
+	 * @throws IOException if something went wrong with the HttpClient
+	 * @throws OpenCmsConnectorException if the connector was not found at the given Url or if the connector returned
+	 *                                   an invalid http status
+	 */
 	public HashMap<String, String> getModuleResourceInfos(List<OpenCmsModuleResource> moduleResources) throws IOException, OpenCmsConnectorException {
 		List<String> resourcePaths = new ArrayList<String>(moduleResources.size());
 		for (OpenCmsModuleResource moduleResource : moduleResources) {
@@ -107,14 +149,40 @@ public class OpenCmsPluginConnector {
 	}
 
 
+	/**
+	 * Gets the resource meta data for the module resources at the given paths
+	 * @param resourcePaths   a list of module resource paths for which meta data is to be retrieved
+	 * @return a map containing the resource path as key and the corresponding resource meta data (XML String) as value
+	 * @throws IOException if something went wrong with the HttpClient
+	 * @throws OpenCmsConnectorException if the connector was not found at the given Url or if the connector returned
+	 *                                   an invalid http status
+	 */
 	public HashMap<String, String> getResourceInfos(List<String> resourcePaths) throws IOException, OpenCmsConnectorException {
 		return getActionResponseMap(resourcePaths, ACTION_RESOURCEINFOS);
 	}
 
+	/**
+	 * Gets the manifest stub files for the given modules
+	 * @param moduleNames List of module names
+	 * @return a map containing the module name as key and the corresponding module manifest data (XML String) as value
+	 * @throws IOException if something went wrong with the HttpClient
+	 * @throws OpenCmsConnectorException if the connector was not found at the given Url or if the connector returned
+	 *                                   an invalid http status
+	 */
 	public HashMap<String, String> getModuleManifests(List<String> moduleNames) throws IOException, OpenCmsConnectorException {
 		return getActionResponseMap(moduleNames, ACTION_MODULEMANIFESTS);
 	}
 
+	/**
+	 * Starts a direct publish session for the given resources
+	 * @param resourcePaths List containing the paths of the resources to be published
+	 * @param publishSubResources <code>true</code> if sub resources should be published (e.g. a folder and all files
+	 *                            and folders contained therein), <code>false</code> if only the resources in the list
+	 *                            should be published and sub resources should be left alone.
+	 * @throws IOException if something went wrong with the HttpClient
+	 * @throws OpenCmsConnectorException if the connector was not found at the given Url or if the connector returned
+	 *                                   an invalid http status
+	 */
 	public void publishResources(List<String> resourcePaths, boolean publishSubResources) throws IOException, OpenCmsConnectorException {
 		Map<String, String> additionalParams = new HashMap<String, String>();
 		additionalParams.put("publishSubResources", String.valueOf(publishSubResources));
@@ -126,7 +194,17 @@ public class OpenCmsPluginConnector {
 		}
 	}
 
-	public String getActionResponseString(List<String> identifiers, String action, Map<String, String> additionalParameters) throws IOException, OpenCmsConnectorException {
+	/**
+	 * Internal method to get the http response String for a connector action
+	 * @param identifiers List of identifiers (e.g. resource paths or module names)
+	 * @param action the connector action to be executed
+	 * @param additionalParameters Map of key/value parameters to be passed to the connector
+	 * @return the http response of the connector JSP (usually JSON, plaintext for publish actions)
+	 * @throws IOException if something went wrong with the HttpClient
+	 * @throws OpenCmsConnectorException if the connector was not found at the given Url or if the connector returned
+	 *                                   an invalid http status
+	 */
+	private String getActionResponseString(List<String> identifiers, String action, Map<String, String> additionalParameters) throws IOException, OpenCmsConnectorException {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("requesting connector response");
 			LOG.debug("connectorUrl: " + connectorUrl);
@@ -177,7 +255,16 @@ public class OpenCmsPluginConnector {
 		}
 	}
 
-	public HashMap<String, String> getActionResponseMap(List<String> identifiers, String action) throws IOException, OpenCmsConnectorException {
+	/**
+	 * Internal method to get the http response JSON-String for a connector action and parse it into a Map
+	 * (key: identifier, value: meta data in XML format)
+	 * @param identifiers List of identifiers (e.g. resource paths or module names)
+	 * @param action the connector action to be executed
+	 * @return the http response of the connector JSP parsed into a Map (key: identifier, value: meta data in XML format)
+	 * @throws IOException
+	 * @throws OpenCmsConnectorException
+	 */
+	private HashMap<String, String> getActionResponseMap(List<String> identifiers, String action) throws IOException, OpenCmsConnectorException {
 
 		HashMap<String, String> resourceInfos = new HashMap<String, String>();
 		String jsonString = getActionResponseString(identifiers, action, null);
@@ -200,6 +287,11 @@ public class OpenCmsPluginConnector {
 	}
 
 
+	/**
+	 * Internal utility method to convert a List of Strings into a JSON array
+	 * @param list The List of Strings to be converted
+	 * @return the list of Strings converted into a JSON array
+	 */
 	@SuppressWarnings("unchecked")
 	private String getJSONArrayForStringList(List<String> list) {
 		JSONArray jsonArray = new JSONArray();

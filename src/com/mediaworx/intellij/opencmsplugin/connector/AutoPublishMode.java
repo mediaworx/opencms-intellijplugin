@@ -24,6 +24,15 @@
 
 package com.mediaworx.intellij.opencmsplugin.connector;
 
+/**
+ * Enumeration for the possible Auto Publish Modes.
+ *
+ * <ul>
+ *     <li>OFF: Nothing will be published automatically</li>
+ *     <li>FILECHANGE: File changes (delete, move and rename) will be published automatically</li>
+ *     <li>ALL: All resources synced to the VFS will be published automatically</li>
+ * </ul>
+ */
 public enum  AutoPublishMode {
 	OFF,
 	FILECHANGE,
