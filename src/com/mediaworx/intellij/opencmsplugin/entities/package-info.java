@@ -23,7 +23,6 @@
  */
 
 /**
- * This package contains classes used to connect the IntelliJ plugin to OpenCms to execute actions like pulling meta
- * data or publishing resources.
+ * Some beans used for syncing and exporting resources.
  */
-package com.mediaworx.intellij.opencmsplugin.connector;
+package com.mediaworx.intellij.opencmsplugin.entities;

@@ -32,19 +32,39 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 
 public class SyncFolder extends SyncEntity {
 
+	/**
+	 * Creates a new sync folder
+	 * @param ocmsModule the OpenCms module the folder is contained in
+	 * @param vfsPath the folder's VFS path
+	 * @param ideaVFile IntelliJs virtual file representing the folder
+	 * @param vfsObject The CMIS object representing the folder
+	 * @param syncAction The Sync Action to be used for the folder (PUSH, PULL, DELETE_RFS or DELETE_VFS)
+	 */
 	public SyncFolder(OpenCmsModule ocmsModule, String vfsPath, VirtualFile ideaVFile, CmisObject vfsObject, SyncAction syncAction, boolean replaceExistingEntity) {
 		super(ocmsModule, vfsPath, ideaVFile, vfsObject, syncAction, replaceExistingEntity);
 	}
 
+	/**
+	 * Returns the Type (FOLDER)
+	 * @return always returns Type.FOLDER
+	 */
 	@Override
 	public Type getType() {
 		return Type.FOLDER;
 	}
 
+	/**
+	 * returns the path to the meta data file for this folder
+	 * @return the path to the meta data file for this folder
+	 */
 	public String getMetaInfoFilePath() {
 		return OpenCmsModuleManifestGenerator.getMetaInfoPath(getOcmsModule().getManifestRoot(), getVfsPath(), true);
 	}
 
+	/**
+	 * returns the path to the meta data folder for this folder (containing meta data of child entities)
+	 * @return the path to the meta data folder for this folder
+	 */
 	public String getMetaInfoFolderPath() {
 		return getOcmsModule().getManifestRoot() + getVfsPath();
 	}

@@ -30,30 +30,35 @@ import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
 import com.mediaworx.opencms.moduleutils.manifestgenerator.OpenCmsModuleManifestGenerator;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 
-import java.util.Date;
-
 public class SyncFile extends SyncEntity {
 
-	private Date lastChangeDate;
-
+	/**
+	 * Creates a new sync file
+	 * @param ocmsModule the OpenCms module the file is contained in
+	 * @param vfsPath the file's VFS path
+	 * @param ideaVFile IntelliJs virtual file representing the file
+	 * @param vfsObject The CMIS object representing the file
+	 * @param syncAction The Sync Action to be used for the file (PUSH, PULL, DELETE_RFS or DELETE_VFS)
+	 */
 	public SyncFile(OpenCmsModule ocmsModule, String vfsPath, VirtualFile ideaVFile, CmisObject vfsObject, SyncAction syncAction, boolean replaceExistingEntity) {
 		super(ocmsModule, vfsPath, ideaVFile, vfsObject, syncAction, replaceExistingEntity);
 	}
 
+	/**
+	 * Returns the Type (FILE)
+	 * @return always returns Type.FILE
+	 */
 	@Override
 	public Type getType() {
 		return Type.FILE;
 	}
 
+	/**
+	 * returns the path to the meta data file for this file
+	 * @return the path to the meta data file for this file
+	 */
 	public String getMetaInfoFilePath() {
 		return OpenCmsModuleManifestGenerator.getMetaInfoPath(getOcmsModule().getManifestRoot(), getVfsPath(), false);
 	}
 
-	public Date getLastChangeDate() {
-		return (Date) lastChangeDate.clone();
-	}
-
-	public void setLastChangeDate(Date lastChangeDate) {
-		this.lastChangeDate = (Date)lastChangeDate.clone();
-	}
 }

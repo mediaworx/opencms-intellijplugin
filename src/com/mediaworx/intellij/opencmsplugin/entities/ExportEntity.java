@@ -24,8 +24,15 @@
 
 package com.mediaworx.intellij.opencmsplugin.entities;
 
+/**
+ * Bean containing information of resources to be exported from the VFS to the webapp's RFS (due to the configuration of
+ * module export points in OpenCms)
+ */
 public class ExportEntity {
 
+	/**
+	 * Creates a new export entity
+	 */
 	public ExportEntity() {
 	}
 
@@ -35,46 +42,90 @@ public class ExportEntity {
 	String destination;
 	boolean toBeDeleted;
 
+	/**
+	 * Returns the RFS source path
+ 	 * @return the RFS source path
+	 */
 	public String getSourcePath() {
 		return sourcePath;
 	}
 
+	/**
+	 * Sets the RFS source path
+	 * @param sourcePath the RFS source path
+	 */
 	public void setSourcePath(String sourcePath) {
 		this.sourcePath = sourcePath;
 	}
 
+	/**
+	 * Returns the export target path (somewhere in the webapp's folder structure)
+	 * @return the export target path
+	 */
 	public String getTargetPath() {
 		return targetPath;
 	}
 
+	/**
+	 * Sets the export target path
+	 * @param targetPath the export target path
+	 */
 	public void setTargetPath(String targetPath) {
 		this.targetPath = targetPath;
 	}
 
+	/**
+	 * Gets the entity's OpenCms VFS path
+	 * @return the entity's OpenCms VFS path
+	 */
 	public String getVfsPath() {
 		return vfsPath;
 	}
 
+	/**
+	 * Sets the entity's OpenCms VFS path
+	 * @param vfsPath the entity's OpenCms VFS path
+	 */
 	public void setVfsPath(String vfsPath) {
 		this.vfsPath = vfsPath;
 	}
 
+	/**
+	 * Returns the export point's destination (the RFS target configured in OpenCms)
+	 * @return the export point's destination
+	 */
 	public String getDestination() {
 		return destination;
 	}
 
+	/**
+	 * Sets the export point's destination
+	 * @param destination the export point's destination (the RFS target configured in OpenCms)
+	 */
 	public void setDestination(String destination) {
 		this.destination = destination;
 	}
 
+	/**
+	 * Flag denoting if the exported entity is to be deleted
+	 * @return <code>true</code> if the exported entity is to be deleted, <code>false</code> otherwise
+	 */
 	public boolean isToBeDeleted() {
 		return toBeDeleted;
 	}
 
+	/**
+	 * Sets the flag denoting if the exported entity is to be deleted
+	 * @param toBeDeleted <code>true</code> if the exported entity is to be deleted, <code>false</code> otherwise
+	 */
 	public void setToBeDeleted(boolean toBeDeleted) {
 		this.toBeDeleted = toBeDeleted;
 	}
 
+	/**
+	 * Returns a String representation of this export entity (for debugging purposes)
+	 * @return a String representation of this export entity
+	 */
 	@Override
 	public String toString() {
 		return "ExportEntity {\n" +
