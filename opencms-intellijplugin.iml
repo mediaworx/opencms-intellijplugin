@@ -6,7 +6,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="IDEA Plugin SDK IU-117.963" jdkType="IDEA JDK" />
+    <orderEntry type="jdk" jdkName="IDEA IU-129.1359" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="httpclient-4.3.1" level="project" />
     <orderEntry type="library" name="json-simple-1.1.1" level="project" />
@@ -20,7 +20,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="opencms-manifestgenerator-1.2" level="project" />
+    <orderEntry type="library" name="opencms-manifestgenerator-1.3" level="project" />
     <orderEntry type="library" name="opencms-modulepackager-1.1" level="project" />
   </component>
   <component name="OpenCmsModuleConfigurationData">

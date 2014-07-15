@@ -172,7 +172,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		if (!wasInitialized) {
 			if (config != null && config.isOpenCmsPluginEnabled()) {
 				if (config.isPluginConnectorEnabled()) {
-					pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword());
+					pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword(), config.isUseMetaVariablesEnabled());
 				}
 			}
 			registerMenus();

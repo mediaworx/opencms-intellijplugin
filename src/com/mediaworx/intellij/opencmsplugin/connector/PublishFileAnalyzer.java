@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * VFS file analyzer used to analyze which of the files selected in the IntelliJ project tree are to be published
+ * VFS file analyzer used to analyze which of the entities selected in the IntelliJ project tree are to be published
  */
 public class PublishFileAnalyzer extends VfsFileAnalyzer {
 

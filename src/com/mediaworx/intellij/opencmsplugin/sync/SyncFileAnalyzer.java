@@ -104,16 +104,16 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		syncList.addOcmsModule(ocmsModule);
 	}
 
-	protected void handleModuleResourcePath(OpenCmsModule ocmsModule, String resourcePath) {
-		LOG.info("resource path: " + ocmsModule.getLocalVfsRoot() + resourcePath);
-		VirtualFile resourceFile = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getLocalVfsRoot() + resourcePath);
+	protected void handleModuleResourcePath(OpenCmsModule ocmsModule, String moduleResourceVfsPath) {
+		LOG.info("resource path: " + ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
+		VirtualFile resourceFile = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
 		if (resourceFile != null) {
 			LOG.info("vFolder path: " + resourceFile.getPath());
 			handleModuleResource(ocmsModule, resourceFile);
 		}
 		else {
 			LOG.info("Resource path doesn't exist in the FS, it has to be pulled from the VFS");
-			moduleResourcesToBePulled.add(new OpenCmsModuleResource(ocmsModule, resourcePath));
+			moduleResourcesToBePulled.add(new OpenCmsModuleResource(ocmsModule, moduleResourceVfsPath));
 		}
 	}
 
@@ -176,7 +176,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			if (!vfsObjectExists) {
 				if (!pullAllMetaInformation) {
 					LOG.info("It's a folder that does not exist on the VFS, PUSH recursively");
-					addRfsOnlyFolderTreeToSyncJob(ocmsModule, vfsPath, ideaVFile, false);
+					addRfsOnlyFolderTreeToSyncList(ocmsModule, vfsPath, ideaVFile, false);
 				}
 			}
 			// The Folder is there, compare contents of VFS and RFS
@@ -190,7 +190,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			if (!vfsObjectExists) {
 				if (!pullAllMetaInformation) {
 					LOG.info("It's a file that does not exist on the VFS, PUSH");
-					addRfsOnlyFileToSyncJob(ocmsModule, vfsPath, ideaVFile, null);
+					addRfsOnlyFileToSyncList(ocmsModule, vfsPath, ideaVFile, null);
 				}
 			}
 			// The file exists, check which one is newer
@@ -263,11 +263,11 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 			// files
 			if (vfsChild.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
-				addVfsOnlyFileToSyncJob(ocmsModule, childVfsPath, vfsChild, false);
+				addVfsOnlyFileToSyncList(ocmsModule, childVfsPath, vfsChild, false);
 			}
 			// folders
 			else if (vfsChild.getBaseTypeId().equals(BaseTypeId.CMIS_FOLDER)) {
-				addVfsOnlyFolderTreeToSyncJob(ocmsModule, childVfsPath, vfsChild, false);
+				addVfsOnlyFolderTreeToSyncList(ocmsModule, childVfsPath, vfsChild, false);
 			}
 		}
 	}
@@ -332,23 +332,23 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 			// files
 			if (vfsObject.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
-				addModuleResourceFileToSyncJob(ocmsModule, vfsPath, vfsObject);
+				addModuleResourceFileToSyncList(ocmsModule, vfsPath, vfsObject);
 			}
 			// folders
 			else if (vfsObject.getBaseTypeId().equals(BaseTypeId.CMIS_FOLDER)) {
-				addModuleResourceFolderTreeToSyncJob(ocmsModule, vfsPath, vfsObject);
+				addModuleResourceFolderTreeToSyncList(ocmsModule, vfsPath, vfsObject);
 			}
 		}
 	}
 
-	private void addRfsOnlyFileToSyncJob(OpenCmsModule ocmsModule, String vfsPath, VirtualFile file, Document vfsFile) {
+	private void addRfsOnlyFileToSyncList(OpenCmsModule ocmsModule, String vfsPath, VirtualFile file, Document vfsFile) {
 		LOG.info("Adding RFS only file " + vfsPath);
 		SyncAction syncAction = getRfsOnlySyncAction(ocmsModule.getSyncMode());
 		SyncFile syncFile = new SyncFile(ocmsModule, vfsPath, file, vfsFile, syncAction, vfsFile != null);
 		syncList.add(syncFile);
 	}
 
-	private void addRfsOnlyFolderTreeToSyncJob(OpenCmsModule ocmsModule, String vfsPath, VirtualFile file, boolean replaceExistingEntity) {
+	private void addRfsOnlyFolderTreeToSyncList(OpenCmsModule ocmsModule, String vfsPath, VirtualFile file, boolean replaceExistingEntity) {
 		LOG.info("Adding RFS only folder " + vfsPath);
 
 		SyncAction syncAction = getRfsOnlySyncAction(ocmsModule.getSyncMode());
@@ -365,14 +365,14 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		}
 	}
 
-	private void addVfsOnlyFileToSyncJob(OpenCmsModule ocmsModule, String vfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
+	private void addVfsOnlyFileToSyncList(OpenCmsModule ocmsModule, String vfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
 		LOG.info("Adding VFS only file " + vfsPath);
 		SyncAction syncAction = getVfsOnlySyncAction(ocmsModule.getSyncMode());
 		SyncFile syncFile = new SyncFile(ocmsModule, vfsPath, null, vfsObject, syncAction, replaceExistingEntity);
 		syncList.add(syncFile);
 	}
 
-	private void addVfsOnlyFolderTreeToSyncJob(OpenCmsModule ocmsModule, String vfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
+	private void addVfsOnlyFolderTreeToSyncList(OpenCmsModule ocmsModule, String vfsPath, CmisObject vfsObject, boolean replaceExistingEntity) {
 		LOG.info("Adding VFS only folder " + vfsPath);
 
 		SyncAction syncAction = getVfsOnlySyncAction(ocmsModule.getSyncMode());
@@ -388,23 +388,23 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 				// files
 				if (child.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
-					addVfsOnlyFileToSyncJob(ocmsModule, childVfsPath, child, false);
+					addVfsOnlyFileToSyncList(ocmsModule, childVfsPath, child, false);
 				}
 				// folders
 				else if (child.getBaseTypeId().equals(BaseTypeId.CMIS_FOLDER)) {
-					addVfsOnlyFolderTreeToSyncJob(ocmsModule, childVfsPath, child, false);
+					addVfsOnlyFolderTreeToSyncList(ocmsModule, childVfsPath, child, false);
 				}
 			}
 		}
 	}
 
-	private void addModuleResourceFileToSyncJob(OpenCmsModule ocmsModule, String vfsPath, CmisObject vfsObject) {
+	private void addModuleResourceFileToSyncList(OpenCmsModule ocmsModule, String vfsPath, CmisObject vfsObject) {
 		LOG.info("Adding VFS module resource file " + vfsPath);
 		SyncFile syncFile = new SyncFile(ocmsModule, vfsPath, null, vfsObject, SyncAction.PULL, false);
 		syncList.add(syncFile);
 	}
 
-	private void addModuleResourceFolderTreeToSyncJob(OpenCmsModule ocmsModule, String vfsPath, CmisObject vfsObject) {
+	private void addModuleResourceFolderTreeToSyncList(OpenCmsModule ocmsModule, String vfsPath, CmisObject vfsObject) {
 		LOG.info("Adding VFS module resource folder " + vfsPath);
 
 		SyncFolder syncFolder = new SyncFolder(ocmsModule, vfsPath, null, vfsObject, SyncAction.PULL, false);
@@ -422,11 +422,11 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 			// files
 			if (child.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
-				addModuleResourceFileToSyncJob(ocmsModule, childVfsPath, child);
+				addModuleResourceFileToSyncList(ocmsModule, childVfsPath, child);
 			}
 			// folders
 			else if (child.getBaseTypeId().equals(BaseTypeId.CMIS_FOLDER)) {
-				addModuleResourceFolderTreeToSyncJob(ocmsModule, childVfsPath, child);
+				addModuleResourceFolderTreeToSyncList(ocmsModule, childVfsPath, child);
 			}
 		}
 	}

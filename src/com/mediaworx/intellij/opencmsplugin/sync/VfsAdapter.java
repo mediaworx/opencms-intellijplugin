@@ -312,7 +312,7 @@ public class VfsAdapter {
 			throw new CmsPushException("Could not push entity "+entity.getVfsPath()+", there was a problem with the resource name.\n"+e.getMessage(), e);
 		}
 		catch(CmisRuntimeException e) {
-			throw new CmsPushException("Could not push entity "+entity.getVfsPath()+", there may be an issue with a lock.\n"+e.getMessage(), e);
+			throw new CmsPushException("Could not push entity "+entity.getVfsPath()+", there may be an issue with a lock or an XML validation issue. Look at the OpenCms log file to find out what went wrong.\n"+e.getMessage(), e);
 		}
 		finally {
 			try {

@@ -166,9 +166,10 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 					plugin.getPluginConnector().setConnectorUrl(configurationData.getConnectorUrl());
 					plugin.getPluginConnector().setUser(configurationData.getUsername());
 					plugin.getPluginConnector().setPassword(configurationData.getPassword());
+					plugin.getPluginConnector().setUseMetaVariables(configurationData.isUseMetaVariablesEnabled());
 				}
 				else {
-					plugin.setPluginConnector(new OpenCmsPluginConnector(configurationData.getConnectorUrl(), configurationData.getUsername(), configurationData.getPassword()));
+					plugin.setPluginConnector(new OpenCmsPluginConnector(configurationData.getConnectorUrl(), configurationData.getUsername(), configurationData.getPassword(), configurationData.isUseMetaVariablesEnabled()));
 				}
 			}
 			else {

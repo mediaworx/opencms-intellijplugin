@@ -42,15 +42,13 @@ public class OpenCmsModule {
 
 	OpenCmsPlugin plugin;
 	Module intelliJModule;
+	OpenCmsPluginConfigurationData pluginConfig;
 	OpenCmsModuleConfigurationData moduleConfig;
 
 	List<OpenCmsModuleExportPoint> exportPoints;
 	List<String> moduleResources;
 	String intelliJModuleRoot;
 	String localVfsRoot;
-	SyncMode syncMode;
-	private boolean setSpecificModuleVersionEnabled = false;
-	private String moduleVersion;
 
 	public OpenCmsModule(OpenCmsPlugin plugin, Module intelliJModule) {
 		this.plugin = plugin;
@@ -60,7 +58,7 @@ public class OpenCmsModule {
 	public void init(OpenCmsModuleConfigurationData moduleConfig) {
 		this.moduleConfig = moduleConfig;
 		OpenCmsConfiguration openCmsConfig = plugin.getOpenCmsConfiguration();
-		OpenCmsPluginConfigurationData pluginConfig = plugin.getPluginConfiguration();
+		this.pluginConfig = plugin.getPluginConfiguration();
 		String moduleName = moduleConfig.getModuleName();
 
 		exportPoints = openCmsConfig.getExportPointsForModule(moduleName);
@@ -86,16 +84,6 @@ public class OpenCmsModule {
 			vfsRootBuilder.append(this.intelliJModuleRoot).append("/").append(relativeVfsRoot);
 			localVfsRoot = vfsRootBuilder.toString();
 		}
-
-		if (moduleConfig.isUseProjectDefaultSyncModeEnabled()) {
-			syncMode = pluginConfig.getDefaultSyncMode();
-		}
-		else {
-			syncMode = moduleConfig.getSyncMode();
-		}
-
-		setSpecificModuleVersionEnabled = moduleConfig.isSetSpecificModuleVersionEnabled();
-		moduleVersion = moduleConfig.getModuleVersion();
 	}
 
 	public void refresh(OpenCmsModuleConfigurationData moduleConfig) {
@@ -125,15 +113,20 @@ public class OpenCmsModule {
 	}
 
 	public SyncMode getSyncMode() {
-		return syncMode;
+		if (moduleConfig.isUseProjectDefaultSyncModeEnabled()) {
+			return pluginConfig.getDefaultSyncMode();
+		}
+		else {
+			return moduleConfig.getSyncMode();
+		}
 	}
 
 	public boolean isSetSpecificModuleVersionEnabled() {
-		return setSpecificModuleVersionEnabled;
+		return moduleConfig.isSetSpecificModuleVersionEnabled();
 	}
 
 	public String getModuleVersion() {
-		return moduleVersion;
+		return moduleConfig.getModuleVersion();
 	}
 
 	public List<OpenCmsModuleExportPoint> getExportPoints() {

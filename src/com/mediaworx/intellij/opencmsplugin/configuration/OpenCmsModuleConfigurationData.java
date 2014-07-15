@@ -185,6 +185,9 @@ public class OpenCmsModuleConfigurationData {
 	 * @param moduleVersion the module version to be used in the module's manifest file (e.g. "2.1")
 	 */
 	public void setModuleVersion(String moduleVersion) {
-		this.moduleVersion = moduleVersion;
+		if (!moduleVersion.equals(this.moduleVersion)) {
+			this.moduleVersion = moduleVersion;
+
+		}
 	}
 }

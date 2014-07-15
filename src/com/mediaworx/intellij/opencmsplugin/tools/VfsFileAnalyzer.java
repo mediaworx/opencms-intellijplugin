@@ -34,6 +34,38 @@ import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
 import java.util.HashSet;
 
+/**
+ * Abstract class used for analyzing a user selection in IntelliJ's project tree. All selected entities are checked
+ * if they
+ *
+ * <ul>
+ *     <li>are contained in an OpenCms module resource path or within a module's VFS path</li>
+ *     <li>are not ignored due to the ignored files/folders configuration</li>
+ * </ul>
+ *
+ * Those entities passing that test, are handled depending on their type:
+ *
+ * <ul>
+ *     <li>
+ *         if the selected entity is an IntelliJ module, it is handled by calling
+ *         {@link #handleModule(OpenCmsModule)} that calls {@link #handleModuleResourcePath(OpenCmsModule, String)}
+ *         for all of the module's resource paths.
+ *     </li>
+ *     <li>
+ *         if the selected entity is a file or a folder contained in an OpenCms module resource path, it is handled
+ *         by calling {@link #handleModuleResource(OpenCmsModule, VirtualFile)}
+ *     </li>
+ *     <li>
+ *         if the selected entity is a folder that's an ancestor to an OpenCms module resource path, it is handled
+ *         by calling {@link #handleModuleResourcePath(OpenCmsModule, String)}
+ *     </li>
+ * </ul>
+ *
+ * The methods <code>handleModuleResource</code> and <code>handleModuleResourcePath</code> are abstract and are
+ * implemented by subclasses. VfsFileAnalyzers are used to determine which resources are to be synced
+ * ({@link com.mediaworx.intellij.opencmsplugin.sync.SyncFileAnalyzer} or which resources are to be published
+ * ({@link com.mediaworx.intellij.opencmsplugin.connector.PublishFileAnalyzer}.
+ */
 public abstract class VfsFileAnalyzer {
 
 	private static final Logger LOG = Logger.getInstance(VfsFileAnalyzer.class);
@@ -80,7 +112,7 @@ public abstract class VfsFileAnalyzer {
 					continue;
 				}
 
-				// it's a folder that is a module root, so sync all corresponding module resources
+				// it's a folder that is a module root, so handle all corresponding module resources
 				if (file.isDirectory() && ocmsModule.isIdeaVFileModuleRoot(file)) {
 					LOG.info("Module root selected, handling the module " + ocmsModule.getModuleName());
 					handleModule(ocmsModule);
@@ -116,16 +148,37 @@ public abstract class VfsFileAnalyzer {
 		}
 	}
 
+	/**
+	 * Handles selected modules, calls the abstract method {@link #handleModuleResourcePath(OpenCmsModule, String)}
+	 * for all of the module's resource paths.
+	 * @param ocmsModule the OpenCms module
+	 */
 	protected void handleModule(OpenCmsModule ocmsModule) {
 		for (String resourcePath : ocmsModule.getModuleResources()) {
 			handleModuleResourcePath(ocmsModule, resourcePath);
 		}
 	}
 
+	/**
+	 * Abstract method handling resources contained in OpenCms module resource paths
+	 * @param ocmsModule the OpenCms module the resource is contained in
+	 * @param file IntelliJ file representing the resource in the real file system
+	 */
 	protected abstract void handleModuleResource(OpenCmsModule ocmsModule, VirtualFile file);
 
-	protected abstract void handleModuleResourcePath(OpenCmsModule ocmsModule, String moduleResource);
+	/**
+	 * Abstract method handling resource paths
+	 * @param ocmsModule
+	 * @param moduleResourceVfsPath
+	 */
+	protected abstract void handleModuleResourcePath(OpenCmsModule ocmsModule, String moduleResourceVfsPath);
 
+	/**
+	 * Utility method used to check if a resource is ignored due to the ignored files/folders configuration
+	 * @param config the project level plugin configuration data
+	 * @param ideaVFile IntelliJ file representing the resource to be checked
+	 * @return <code>true</code> if the resource is ignored, <code>false</code> otherwise
+	 */
 	public static boolean fileOrPathIsIgnored(OpenCmsPluginConfigurationData config, final VirtualFile ideaVFile) {
 		final String path = ideaVFile.getPath();
 		for (String ignoredPath : config.getIgnoredPathsArray()) {
@@ -145,10 +198,20 @@ public abstract class VfsFileAnalyzer {
 		return false;
 	}
 
+	/**
+	 * Used to check if there were warnings during file analysis and handling.
+	 * @return <code>true</code> if there were warnings, <code>false</code> otherwise
+	 * @see #getWarnings()
+	 */
 	public boolean hasWarnings() {
 		return warnings.length() > 0;
 	}
 
+	/**
+	 * Returns the warnings collected during file analysis and handling.
+	 * @return StringBuilder containing warning messages, empty SringBuilder if no warnings were generated
+	 * @see #hasWarnings()
+	 */
 	public StringBuilder getWarnings() {
 		return warnings;
 	}

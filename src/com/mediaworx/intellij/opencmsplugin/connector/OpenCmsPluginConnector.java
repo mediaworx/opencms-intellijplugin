@@ -76,6 +76,7 @@ public class OpenCmsPluginConnector {
 	private String connectorUrl;
 	private String user;
 	private String password;
+	private boolean useMetaVariables;
 	private CloseableHttpClient httpClient;
 	private JSONParser jsonParser;
 
@@ -85,11 +86,11 @@ public class OpenCmsPluginConnector {
 	 * @param user          OpenCms user to be used for communication with the connector
 	 * @param password      The OpenCms user's password
 	 */
-	public OpenCmsPluginConnector(String connectorUrl, String user, String password) {
+	public OpenCmsPluginConnector(String connectorUrl, String user, String password, boolean useMetaVariables) {
 		this.connectorUrl = connectorUrl;
 		this.user = user;
 		this.password = password;
-
+		this.useMetaVariables = useMetaVariables;
 		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
 		clientBuilder.setUserAgent("IntelliJ OpenCms plugin connector");
 		httpClient = clientBuilder.build();
@@ -130,6 +131,14 @@ public class OpenCmsPluginConnector {
 			this.password = password;
 			resetClient();
 		}
+	}
+
+	/**
+	 * Sets the flag denoting if using placeholders instead of UUIDs and dates in resource meta data is enabled
+	 * @param useMetaVariables  <code>true</code> if using placeholders should be enabled, <code>false</code> otherwise
+	 */
+	public void setUseMetaVariables(boolean useMetaVariables) {
+		this.useMetaVariables = useMetaVariables;
 	}
 
 	/**
@@ -241,7 +250,7 @@ public class OpenCmsPluginConnector {
 			HttpEntity entity = response.getEntity();
 			int status = response.getStatusLine().getStatusCode();
 			if (entity != null && status >= 200 && status < 300) {
-				return EntityUtils.toString(entity);
+				return EntityUtils.toString(entity, "UTF-8");
 			}
 			else if (status == 404) {
 				throw new OpenCmsConnectorException("The connector was not found.\nIs the connector module installed in OpenCms?");
@@ -266,8 +275,15 @@ public class OpenCmsPluginConnector {
 	 */
 	private HashMap<String, String> getActionResponseMap(List<String> identifiers, String action) throws IOException, OpenCmsConnectorException {
 
+		Map<String, String> additionalParams = null;
+
+		if (action.equals(ACTION_RESOURCEINFOS) && useMetaVariables) {
+			additionalParams = new HashMap<String, String>();
+			additionalParams.put("useMetaVariables", "true");
+		}
+
 		HashMap<String, String> resourceInfos = new HashMap<String, String>();
-		String jsonString = getActionResponseString(identifiers, action, null);
+		String jsonString = getActionResponseString(identifiers, action, additionalParams);
 		if (jsonString != null) {
 			try {
 				JSONArray jsonArray = (JSONArray)jsonParser.parse(jsonString);

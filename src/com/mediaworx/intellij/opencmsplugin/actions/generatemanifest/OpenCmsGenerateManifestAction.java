@@ -65,6 +65,7 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 		final List<File> filesToBeRefreshed = new ArrayList<File>(ideaVFiles.length);
 
 		OpenCmsModuleManifestGenerator manifestGenerator = new OpenCmsModuleManifestGenerator();
+		manifestGenerator.setReplaceMetaVariables(config.isUseMetaVariablesEnabled());
 		plugin.showConsole();
 		clearConsole();
 

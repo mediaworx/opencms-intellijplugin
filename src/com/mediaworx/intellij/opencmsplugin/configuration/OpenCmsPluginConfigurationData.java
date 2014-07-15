@@ -46,9 +46,10 @@ public class OpenCmsPluginConfigurationData {
 	private String[] ignoredPathsArray;
 	private boolean pluginConnectorEnabled;
 	private String connectorUrl;
+	private AutoPublishMode autoPublishMode;
 	private boolean pullMetadataEnabled;
 	private String manifestRoot;
-	private AutoPublishMode autoPublishMode;
+	private boolean useMetaVariablesEnabled;
 
 	/**
 	 * Flag denoting if the plugin is enabled for the project.
@@ -275,6 +276,23 @@ public class OpenCmsPluginConfigurationData {
 	}
 
 	/**
+	 * Gets the configured Auto Publish Mode
+	 * @return the configured Auto Publish Mode (OFF, FILECHANGE, ALL)
+	 */
+	public AutoPublishMode getAutoPublishMode() {
+		return autoPublishMode != null ? autoPublishMode : AutoPublishMode.FILECHANGE;
+	}
+
+	/**
+	 * Sets the Auto Publish Mode
+	 * @param autoPublishMode the Auto Publish Mode to be used by the plugin (OFF, FILECHANGE, ALL)
+	 */
+	public void setAutoPublishMode(AutoPublishMode autoPublishMode) {
+		this.autoPublishMode = autoPublishMode;
+	}
+
+
+	/**
 	 * Flag denoting if pulling OpenCms module and resource meta data is enabled
 	 * @return  <code>true</code> if pulling meta data is enabled, <code>false</code> otherwise
 	 */
@@ -309,19 +327,19 @@ public class OpenCmsPluginConfigurationData {
 	}
 
 	/**
-	 * Gets the configured Auto Publish Mode
-	 * @return the configured Auto Publish Mode (OFF, FILECHANGE, ALL)
+	 * Gets the flag denoting if using placeholders instead of UUIDs and dates in resource meta data is enabled
+	 * @return <code>true</code> if using placeholders is enabled, <code>false</code> otherwise
 	 */
-	public AutoPublishMode getAutoPublishMode() {
-		return autoPublishMode != null ? autoPublishMode : AutoPublishMode.FILECHANGE;
+	public boolean isUseMetaVariablesEnabled() {
+		return useMetaVariablesEnabled;
 	}
 
 	/**
-	 * Sets the Auto Publish Mode
-	 * @param autoPublishMode the Auto Publish Mode to be used by the plugin (OFF, FILECHANGE, ALL)
+	 * Sets the flag denoting if using placeholders instead of UUIDs and dates in resource meta data is enabled
+	 * @param useMetaVariablesEnabled  <code>true</code> if using placeholders should be enabled, <code>false</code> otherwise
 	 */
-	public void setAutoPublishMode(AutoPublishMode autoPublishMode) {
-		this.autoPublishMode = autoPublishMode;
+	public void setUseMetaVariablesEnabled(boolean useMetaVariablesEnabled) {
+		this.useMetaVariablesEnabled = useMetaVariablesEnabled;
 	}
 
 	/**
