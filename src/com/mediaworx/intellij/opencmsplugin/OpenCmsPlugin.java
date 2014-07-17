@@ -319,7 +319,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 */
 	public void disposeComponent() {
 		project = null;
-		openCmsConfiguration = null;
+		if (openCmsConfiguration != null) {
+			openCmsConfiguration.stopMonitoringConfigurationChanges();
+			openCmsConfiguration = null;
+		}
 		openCmsModules = null;
 		vfsAdapter = null;
 		config = null;
@@ -353,6 +356,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public OpenCmsConfiguration getOpenCmsConfiguration() {
 		if (openCmsConfiguration == null) {
 			openCmsConfiguration = new OpenCmsConfiguration(config);
+			openCmsConfiguration.startMonitoringConfigurationChanges();
 		}
 		return openCmsConfiguration;
 	}

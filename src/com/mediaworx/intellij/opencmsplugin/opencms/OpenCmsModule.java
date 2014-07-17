@@ -36,30 +36,34 @@ import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
 
 import java.util.List;
 
-public class OpenCmsModule {
+public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeListener {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsModule.class);
 
-	OpenCmsPlugin plugin;
-	Module intelliJModule;
-	OpenCmsPluginConfigurationData pluginConfig;
-	OpenCmsModuleConfigurationData moduleConfig;
+	private OpenCmsPlugin plugin;
+	private Module intelliJModule;
+	private OpenCmsConfiguration openCmsConfig;
+	private OpenCmsPluginConfigurationData pluginConfig;
+	private OpenCmsModuleConfigurationData moduleConfig;
+	private String moduleName;
 
-	List<OpenCmsModuleExportPoint> exportPoints;
-	List<String> moduleResources;
-	String intelliJModuleRoot;
-	String localVfsRoot;
+	private List<OpenCmsModuleExportPoint> exportPoints;
+	private List<String> moduleResources;
+	private String intelliJModuleRoot;
+	private String localVfsRoot;
 
 	public OpenCmsModule(OpenCmsPlugin plugin, Module intelliJModule) {
 		this.plugin = plugin;
 		this.intelliJModule = intelliJModule;
+
+		pluginConfig = plugin.getPluginConfiguration();
+		openCmsConfig = plugin.getOpenCmsConfiguration();
+		openCmsConfig.registerConfigurationChangeListener(this);
 	}
 
 	public void init(OpenCmsModuleConfigurationData moduleConfig) {
 		this.moduleConfig = moduleConfig;
-		OpenCmsConfiguration openCmsConfig = plugin.getOpenCmsConfiguration();
-		this.pluginConfig = plugin.getPluginConfiguration();
-		String moduleName = moduleConfig.getModuleName();
+		moduleName = moduleConfig.getModuleName();
 
 		exportPoints = openCmsConfig.getExportPointsForModule(moduleName);
 		moduleResources = openCmsConfig.getModuleResourcesForModule(moduleName);
@@ -180,5 +184,13 @@ public class OpenCmsModule {
 			relativeName = "/";
 		}
 		return relativeName;
+	}
+
+	@Override
+	public void handleOpenCmsConfigurationChange(OpenCmsConfiguration.ConfigurationChangeType changeType) {
+		if (changeType == OpenCmsConfiguration.ConfigurationChangeType.MODULECONFIGURATION) {
+			exportPoints = openCmsConfig.getExportPointsForModule(moduleName);
+			moduleResources = openCmsConfig.getModuleResourcesForModule(moduleName);
+		}
 	}
 }

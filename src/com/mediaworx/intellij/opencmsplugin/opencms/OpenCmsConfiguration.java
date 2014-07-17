@@ -27,11 +27,15 @@ package com.mediaworx.intellij.opencmsplugin.opencms;
 import com.intellij.openapi.diagnostic.Logger;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.xmlutils.XmlHelper;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,12 +50,28 @@ public class OpenCmsConfiguration {
 
 	private OpenCmsPluginConfigurationData config;
 	private XmlHelper xmlHelper;
+	private File moduleConfigurationFile;
+	private FileAlterationMonitor configurationChangeMonitor;
+	private List<ConfigurationChangeListener> configurationChageListeners = new ArrayList<ConfigurationChangeListener>();
 
 	private Document parsedModuleConfigurationFile;
+
+	public enum  ConfigurationChangeType {
+		MODULECONFIGURATION
+	}
+
 
 
 	public OpenCmsConfiguration(OpenCmsPluginConfigurationData config) {
 		this.config = config;
+
+		File configurationFolder = new File(config.getWebappRoot() + CONFIGPATH);
+		this.moduleConfigurationFile = new File(config.getWebappRoot() + CONFIGPATH + MODULECONFIGFILE);
+
+		// Create an Observer for configuration changes
+		FileAlterationObserver configurationChangeObserver = new FileAlterationObserver(configurationFolder);
+		configurationChangeObserver.addListener(new ConfigurationAlterationListener());
+		configurationChangeMonitor = new FileAlterationMonitor(5000, configurationChangeObserver);
 
 		try {
 			xmlHelper = new XmlHelper();
@@ -64,11 +84,31 @@ public class OpenCmsConfiguration {
 	private void parseConfiguration() {
 		if (config.getWebappRoot() != null) {
 			try {
-				parsedModuleConfigurationFile = xmlHelper.parseFile(config.getWebappRoot() + CONFIGPATH + MODULECONFIGFILE);
+				parsedModuleConfigurationFile = xmlHelper.parseFile(moduleConfigurationFile, null);
 			}
 			catch (Exception e) {
 				LOG.warn("Exception parsing the module configuration ", e);
 			}
+		}
+	}
+
+	public void startMonitoringConfigurationChanges() {
+		try {
+			LOG.info("Starting OpenCms configuration change monitor");
+			configurationChangeMonitor.start();
+		}
+		catch (Exception e) {
+			LOG.error("There was an error starting the OpenCms configuration change monitor", e);
+		}
+	}
+
+
+	public void stopMonitoringConfigurationChanges() {
+		try {
+			configurationChangeMonitor.stop();
+		}
+		catch (Exception e) {
+			LOG.error("There was an error stopping the OpenCms configuration change monitor");
 		}
 	}
 
@@ -125,4 +165,68 @@ public class OpenCmsConfiguration {
 		return moduleResources;
 	}
 
+	public void registerConfigurationChangeListener(ConfigurationChangeListener listener) {
+		configurationChageListeners.add(listener);
+	}
+
+	private class ConfigurationAlterationListener implements FileAlterationListener {
+
+		@Override
+		public void onStart(FileAlterationObserver fileAlterationObserver) {
+			// LOG.debug("Checking for OpenCms configuration changes");
+		}
+
+		@Override
+		public void onDirectoryCreate(File file) {
+			// Do nothing
+		}
+
+		@Override
+		public void onDirectoryChange(File file) {
+			// Do nothing
+		}
+
+		@Override
+		public void onDirectoryDelete(File file) {
+			// Do nothing
+		}
+
+		@Override
+		public void onFileCreate(File file) {
+			// Do nothing
+		}
+
+		@Override
+		public void onFileChange(File file) {
+			// ignore changes in the configuration backup directory
+			if (file.getPath().contains(File.pathSeparator + "backup")) {
+				return;
+			}
+
+			// if the module configuration was changed ...
+			if (file.getName().equals(MODULECONFIGFILE)) {
+				LOG.info("The OpenCms module configuration has been changed, refreshing modules");
+				parseConfiguration();
+
+				// notify the listeners that the module configuration was changed
+				for (ConfigurationChangeListener listener : configurationChageListeners) {
+					listener.handleOpenCmsConfigurationChange(ConfigurationChangeType.MODULECONFIGURATION);
+				}
+			}
+		}
+
+		@Override
+		public void onFileDelete(File file) {
+			// Do nothing
+		}
+
+		@Override
+		public void onStop(FileAlterationObserver fileAlterationObserver) {
+			// LOG.debug("Checking for OpenCms configuration changes finished");
+		}
+	}
+
+	public interface ConfigurationChangeListener {
+		public void handleOpenCmsConfigurationChange(ConfigurationChangeType changeType);
+	}
 }
