@@ -43,7 +43,9 @@ public class OpenCmsConfiguration {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsConfiguration.class);
 
-	private static final String CONFIGPATH = "/WEB-INF/config/";
+	/** Relative path to the OpenCms configuration files, static String "/WEB-INF/config/" */
+	public static final String CONFIGPATH = "/WEB-INF/config/";
+
 	private static final String MODULECONFIGFILE = "opencms-modules.xml";
 	private static final String EXPORTPOINT_XPATH = "/opencms/modules/module/name[normalize-space(text())=\"%s\"]/../exportpoints/exportpoint";
 	private static final String MODULE_RESOURCE_XPATH = "/opencms/modules/module/name[normalize-space(text())=\"%s\"]/../resources/resource";

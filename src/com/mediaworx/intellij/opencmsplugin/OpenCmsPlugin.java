@@ -29,6 +29,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -51,6 +52,7 @@ import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.io.File;
 
 /**
  * OpenCms plugin for IntelliJ providing IntelliJ menu actions to sync resources to and from the OpenCms VFS, to publish
@@ -178,6 +180,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 			registerMenus();
 			registerListeners();
 			wasInitialized = true;
+
+			checkWebappRootConfiguration(true);
 		}
 		else {
 			setToolWindowAvailable(true);
@@ -312,6 +316,31 @@ public class OpenCmsPlugin implements ProjectComponent {
 			editorTabPopup.addAction(Separator.getInstance());
 			addAction(editorTabPopup, TAB_POPUP_MENU_ID, openCmsEditorTabPopupMenu, "_OpenCms", MENU_ICON);
 		}
+	}
+
+	public boolean checkWebappRootConfiguration(boolean showDialog) {
+		boolean configOK = true;
+		if (config.isOpenCmsPluginEnabled()) {
+			File file = new File(config.getWebappRoot());
+			// show an error message if the webapp root folder was not found
+			if (!file.exists()) {
+				configOK = false;
+				if (showDialog) {
+					Messages.showDialog("The Webapp Root was not found.\nPlease check the OpenCms Webapp Root in the OpenCms Plugin settings.", "OpenCms Plugin - Configuration Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+				}
+			}
+			else {
+				// check if the OpenCms configuration path exists
+				file = new File(config.getWebappRoot() + OpenCmsConfiguration.CONFIGPATH);
+				if (!file.exists()) {
+					configOK = false;
+					if (showDialog) {
+						Messages.showDialog("The OpenCms configuration was not found.\nPlease check the OpenCms Webapp Root in the OpenCms Plugin settings.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+					}
+				}
+			}
+		}
+		return configOK;
 	}
 
 	/**

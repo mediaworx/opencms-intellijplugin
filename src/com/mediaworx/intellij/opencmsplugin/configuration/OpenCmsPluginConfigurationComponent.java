@@ -154,6 +154,11 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 			form.getData(configurationData);
 
 			OpenCmsPlugin plugin = project.getComponent(OpenCmsPlugin.class);
+
+			if (!plugin.checkWebappRootConfiguration(false)) {
+				throw new ConfigurationException("The Webapp Root or OpenCms configuration folder was not found. Please check the OpenCms Webapp Root in the OpenCms Plugin settings.", "Configuration error!");
+			}
+
 			if (plugin.getOpenCmsModules() != null && plugin.getOpenCmsModules().getAllModules().size() > 0) {
 				Collection<OpenCmsModule> openCmsModules = plugin.getOpenCmsModules().getAllModules();
 				for (OpenCmsModule openCmsModule : openCmsModules) {
