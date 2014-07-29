@@ -277,7 +277,7 @@ public class OpenCmsPluginConnector {
 
 		Map<String, String> additionalParams = null;
 
-		if (action.equals(ACTION_RESOURCEINFOS) && useMetaVariables) {
+				if ((action.equals(ACTION_RESOURCEINFOS) || action.equals(ACTION_MODULEMANIFESTS)) && useMetaVariables) {
 			additionalParams = new HashMap<String, String>();
 			additionalParams.put("useMetaVariables", "true");
 		}
