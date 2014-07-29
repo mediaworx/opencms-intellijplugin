@@ -38,8 +38,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Parent action for all actions used to generate module manifest files (manifest.xml)
@@ -83,6 +81,10 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 				}
 				manifestGenerator.generateManifest(new File(ocmsModule.getManifestRoot()));
 				plugin.getConsole().info("manifest.xml created at " + ocmsModule.getManifestRoot());
+				VirtualFile manifestRoot = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getManifestRoot());
+				if (manifestRoot != null) {
+					manifestRoot.refresh(true, false);
+				}
 			}
 			catch (OpenCmsMetaXmlParseException e) {
 				String message = "There was an error parsing the meta information for module " + ocmsModule.getModuleName();
@@ -99,14 +101,7 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 				plugin.getConsole().error(message + "; Please have a look at the IntelliJ log file and/or the OpenCms log file.");
 				LOG.error(message, e);
 			}
-			filesToBeRefreshed.add(new File(ideaVFile.getPath()));
 		}
-		new Timer().schedule(new TimerTask() {
-			@Override
-			public void run() {
-				LocalFileSystem.getInstance().refreshIoFiles(filesToBeRefreshed, true, false, null);
-			}
-		}, 1000);
 	}
 
 	/**
