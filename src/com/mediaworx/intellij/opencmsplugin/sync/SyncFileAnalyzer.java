@@ -29,7 +29,8 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
-import com.mediaworx.intellij.opencmsplugin.entities.*;
+import com.mediaworx.intellij.opencmsplugin.entities.SyncFile;
+import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
@@ -52,6 +53,8 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 	List<OpenCmsModuleResource> moduleResourcesToBePulled;
 
 	private VfsAdapter vfsAdapter;
+
+	private static final String CLASSES_FOLDER = "/classes";
 
 	private boolean pullAllMetaInformation;
 	private boolean executeSync = true;
@@ -140,6 +143,11 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 		if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), ideaVFile)) {
 			return;
+		}
+
+		// check if the file/folder is contained in classes, refresh the IntelliJ VFS if necessary
+		if (ideaVFile.getPath().contains(CLASSES_FOLDER)) {
+			ideaVFile.refresh(false, false);
 		}
 
 		String vfsPath = ocmsModule.getVfsPathForIdeaVFile(ideaVFile);
