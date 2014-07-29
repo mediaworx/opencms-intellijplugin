@@ -132,10 +132,10 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				handleFileEvent(event);
 			}
 			if (getNumAffected() > 0) {
-				handleAffectedFiles();
+				boolean wasExecuted = handleAffectedFiles();
 
 				// Publish the affected VFS resources (if publish is enabled)
-				if (config.isPluginConnectorEnabled() && config.getAutoPublishMode() != AutoPublishMode.OFF) {
+				if (wasExecuted && config.isPluginConnectorEnabled() && config.getAutoPublishMode() != AutoPublishMode.OFF) {
 					publishAffectedVfsResources();
 				}
 			}
@@ -266,18 +266,21 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
-	private void handleAffectedFiles() throws CmsConnectionException {
+	private boolean handleAffectedFiles() throws CmsConnectionException {
+
+		boolean wasExecuted = false;
+
 		// Delete files
 		if (vfsFilesToBeDeleted.size() > 0) {
-			deleteFiles();
+			wasExecuted = deleteFiles();
 		}
 		// Move files
 		if (vfsFilesToBeMoved.size() > 0) {
-			moveFiles();
+			wasExecuted = moveFiles();
 		}
 		// Rename files
 		if (vfsFilesToBeRenamed.size() > 0) {
-			renameFiles();
+			wasExecuted = renameFiles();
 		}
 
 		// Refresh the affected files in the IDEA VFS after a short delay (to avoid event collision)
@@ -290,6 +293,8 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				}
 			}, 2000);
 		}
+
+		return wasExecuted;
 	}
 
 	private String getMetaDataFilePathWithoutSuffix(OpenCmsModule ocmsModule, String vfsPath) {
@@ -300,7 +305,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		return OpenCmsModuleManifestGenerator.getMetaInfoPath(ocmsModule.getManifestRoot(), vfsPath, isDirectory);
 	}
 
-	private void deleteFiles() throws CmsConnectionException {
+	private boolean deleteFiles() throws CmsConnectionException {
 		StringBuilder msg = new StringBuilder("Do you want to delete the following files/folders from the OpenCms VFS?");
 		for (VfsFileDeleteInfo vfsFileToBeDeleted : vfsFilesToBeDeleted) {
 			msg.append("\n").append(vfsFileToBeDeleted.vfsPath);
@@ -333,10 +338,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 					refreshFiles.add(metaFolder);
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 
-	private void moveFiles() throws CmsConnectionException {
+	private boolean moveFiles() throws CmsConnectionException {
 		StringBuilder msg = new StringBuilder("Do you want to move the following files/folders in the OpenCms VFS as well?");
 		for (VfsFileMoveInfo vfsFileToBeMoved : vfsFilesToBeMoved) {
 			msg.append("\n").append(vfsFileToBeMoved.oldVfsPath);
@@ -369,10 +376,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 							"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 
-	private void renameFiles() throws CmsConnectionException {
+	private boolean renameFiles() throws CmsConnectionException {
 		StringBuilder msg = new StringBuilder("Do you want to rename the following files/folders in the OpenCms VFS as well?");
 		for (VfsFileRenameInfo vfsFileToBeRenamed : vfsFilesToBeRenamed) {
 			msg.append("\n").append(vfsFileToBeRenamed.oldVfsPath).append(" -> ").append(vfsFileToBeRenamed.newName);
@@ -407,7 +416,9 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 							"Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 
 	private void handleExportPointsForMovedResources(String oldVfsPath, String newVfsPath, String newRfsPath) {
