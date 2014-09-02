@@ -51,7 +51,20 @@ import java.util.regex.Matcher;
 public class SyncJob implements Runnable {
 
 	private static final Logger LOG = Logger.getInstance(SyncJob.class);
-	private static final String ERROR_PREFIX = "ERROR: ";
+	public static final String ERROR_PREFIX = "ERROR: ";
+
+	private static final String CLASSES_PATH = "WEB-INF/classes";
+	private static final String IDE_CONNECTOR_PACKAGE = "com.mediaworx.opencms.ideconnector";
+	private static final Set<String> IDE_CONNECTOR_PARENT_PATHS = new HashSet<String>();
+	static {
+		String[] ideConnectorPathFolders = IDE_CONNECTOR_PACKAGE.split("\\.");
+		StringBuilder ideConnectorParentPath = new StringBuilder(CLASSES_PATH);
+		IDE_CONNECTOR_PARENT_PATHS.add(ideConnectorParentPath.toString());
+		for (String ideConnectorPathFolder : ideConnectorPathFolders) {
+			ideConnectorParentPath.append("/").append(ideConnectorPathFolder);
+			IDE_CONNECTOR_PARENT_PATHS.add(ideConnectorParentPath.toString());
+		}
+	}
 
 	private OpenCmsPlugin plugin;
 	private OpenCmsToolWindowConsole console;
@@ -519,8 +532,18 @@ public class SyncJob implements Runnable {
 		}
 	}
 
+	public static boolean isParentOfIdeConnectorPath(String path) {
+		for (String ideConnectorParentPath : IDE_CONNECTOR_PARENT_PATHS) {
+			if (path.endsWith(ideConnectorParentPath)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void doExportPointHandling(ExportEntity entity) {
 		StringBuilder confirmation = new StringBuilder();
+		StringBuilder notice = new StringBuilder();
 
 		if (!entity.isToBeDeleted()) {
 			confirmation.append("Copy of ").append(entity.getVfsPath()).append(" to ").append(entity.getDestination()).append(" - ");
@@ -531,7 +554,7 @@ public class SyncJob implements Runnable {
 						FileUtils.copyFile(file, new File(entity.getTargetPath()));
 						confirmation.append("SUCCESS");
 					} catch (IOException e) {
-						confirmation.insert(0, "ERROR: ");
+						confirmation.insert(0, ERROR_PREFIX);
 						confirmation.append("FAILED (").append(e.getMessage()).append(")");
 					}
 				}
@@ -540,7 +563,7 @@ public class SyncJob implements Runnable {
 						FileUtils.copyDirectory(file, new File(entity.getTargetPath()));
 						confirmation.append("SUCCESS");
 					} catch (IOException e) {
-						confirmation.insert(0, "ERROR: ");
+						confirmation.insert(0, ERROR_PREFIX);
 						confirmation.append("FAILED (").append(e.getMessage()).append(")");
 					}
 				}
@@ -550,27 +573,44 @@ public class SyncJob implements Runnable {
 			}
 		}
 		else {
-			confirmation.append("Resource ").append(entity.getVfsPath()).append(" removed, deletion of exported file ")
-					.append(entity.getDestination()).append(" - ");
-			File file = new File(entity.getTargetPath());
-			if (file.exists()) {
-				if (FileUtils.deleteQuietly(file)) {
-					confirmation.append("SUCCESS");
-				}
-				else {
-					confirmation.insert(0, "ERROR: ");
-					confirmation.append("FAILED");
-				}
-			}
-			else {
-				confirmation.append("NOT NECESSARY (doesn't exist)");
-			}
+			String targetPath = entity.getTargetPath();
+			String vfsPath = entity.getVfsPath();
+
+			deleteExportedResource(vfsPath, targetPath, confirmation, notice);
 		}
 		if (confirmation.indexOf(ERROR_PREFIX) > -1) {
 			console.error(confirmation.toString());
 		}
 		else {
 			console.info(confirmation.toString());
+		}
+		if (notice.length() > 0) {
+			console.notice(notice.toString());
+		}
+	}
+
+	public static void deleteExportedResource(String vfsPath, String targetPath, StringBuilder confirmation, StringBuilder notice) {
+		confirmation.append("Resource ").append(vfsPath).append(" removed, deletion of exported file ")
+				.append(targetPath).append(" - ");
+		// check if the target path is something that shouldn't be deleted
+		if (isParentOfIdeConnectorPath(targetPath)) {
+			confirmation.append("SKIPPED (paths containing the IDE connector must not be deleted)");
+			notice.append("Deletion of the folder ").append(targetPath).append(" was skipped. Please delete any unwanted exported sub resources manually.");
+		}
+		else {
+			File file = new File(targetPath);
+			if (file.exists()) {
+				if (FileUtils.deleteQuietly(file)) {
+					confirmation.append("SUCCESS");
+				}
+				else {
+					confirmation.insert(0, ERROR_PREFIX);
+					confirmation.append("FAILED");
+				}
+			}
+			else {
+				confirmation.append("NOT NECESSARY (doesn't exist)");
+			}
 		}
 	}
 

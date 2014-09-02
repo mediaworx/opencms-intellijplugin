@@ -38,6 +38,7 @@ public class OpenCmsToolWindowConsole extends JTextPane {
 	private JScrollPane scrollPane;
 	private StyledDocument consoleDocument;
 	private SimpleAttributeSet errorAttributes;
+	private SimpleAttributeSet noticeAttributes;
 
 	public OpenCmsToolWindowConsole() {
 		super();
@@ -55,6 +56,10 @@ public class OpenCmsToolWindowConsole extends JTextPane {
 		errorAttributes = new SimpleAttributeSet();
 		StyleConstants.setForeground(errorAttributes, Color.RED);
 		StyleConstants.setBold(errorAttributes, true);
+
+		noticeAttributes = new SimpleAttributeSet();
+		StyleConstants.setForeground(noticeAttributes, Color.BLUE);
+		StyleConstants.setBold(noticeAttributes, true);
 	}
 
 	public void clear() {
@@ -63,6 +68,10 @@ public class OpenCmsToolWindowConsole extends JTextPane {
 
 	public void info(String str) {
 		append(str + "\n", null);
+	}
+
+	public void notice(String str) {
+		append(str + "\n", noticeAttributes);
 	}
 
 	public void error(String str) {

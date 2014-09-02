@@ -46,6 +46,7 @@ import com.mediaworx.intellij.opencmsplugin.exceptions.OpenCmsConnectorException
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
+import com.mediaworx.intellij.opencmsplugin.sync.SyncJob;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import com.mediaworx.opencms.moduleutils.manifestgenerator.OpenCmsModuleManifestGenerator;
@@ -491,8 +492,21 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 			String exportPath = config.getWebappRoot() + "/" + exportPoint.getTargetPathForVfsResource(vfsPath);
 			File exportedFileToBeDeleted = new File(exportPath);
 			if (exportedFileToBeDeleted.exists()) {
-				console.info("DELETE EXPORTPOINT FILE: " + exportPath);
-				FileUtils.deleteQuietly(exportedFileToBeDeleted);
+				StringBuilder confirmation = new StringBuilder();
+				StringBuilder notice = new StringBuilder();
+
+				SyncJob.deleteExportedResource(vfsPath, exportPath, confirmation, notice);
+
+				if (confirmation.indexOf(SyncJob.ERROR_PREFIX) > -1) {
+					console.error(confirmation.toString());
+				}
+				else {
+					console.info(confirmation.toString());
+				}
+				if (notice.length() > 0) {
+					console.notice(notice.toString());
+				}
+
 				refreshFiles.add(exportedFileToBeDeleted);
 			}
 		}
