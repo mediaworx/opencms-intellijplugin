@@ -1,7 +1,7 @@
 <idea-plugin version="2">
 	<name>opencms-intellijplugin</name>
 	<description>Sync of OpenCms modules from local FS to VFS</description>
-	<version>1.4</version>
+	<version>1.5</version>
 	<vendor>mediaworx Berlin AG</vendor>
 
 	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
