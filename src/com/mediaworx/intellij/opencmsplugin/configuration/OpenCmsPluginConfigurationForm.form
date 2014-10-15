@@ -3,22 +3,24 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="800" height="664"/>
+      <xy x="20" y="20" width="800" height="697"/>
     </constraints>
     <properties>
-      <minimumSize width="800" height="500"/>
+      <minimumSize width="800" height="650"/>
     </properties>
     <border type="none" title=""/>
     <children>
       <grid id="f9d49" layout-manager="FormLayout">
         <rowspec value="center:35px:noGrow"/>
         <rowspec value="top:4dlu:noGrow"/>
-        <rowspec value="center:max(d;4px):noGrow"/>
+        <rowspec value="center:620px:noGrow"/>
         <colspec value="fill:675px:grow"/>
         <colspec value="left:4dlu:noGrow"/>
         <colspec value="fill:max(d;4px):noGrow"/>
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="600"/>
+          </grid>
         </constraints>
         <properties/>
         <border type="empty"/>
@@ -51,7 +53,7 @@
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:144px:noGrow"/>
+            <rowspec value="center:max(m;150px):noGrow"/>
             <colspec value="fill:15px:noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
             <colspec value="fill:125px:noGrow"/>
@@ -62,7 +64,7 @@
               <forms defaultalign-vert="false"/>
             </constraints>
             <properties>
-              <minimumSize width="500" height="548"/>
+              <minimumSize width="500" height="550"/>
             </properties>
             <border type="none"/>
             <children>
@@ -216,7 +218,7 @@
                 </constraints>
                 <properties>
                   <enabled value="true"/>
-                  <minimumSize width="500" height="108"/>
+                  <minimumSize width="500" height="128"/>
                 </properties>
                 <border type="none"/>
                 <children>
@@ -440,9 +442,7 @@
                     </children>
                   </scrollpane>
                   <grid id="443f8" layout-manager="FormLayout">
-                    <rowspec value="top:d:noGrow"/>
-                    <rowspec value="top:5px:noGrow"/>
-                    <rowspec value="fill:d:noGrow"/>
+                    <rowspec value="fill:219px:noGrow"/>
                     <colspec value="fill:300px:noGrow"/>
                     <constraints>
                       <grid row="0" column="4" row-span="3" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -469,34 +469,12 @@
                           <focusable value="false"/>
                           <font swing-font="EditorPane.font"/>
                           <lineWrap value="true"/>
-                          <maximumSize width="298" height="2147483647"/>
-                          <minimumSize width="298" height="64"/>
+                          <maximumSize width="298" height="350"/>
+                          <minimumSize width="298" height="220"/>
                           <opaque value="false"/>
-                          <preferredSize width="298" height="64"/>
+                          <preferredSize width="298" height="220"/>
                           <requestFocusEnabled value="false"/>
-                          <text value="Ignored files and folders use Regular Expressions. &#10;Dots (&quot;.&quot;) have to be escaped (&quot;\.&quot;) if meant literally.&#10;&#10;You can use the full Regular Expression syntax, e.g.:"/>
-                          <wrapStyleWord value="true"/>
-                        </properties>
-                      </component>
-                      <component id="f9ce5" class="javax.swing.JTextArea" binding="canBeUsedAsTextArea" default-binding="true">
-                        <constraints>
-                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="8" fill="2" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="50"/>
-                          </grid>
-                          <forms defaultalign-horz="false" defaultalign-vert="false"/>
-                        </constraints>
-                        <properties>
-                          <background color="-986896"/>
-                          <editable value="false"/>
-                          <focusable value="false"/>
-                          <font swing-font="EditorPane.font"/>
-                          <lineWrap value="true"/>
-                          <maximumSize width="298" height="2147483647"/>
-                          <minimumSize width="298" height="128"/>
-                          <opaque value="false"/>
-                          <preferredSize width="298" height="128"/>
-                          <requestFocusEnabled value="false"/>
-                          <text value="  • &quot;.*&quot; can be used as wildcard&#10;  • &quot;.+&quot; matches at least one character&#10;  • &quot;[0-9]+&quot; matches 1-n numbers&#10;  • &quot;[a-z]+&quot; matches 1-n lowercase letters&#10;  • &quot;[A-Z]+&quot; matches 1-n uppercase letters&#10;&#10;Use the search engine of your choice to find out more about the power of Regular Expressions."/>
+                          <text value="Ignored files and folders use Regular Expressions. &#10;Dots (&quot;.&quot;) have to be escaped (&quot;\.&quot;) if meant literally.&#10;&#10;You can use the full Regular Expression syntax, e.g.:&#10;  • &quot;.*&quot; can be used as wildcard&#10;  • &quot;.+&quot; matches at least one character&#10;  • &quot;[0-9]+&quot; matches 1-n numbers&#10;  • &quot;[a-z]+&quot; matches 1-n lowercase letters&#10;  • &quot;[A-Z]+&quot; matches 1-n uppercase letters&#10;&#10;Use the search engine of your choice to find out more about the power of Regular Expressions."/>
                           <wrapStyleWord value="true"/>
                         </properties>
                       </component>

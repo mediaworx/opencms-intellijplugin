@@ -52,6 +52,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	private JTextField password;
 	private JTextField webappRoot;
 	private JTextField defaultLocalVfsRoot;
+//	private JTextField moduleNamingScheme;
 	private JComboBox defaultSyncMode;
 	private JTextArea ignoredFiles;
 	private JTextArea ignoredPaths;
@@ -62,7 +63,6 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	private JCheckBox pullMetaDataCheckbox;
 	private JComboBox autoPublishMode;
 	private JTextArea ignoredFilesAndFoldersTextArea;
-	private JTextArea canBeUsedAsTextArea;
 	private JLabel pluginVersionLabel;
 	private JPanel pullMetaDataOptionsPanel;
 	private JCheckBox useMetaVariablesCheckbox;
@@ -113,6 +113,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		FormTools.setConfiguredOrKeepDefault(password, data.getPassword());
 		FormTools.setConfiguredOrKeepDefault(webappRoot, data.getWebappRoot());
 		FormTools.setConfiguredOrKeepDefault(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot());
+//		FormTools.setConfiguredOrKeepDefault(moduleNamingScheme, data.getModuleNamingScheme());
 
 		switch (data.getDefaultSyncMode()) {
 			case PUSH:
@@ -160,6 +161,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		data.setPassword(password.getText());
 		data.setWebappRoot(webappRoot.getText());
 		data.setDefaultLocalVfsRoot(defaultLocalVfsRoot.getText());
+//		data.setModuleNamingScheme(moduleNamingScheme.getText());
 		data.setDefaultSyncMode(FormTools.getSyncModeFromComboBox(defaultSyncMode));
 		data.setIgnoredFiles(ignoredFiles.getText());
 		data.setIgnoredPaths(ignoredPaths.getText());
@@ -185,6 +187,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			FormTools.isTextFieldModified(password, data.getPassword()) ||
 			FormTools.isTextFieldModified(webappRoot, data.getWebappRoot()) ||
 			FormTools.isTextFieldModified(defaultLocalVfsRoot, data.getDefaultLocalVfsRoot()) ||
+//			FormTools.isTextFieldModified(moduleNamingScheme, data.getModuleNamingScheme()) ||
 			!FormTools.getSyncModeFromComboBox(defaultSyncMode).equals(data.getDefaultSyncMode()) ||
 			FormTools.isTextFieldModified(ignoredFiles, data.getIgnoredFiles()) ||
 			FormTools.isTextFieldModified(ignoredPaths, data.getIgnoredPaths()) ||
