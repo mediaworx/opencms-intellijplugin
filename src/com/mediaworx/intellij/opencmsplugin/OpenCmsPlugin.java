@@ -406,6 +406,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 		return openCmsModules;
 	}
 
+	public void refreshOpenCmsModules() {
+		openCmsModules.refreshAllModules();
+	}
+
 	/**
 	 * Returns the adapter used to sync the RFS with the OpenCms VFS
 	 * @return  the VFS adapter for sync actions

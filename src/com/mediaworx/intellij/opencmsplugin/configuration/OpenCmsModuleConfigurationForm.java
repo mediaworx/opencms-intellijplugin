@@ -24,6 +24,7 @@
 
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
+import com.intellij.openapi.module.Module;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
 
 import javax.swing.*;
@@ -31,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.regex.Pattern;
 
 /**
  * The Swing form used for the module level configuration of the OpenCms plugin. This form is included for all
@@ -41,6 +43,8 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	private OpenCmsPluginConfigurationData config;
 	private JPanel rootComponent;
 	private JCheckBox isOpenCmsModuleCheckbox;
+	private JRadioButton useProjectDefaultModuleNameRadioButton;
+	private JRadioButton useModuleSpecificMoudleNameRadioButton;
 	private JTextField moduleName;
 	private JPanel formPanel;
 	private JRadioButton useProjectDefaultVfsRootRadioButton;
@@ -57,10 +61,14 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	/**
 	 * Creates a new module level configuration form and initializes listeners for form actions
 	 */
-	public OpenCmsModuleConfigurationForm(OpenCmsPluginConfigurationData config) {
+	public OpenCmsModuleConfigurationForm(OpenCmsPluginConfigurationData config, Module module) {
 		this.config = config;
 		formPanel.setVisible(false);
 		isOpenCmsModuleCheckbox.addActionListener(this);
+		useProjectDefaultModuleNameRadioButton.addActionListener(this);
+		String defaultModuleName = config.getModuleNamingScheme().replaceAll(Pattern.quote("${modulename}"), module.getName());
+		useProjectDefaultModuleNameRadioButton.setText("Use Default (" + defaultModuleName + ")");
+		useModuleSpecificMoudleNameRadioButton.addActionListener(this);
 		useProjectDefaultVfsRootRadioButton.addActionListener(this);
 		useModuleSpecificVfsRootRadioButton.addActionListener(this);
 		useProjectDefaultSyncModeRadioButton.addActionListener(this);
@@ -88,6 +96,17 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		if (data != null) {
 			isOpenCmsModuleCheckbox.setSelected(data.isOpenCmsModuleEnabled());
 			formPanel.setVisible(data.isOpenCmsModuleEnabled());
+
+			if (data.isUseProjectDefaultModuleNameEnabled()) {
+				useProjectDefaultModuleNameRadioButton.setSelected(true);
+				useModuleSpecificMoudleNameRadioButton.setSelected(false);
+				moduleName.setEnabled(false);
+			}
+			else {
+				useProjectDefaultModuleNameRadioButton.setSelected(false);
+				useModuleSpecificMoudleNameRadioButton.setSelected(true);
+				moduleName.setEnabled(true);
+			}
 			FormTools.setConfiguredOrKeepDefault(moduleName, data.getModuleName());
 
 			if (data.isUseProjectDefaultVfsRootEnabled()) {
@@ -139,6 +158,12 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	 */
 	public void getData(OpenCmsModuleConfigurationData data) {
 		data.setOpenCmsModuleEnabled(isOpenCmsModuleCheckbox.isSelected());
+		if (useProjectDefaultModuleNameRadioButton.isSelected()) {
+			data.setUseProjectDefaultModuleNameEnabled(true);
+		}
+		else {
+			data.setUseProjectDefaultModuleNameEnabled(false);
+		}
 		data.setModuleName(moduleName.getText());
 		if (useProjectDefaultVfsRootRadioButton.isSelected()) {
 			data.setUseProjectDefaultVfsRootEnabled(true);
@@ -167,6 +192,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	 */
 	public boolean isModified(OpenCmsModuleConfigurationData data) {
 		return isOpenCmsModuleCheckbox.isSelected() != data.isOpenCmsModuleEnabled() ||
+				useProjectDefaultModuleNameRadioButton.isSelected() != data.isUseProjectDefaultModuleNameEnabled() ||
 				FormTools.isTextFieldModified(moduleName, data.getModuleName()) ||
 				useProjectDefaultVfsRootRadioButton.isSelected() != data.isUseProjectDefaultVfsRootEnabled() ||
 				FormTools.isTextFieldModified(localVfsRoot, data.getLocalVfsRoot()) ||
@@ -187,6 +213,12 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		Object source = e.getSource();
 		if (source == isOpenCmsModuleCheckbox) {
 			formPanel.setVisible(isOpenCmsModuleCheckbox.isSelected());
+		}
+		if (source == useProjectDefaultModuleNameRadioButton && useProjectDefaultModuleNameRadioButton.isSelected()) {
+			moduleName.setEnabled(false);
+		}
+		if (source == useModuleSpecificMoudleNameRadioButton && useModuleSpecificMoudleNameRadioButton.isSelected()) {
+			moduleName.setEnabled(true);
 		}
 		if (source == useProjectDefaultVfsRootRadioButton && useProjectDefaultVfsRootRadioButton.isSelected()) {
 			localVfsRoot.setEnabled(false);

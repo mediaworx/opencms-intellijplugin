@@ -96,6 +96,14 @@ public class VfsAdapter {
 		this.password = password;
 	}
 
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	/**
 	 * starts the CMIS session that is used to push or pull files/folders
 	 */

@@ -39,6 +39,7 @@ public class OpenCmsPluginConfigurationData {
     private String password;
     private String webappRoot;
 	private String defaultLocalVfsRoot;
+	private String moduleNamingScheme;
 	private SyncMode defaultSyncMode;
 	private String ignoredFiles;
 	private String[] ignoredFilesArray;
@@ -150,6 +151,26 @@ public class OpenCmsPluginConfigurationData {
 	 */
 	public void setDefaultLocalVfsRoot(String defaultLocalVfsRoot) {
 		this.defaultLocalVfsRoot = defaultLocalVfsRoot;
+	}
+
+	/**
+	 * Returns the configured naming scheme for modules. If no specific module name is provided in the module
+	 * configuration, that's the scheme used to generate the OpenCms module name by replacing ${modulename} with the
+	 * IntelliJ module name.
+	 * @return the module naming scheme (e.g. "com.yourcompany.opencms.${modulename})
+	 * @see com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData#getModuleName() ()
+	 */
+	public String getModuleNamingScheme() {
+		return moduleNamingScheme;
+	}
+
+	/**
+	 * Sets the naming scheme to be used to generate OpenCms module names. The variable ${modulename} is replaced by
+	 * the IntelliJ module name.
+	 * @param moduleNamingScheme the naming scheme for OpenCms module names
+	 */
+	public void setModuleNamingScheme(String moduleNamingScheme) {
+		this.moduleNamingScheme = moduleNamingScheme;
 	}
 
 	/**

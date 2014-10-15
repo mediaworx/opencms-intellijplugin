@@ -48,6 +48,8 @@
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
+            <rowspec value="center:max(d;4px):noGrow"/>
+            <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="fill:d:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
@@ -138,7 +140,7 @@
               </component>
               <component id="9f197" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -147,7 +149,7 @@
               </component>
               <component id="cce4e" class="javax.swing.JTextField" binding="defaultLocalVfsRoot">
                 <constraints>
-                  <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                   <forms defaultalign-horz="false"/>
@@ -178,13 +180,13 @@
               </component>
               <hspacer id="77a22">
                 <constraints>
-                  <grid row="0" column="0" row-span="18" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="20" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false"/>
                 </constraints>
               </hspacer>
               <component id="b8c62" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="15" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="17" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -193,7 +195,7 @@
               </component>
               <component id="afe50" class="javax.swing.JCheckBox" binding="usePluginConnectorCheckBox">
                 <constraints>
-                  <grid row="15" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="17" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -213,7 +215,7 @@
                 <colspec value="left:4dlu:noGrow"/>
                 <colspec value="fill:d:grow"/>
                 <constraints>
-                  <grid row="17" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="19" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties>
@@ -344,7 +346,7 @@
               </grid>
               <component id="9f820" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="163" height="16"/>
                   </grid>
                   <forms/>
@@ -355,7 +357,7 @@
               </component>
               <component id="f07b4" class="javax.swing.JComboBox" binding="defaultSyncMode">
                 <constraints>
-                  <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -377,7 +379,7 @@
                 <colspec value="left:4dlu:noGrow"/>
                 <colspec value="fill:300px:noGrow"/>
                 <constraints>
-                  <grid row="13" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="15" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties>
@@ -482,6 +484,27 @@
                   </grid>
                 </children>
               </grid>
+              <component id="46bf3" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="Module &amp;Naming Scheme"/>
+                </properties>
+              </component>
+              <component id="8f5e1" class="javax.swing.JTextField" binding="moduleNamingScheme">
+                <constraints>
+                  <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                  <forms defaultalign-horz="false"/>
+                </constraints>
+                <properties>
+                  <text value="com.yourcompany.opencms.${modulename}"/>
+                  <toolTipText value="${modulename} will be replaced by IntelliJ's module name. Reload the project after changes to this field."/>
+                </properties>
+              </component>
             </children>
           </grid>
           <component id="3e97b" class="javax.swing.JLabel" binding="pluginVersionLabel">

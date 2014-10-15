@@ -31,13 +31,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
-import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.Collection;
 
 @State(
 	name = "OpenCmsPluginConfigurationData",
@@ -160,11 +158,11 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 			}
 
 			if (plugin.getOpenCmsModules() != null && plugin.getOpenCmsModules().getAllModules().size() > 0) {
-				Collection<OpenCmsModule> openCmsModules = plugin.getOpenCmsModules().getAllModules();
-				for (OpenCmsModule openCmsModule : openCmsModules) {
-					openCmsModule.refresh();
-				}
+				plugin.refreshOpenCmsModules();
 			}
+
+			plugin.getVfsAdapter().setUser(configurationData.getUsername());
+			plugin.getVfsAdapter().setPassword(configurationData.getPassword());
 
 			if (configurationData.isPluginConnectorEnabled()) {
 				if (plugin.getPluginConnector() != null) {

@@ -35,6 +35,10 @@
           <grid id="a0785" binding="formPanel" layout-manager="FormLayout">
             <rowspec value="top:d:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
+            <rowspec value="center:max(d;4px):noGrow"/>
+            <rowspec value="top:4dlu:noGrow"/>
+            <rowspec value="center:max(d;4px):noGrow"/>
+            <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:d:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
@@ -78,25 +82,16 @@
                   <text value="OpenCms Module Package &amp;Name"/>
                 </properties>
               </component>
-              <component id="98ddc" class="javax.swing.JTextField" binding="moduleName">
-                <constraints>
-                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties/>
-              </component>
               <component id="559ca" class="javax.swing.JSeparator">
                 <constraints>
-                  <grid row="2" column="2" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="2" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties/>
               </component>
               <component id="392b3" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -105,7 +100,7 @@
               </component>
               <component id="124ad" class="javax.swing.JRadioButton" binding="useProjectDefaultVfsRootRadioButton" default-binding="true">
                 <constraints>
-                  <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -115,7 +110,7 @@
               </component>
               <component id="99211" class="javax.swing.JRadioButton" binding="useModuleSpecificVfsRootRadioButton" default-binding="true">
                 <constraints>
-                  <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -124,7 +119,7 @@
               </component>
               <component id="f7c4c" class="javax.swing.JTextField" binding="localVfsRoot">
                 <constraints>
-                  <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                   <forms defaultalign-horz="false"/>
@@ -135,14 +130,14 @@
               </component>
               <component id="1e0b8" class="javax.swing.JSeparator">
                 <constraints>
-                  <grid row="10" column="2" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="14" column="2" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties/>
               </component>
               <component id="89aaf" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="16" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -151,7 +146,7 @@
               </component>
               <component id="72b1d" class="javax.swing.JRadioButton" binding="useProjectDefaultSyncModeRadioButton">
                 <constraints>
-                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="16" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -161,7 +156,7 @@
               </component>
               <component id="e89dc" class="javax.swing.JRadioButton" binding="useModuleSpecificSyncModeRadioButton">
                 <constraints>
-                  <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="18" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
                 <properties>
@@ -170,7 +165,7 @@
               </component>
               <component id="dc57c" class="javax.swing.JComboBox" binding="syncMode">
                 <constraints>
-                  <grid row="16" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="20" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false"/>
                 </constraints>
                 <properties>
@@ -184,7 +179,7 @@
               </component>
               <hspacer id="14c06">
                 <constraints>
-                  <grid row="0" column="0" row-span="17" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="21" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false"/>
                 </constraints>
               </hspacer>
@@ -196,7 +191,7 @@
                 <colspec value="left:4dlu:noGrow"/>
                 <colspec value="fill:max(d;4px):grow"/>
                 <constraints>
-                  <grid row="20" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="24" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties/>
@@ -238,10 +233,40 @@
               </grid>
               <component id="cc10e" class="javax.swing.JSeparator">
                 <constraints>
-                  <grid row="18" column="2" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="22" column="2" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties/>
+              </component>
+              <component id="98ddc" class="javax.swing.JTextField" binding="moduleName">
+                <constraints>
+                  <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                  <forms defaultalign-horz="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="false"/>
+                </properties>
+              </component>
+              <component id="b5239" class="javax.swing.JRadioButton" binding="useProjectDefaultModuleNameRadioButton">
+                <constraints>
+                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <selected value="true"/>
+                  <text value="Use default"/>
+                </properties>
+              </component>
+              <component id="6a522" class="javax.swing.JRadioButton" binding="useModuleSpecificMoudleNameRadioButton">
+                <constraints>
+                  <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="Use module specific name"/>
+                </properties>
               </component>
             </children>
           </grid>
@@ -257,6 +282,10 @@
     <group name="useProjectVfsRootPath">
       <member id="124ad"/>
       <member id="99211"/>
+    </group>
+    <group name="useDefaultModuleName">
+      <member id="b5239"/>
+      <member id="6a522"/>
     </group>
   </buttonGroups>
 </form>

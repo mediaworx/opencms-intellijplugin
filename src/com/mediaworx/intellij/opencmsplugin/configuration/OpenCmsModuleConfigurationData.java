@@ -32,6 +32,7 @@ import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
 public class OpenCmsModuleConfigurationData {
 
 	private boolean openCmsModuleEnabled = false;
+	private boolean useProjectDefaultModuleNameEnabled = true;
     private String moduleName;
 	private boolean useProjectDefaultVfsRootEnabled = true;
     private String localVfsRoot;
@@ -58,6 +59,26 @@ public class OpenCmsModuleConfigurationData {
 	}
 
 	/**
+	 * Flag denoting if the module uses the project's default OpenCms module name.
+	 * @return  <code>true</code> if the module uses the project's default OpenCms module name, <code>false</code> if a
+	 *          differing OpenCms module name is configured for the module.
+	 * @see OpenCmsPluginConfigurationData#getModuleNamingScheme()
+	 */
+	public boolean isUseProjectDefaultModuleNameEnabled() {
+		return useProjectDefaultModuleNameEnabled;
+	}
+
+	/**
+	 * Sets the flag denoting if the module uses the project's default OpenCms module name.
+	 * @param useProjectDefaultModuleNameEnabled <code>true</code> if the module should use the project's default OpenCms module name,
+	 *                                        <code>false</code> if a differing OpenCms module name is configured for the module.
+	 * @see OpenCmsPluginConfigurationData#setModuleNamingScheme(String)
+	 */
+	public void setUseProjectDefaultModuleNameEnabled(boolean useProjectDefaultModuleNameEnabled) {
+		this.useProjectDefaultModuleNameEnabled = useProjectDefaultModuleNameEnabled;
+	}
+
+	/**
 	 * Returns the configured OpenCms module package name (e.g. "com.mycompany.myproject.mymodule").
 	 * @return  the configured OpenCms module package name
 	 */
@@ -70,7 +91,7 @@ public class OpenCmsModuleConfigurationData {
 	 * @param moduleName the OpenCms module package name (e.g. "com.mycompany.myproject.mymodule").
 	 */
     public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
+	    this.moduleName = moduleName;
     }
 
 	/**

@@ -126,4 +126,11 @@ public class OpenCmsModules {
 		}
 		return allExportPoints;
 	}
+
+	public void refreshAllModules() {
+		for (OpenCmsModule ocmsModule : getAllModules()) {
+			ocmsModule.refresh();
+		}
+		allExportPoints = null;
+	}
 }

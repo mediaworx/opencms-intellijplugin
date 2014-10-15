@@ -35,6 +35,7 @@ import com.mediaworx.intellij.opencmsplugin.tools.ModuleTools;
 import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeListener {
 
@@ -63,7 +64,20 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 
 	public void init(OpenCmsModuleConfigurationData moduleConfig) {
 		this.moduleConfig = moduleConfig;
-		moduleName = moduleConfig.getModuleName();
+
+		if (moduleConfig.isUseProjectDefaultModuleNameEnabled()) {
+			String moduleNamingScheme = pluginConfig.getModuleNamingScheme();
+			String intelliJModuleName = this.intelliJModule.getName();
+			if (moduleNamingScheme != null && moduleNamingScheme.length() > 0) {
+				moduleName = moduleNamingScheme.replaceAll(Pattern.quote("${modulename}"), intelliJModuleName);
+			}
+			else {
+				moduleName = intelliJModuleName;
+			}
+		}
+		else {
+			moduleName = moduleConfig.getModuleName();
+		}
 
 		exportPoints = openCmsConfig.getExportPointsForModule(moduleName);
 		moduleResources = openCmsConfig.getModuleResourcesForModule(moduleName);
@@ -101,7 +115,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 	}
 
 	public String getModuleName() {
-		return moduleConfig.getModuleName();
+		return moduleName;
 	}
 
 	public String getIntelliJModuleRoot() {
