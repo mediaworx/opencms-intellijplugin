@@ -136,7 +136,7 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		syncModuleActions.getTemplatePresentation().setText("Sync &Module");
 		syncModuleActions.setPopup(true);
 		publishModuleActions = new DefaultActionGroup();
-		publishModuleActions.getTemplatePresentation().setText("Publish Module");
+		publishModuleActions.getTemplatePresentation().setText("Pu&blish Module");
 		publishModuleActions.setPopup(true);
 
 		registerKeyboardShortcuts();
@@ -148,24 +148,24 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 		add(Separator.getInstance());
 
-		plugin.addAction(this, PULL_MODULE_METADATA_ID, new OpenCmsPullSelectedModuleMetaDataAction(), "_Pull Meta Data for selected Modules");
-		plugin.addAction(this, PULL_ALL_METADATA_ID, new OpenCmsPullAllMetaDataAction(), "Pull all _Meta Data");
+		plugin.addAction(this, PULL_MODULE_METADATA_ID, new OpenCmsPullSelectedModuleMetaDataAction(), "P_ull Meta Data for selected Modules");
+		plugin.addAction(this, PULL_ALL_METADATA_ID, new OpenCmsPullAllMetaDataAction(), "Pu_ll all Meta Data");
 
 		add(Separator.getInstance());
 
 		plugin.addAction(this, GENERATE_SELECTED_MODULE_MANIFEST_ID, new OpenCmsGenerateSelectedModuleManifestsAction(), "_Generate manifest.xml for selected Modules");
-		plugin.addAction(this, GENERATE_ALL_MANIFESTS_ID, new OpenCmsGenerateAllManifestsAction(), "Generate manifest.xml for all Modules");
+		plugin.addAction(this, GENERATE_ALL_MANIFESTS_ID, new OpenCmsGenerateAllManifestsAction(), "Generate manifest._xml for all Modules");
 
 		add(Separator.getInstance());
 
 		plugin.addAction(this, PACKAGE_SELECTED_MODULE_ID, new OpenCmsPackageSelectedModulesAction(), "Package Module _Zip for selected Modules");
-		plugin.addAction(this, PACKAGE_ALL_MODULES_ID, new OpenCmsPackageAllModulesAction(), "Package Module Zip for all Modules");
+		plugin.addAction(this, PACKAGE_ALL_MODULES_ID, new OpenCmsPackageAllModulesAction(), "Package Module Z_ip for all Modules");
 
 		add(Separator.getInstance());
 
 		plugin.addAction(this, PUBLISH_SELECTED_ID, new OpenCmsPublishSelectedAction(), "_Publish selected Modules/Folders/Files");
-		plugin.addAction(this, PUBLISH_OPEN_TABS_ID, new OpenCmsPublishOpenEditorTabsAction(), "Publish all open Editor Tabs");
-		plugin.addAction(this, PUBLSH_ALL_MODULES_ID, new OpenCmsPublishAllModulesAction(), "Publish all Modules");
+		plugin.addAction(this, PUBLISH_OPEN_TABS_ID, new OpenCmsPublishOpenEditorTabsAction(), "Publish all _open Editor Tabs");
+		plugin.addAction(this, PUBLSH_ALL_MODULES_ID, new OpenCmsPublishAllModulesAction(), "Publis_h all Modules");
 		add(publishModuleActions);
 	}
 
