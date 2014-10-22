@@ -10,4 +10,4 @@ OpenCms menu actions are provided in four different locations:
 * In the main editor window (center)
 * In the file tabs (usually on top of the editor)
 
-Have a look at the plugin's [[Wiki|https://github.com/mediaworx/opencms-intellijplugin/wiki] for a full documentation.
+Have a look at the plugin's [Wiki](https://github.com/mediaworx/opencms-intellijplugin/wiki) for a full documentation.
