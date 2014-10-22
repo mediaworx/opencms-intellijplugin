@@ -66,8 +66,10 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		formPanel.setVisible(false);
 		isOpenCmsModuleCheckbox.addActionListener(this);
 		useProjectDefaultModuleNameRadioButton.addActionListener(this);
-		String defaultModuleName = config.getModuleNamingScheme().replaceAll(Pattern.quote("${modulename}"), module.getName());
-		useProjectDefaultModuleNameRadioButton.setText("Use default (" + defaultModuleName + ")");
+		if (config != null && config.getModuleNamingScheme() != null && config.getModuleNamingScheme().length() > 0) {
+			String defaultModuleName = config.getModuleNamingScheme().replaceAll(Pattern.quote("${modulename}"), module.getName());
+			useProjectDefaultModuleNameRadioButton.setText("Use default (" + defaultModuleName + ")");
+		}
 		useModuleSpecificMoudleNameRadioButton.addActionListener(this);
 		if (config != null) {
 			useProjectDefaultVfsRootRadioButton.setText("Use project default path (" + config.getDefaultLocalVfsRoot() + ")");

@@ -1,12 +1,45 @@
 <idea-plugin version="2">
 	<name>OpenCms</name>
 	<description>
+        <![CDATA[
         The OpenCms Plugin for IntelliJ lets you sync files and folders from your local Filesystem to the OpenCms VFS
         and vice versa. It enables OpenCms direct publishing right from your IDE and it lets you package your modules
         into module zips that can be imported in OpenCms.
+        <p/>
+        Features:
+        <ul>
+            <li>Integration of OpenCms menus in:
+                <ul>
+                    <li>the main menu</li>
+                    <li>the project popup menu</li>
+                    <li>the editor popup menu</li>
+                    <li>the editor tab popup menu</li>
+                </ul>
+            </li>
+            <li>Integration of menu actions to sync files and folders between your local file system and the OpenCms VFS</li>
+            <li>Integration of menu actions to start OpenCms direct publish sessions for files and folders right from your IDE</li>
+            <li>Integration of menu actions to generate manifest.xml files for your modules</li>
+            <li>Integration of menu actions to package module zips that can be imported in OpenCms</li>
+            <li>Supports three different sync modes that can be configured for each module:
+                <ul>
+                    <li>PUSH: Local file system is master</li>
+                    <li>SYNC: Changes are synced depending on the file or resource date</li>
+                    <li>PULL: The OpenCms VFS is master</li>
+                </ul>
+            </li>
+            <li>Automatic publishing of file changes (configurable)</li>
+            <li>Automatic pulls of resource meta data (e.g. properties) from OpenCms and stores it in the local file system</li>
+        </ul>
+        <p>See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki">GitHub Wiki</a> for details</p>
+        ]]>
     </description>
-	<version>1.5</version>
-	<vendor>mediaworx berlin AG</vendor>
+    <version>1.5</version>
+    <change-notes>
+        <![CDATA[
+            See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki/Version-History">Version History</a> on GitHub.
+        ]]>
+    </change-notes>
+    <vendor url="http://www.mediaworx.com" email="">mediaworx berlin AG</vendor>
 
 	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
 	<idea-version since-build="107.105"/>
