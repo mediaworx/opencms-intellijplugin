@@ -67,10 +67,22 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		isOpenCmsModuleCheckbox.addActionListener(this);
 		useProjectDefaultModuleNameRadioButton.addActionListener(this);
 		String defaultModuleName = config.getModuleNamingScheme().replaceAll(Pattern.quote("${modulename}"), module.getName());
-		useProjectDefaultModuleNameRadioButton.setText("Use Default (" + defaultModuleName + ")");
+		useProjectDefaultModuleNameRadioButton.setText("Use default (" + defaultModuleName + ")");
 		useModuleSpecificMoudleNameRadioButton.addActionListener(this);
+		if (config != null) {
+			useProjectDefaultVfsRootRadioButton.setText("Use project default path (" + config.getDefaultLocalVfsRoot() + ")");
+		}
 		useProjectDefaultVfsRootRadioButton.addActionListener(this);
 		useModuleSpecificVfsRootRadioButton.addActionListener(this);
+		if (config != null) {
+			String defaultSyncMode;
+			switch (config.getDefaultSyncMode()) {
+				case PUSH: defaultSyncMode = "PUSH"; break;
+				case PULL: defaultSyncMode = "PULL"; break;
+				default: defaultSyncMode = "SYNC";
+			}
+			useProjectDefaultSyncModeRadioButton.setText("Use project default sync mode (" + defaultSyncMode + ")");
+		}
 		useProjectDefaultSyncModeRadioButton.addActionListener(this);
 		useModuleSpecificSyncModeRadioButton.addActionListener(this);
 		localVfsRoot.addFocusListener(this);
