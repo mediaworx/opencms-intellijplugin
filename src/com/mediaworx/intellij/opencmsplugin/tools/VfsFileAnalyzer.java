@@ -168,8 +168,8 @@ public abstract class VfsFileAnalyzer {
 
 	/**
 	 * Abstract method handling resource paths
-	 * @param ocmsModule
-	 * @param moduleResourceVfsPath
+	 * @param ocmsModule the OpenCms module containing the file
+	 * @param moduleResourceVfsPath the VFS file path
 	 */
 	protected abstract void handleModuleResourcePath(OpenCmsModule ocmsModule, String moduleResourceVfsPath);
 

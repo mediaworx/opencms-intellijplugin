@@ -223,6 +223,10 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	private void createUIComponents() {
 	}
 
+	/**
+	 * Event hanlder for form action, handles changes to checkboxes in the form
+	 * @param e the action event provided by IntelliJ
+	 */
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == isOpenCmsModuleCheckbox) {
@@ -265,7 +269,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	public void focusLost(FocusEvent e) {
 		JTextField textField = (JTextField)e.getSource();
 		if (textField == localVfsRoot) {
-			FormTools.clearPathField(localVfsRoot, true);
+			FormTools.cleanupPathField(localVfsRoot, true);
 		}
 	}
 }

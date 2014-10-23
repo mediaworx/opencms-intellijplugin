@@ -39,6 +39,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Parser for OpenCms XML configuration files, right now only handles the module configuration file
+ * <code>/WEB-INF/config/opencms-modules.xml</code>. Used to extract export points and module resources. Also provides
+ * Notifications if the module configuration file is changed. Listener for module configuration changes can register
+ * using {@link #registerConfigurationChangeListener(com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsConfiguration.ConfigurationChangeListener)}.
+ * Listeners must implement the Interface {@link ConfigurationChangeListener} that is also contained in this class.
+ */
 public class OpenCmsConfiguration {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsConfiguration.class);
@@ -58,12 +65,19 @@ public class OpenCmsConfiguration {
 
 	private Document parsedModuleConfigurationFile;
 
+	/**
+	 * enumeration for configuration changes, containing only MODULECONFIGURATION right now, may be extended as needed
+	 * at a later time
+	 */
 	public enum  ConfigurationChangeType {
 		MODULECONFIGURATION
 	}
 
-
-
+	/**
+	 * Creates a new OpenCmsConfiguration instance, prepares the XML helper for parsing configuration files, starts
+	 * a FileAlterationObserver used to handle changes to configuration files.
+	 * @param config the project level plugin configuration data
+	 */
 	public OpenCmsConfiguration(OpenCmsPluginConfigurationData config) {
 		this.config = config;
 
@@ -83,6 +97,8 @@ public class OpenCmsConfiguration {
 		}
 	}
 
+
+	/** Internal method used to parse the OpenCms configuration (right now only the odule configuration is parsed) */
 	private void parseConfiguration() {
 		if (config.getWebappRoot() != null) {
 			try {
@@ -94,6 +110,11 @@ public class OpenCmsConfiguration {
 		}
 	}
 
+	/**
+	 * Starts the configuration change monitor that is used to observe configuration file changes and to notify
+	 * listeners after such changes occurred
+	 * @see #stopMonitoringConfigurationChanges()
+	 */
 	public void startMonitoringConfigurationChanges() {
 		try {
 			LOG.info("Starting OpenCms configuration change monitor");
@@ -104,7 +125,10 @@ public class OpenCmsConfiguration {
 		}
 	}
 
-
+	/**
+	 * Stops the configuration change monitor
+	 * @see #startMonitoringConfigurationChanges()
+	 */
 	public void stopMonitoringConfigurationChanges() {
 		try {
 			configurationChangeMonitor.stop();
@@ -114,11 +138,20 @@ public class OpenCmsConfiguration {
 		}
 	}
 
+	/**
+	 * Internal method, parses the module configuration XML file and returns the resulting Document
+	 * @return the parsed module configuration XML file as a Document
+	 */
 	private Document getParsedModuleConfigurationFile() {
 		parseConfiguration();
 		return parsedModuleConfigurationFile;
 	}
 
+	/**
+	 * Reads the export points from the module configuration
+	 * @param moduleName    the module whose export points should be returned
+	 * @return  A List of export points for the given module
+	 */
 	public List<OpenCmsModuleExportPoint> getExportPointsForModule(String moduleName) {
 		List<OpenCmsModuleExportPoint> exportPoints = new ArrayList<OpenCmsModuleExportPoint>();
 		Document configDocument = getParsedModuleConfigurationFile();
@@ -143,6 +176,11 @@ public class OpenCmsConfiguration {
 		return exportPoints;
 	}
 
+	/**
+	 * Reads the module resource from the module configuration
+	 * @param moduleName    the module whose resources should be returned
+	 * @return A List of module resources for the given module
+	 */
 	public List<String> getModuleResourcesForModule(String moduleName) {
 		List<String> moduleResources = new ArrayList<String>();
 		Document configDocument = getParsedModuleConfigurationFile();
@@ -167,37 +205,57 @@ public class OpenCmsConfiguration {
 		return moduleResources;
 	}
 
+
+	/**
+	 * Adds a configuration change listener. If a configuration change occurs, the listener's
+	 * <code>handleOpenCmsConfigurationChange</code> method is called.
+	 * @param listener  the listener to add
+	 */
 	public void registerConfigurationChangeListener(ConfigurationChangeListener listener) {
 		configurationChageListeners.add(listener);
 	}
 
+	/**
+	 * The internal FileAlterationListener handling file changes of OpenCms configuration files
+	 */
 	private class ConfigurationAlterationListener implements FileAlterationListener {
 
+		/** does nothing */
 		@Override
 		public void onStart(FileAlterationObserver fileAlterationObserver) {
 			// LOG.debug("Checking for OpenCms configuration changes");
 		}
 
+		/** does nothing */
 		@Override
 		public void onDirectoryCreate(File file) {
 			// Do nothing
 		}
 
+		/** does nothing */
 		@Override
 		public void onDirectoryChange(File file) {
 			// Do nothing
 		}
 
+		/** does nothing */
 		@Override
 		public void onDirectoryDelete(File file) {
 			// Do nothing
 		}
 
+		/** does nothing */
 		@Override
 		public void onFileCreate(File file) {
 			// Do nothing
 		}
 
+		/**
+		 * Handles changes to OpenCms configuration files (right now only changes to the module configuration are
+		 * handled). Parses the changed configuration file and calls <code>handleOpenCmsConfigurationChange</code> on
+		 * all registered listeners.
+		 * @param file  the changed file
+		 */
 		@Override
 		public void onFileChange(File file) {
 			// ignore changes in the configuration backup directory
@@ -217,18 +275,29 @@ public class OpenCmsConfiguration {
 			}
 		}
 
+		/** does nothing */
 		@Override
 		public void onFileDelete(File file) {
 			// Do nothing
 		}
 
+		/** does nothing */
 		@Override
 		public void onStop(FileAlterationObserver fileAlterationObserver) {
 			// LOG.debug("Checking for OpenCms configuration changes finished");
 		}
 	}
 
+	/**
+	 * Interface to be implemented by classes registering as listener for configuration changes
+	 */
 	public interface ConfigurationChangeListener {
+
+		/**
+		 * Method that is called whenever an OpenCms configuration file is changed (right now only changes to the
+		 * module configuration are handled).
+		 * @param changeType    the type of the changed OpenCms configuration (right now only MODULECONFIGURATION)
+		 */
 		public void handleOpenCmsConfigurationChange(ConfigurationChangeType changeType);
 	}
 }

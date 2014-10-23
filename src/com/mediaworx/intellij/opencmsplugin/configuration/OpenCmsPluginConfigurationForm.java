@@ -247,10 +247,10 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	public void focusLost(FocusEvent e) {
 		Object source = e.getSource();
 		if (source == webappRoot) {
-			FormTools.clearPathField(webappRoot, false);
+			FormTools.cleanupPathField(webappRoot, false);
 		}
 		else if (source == defaultLocalVfsRoot) {
-			FormTools.clearPathField(defaultLocalVfsRoot, true);
+			FormTools.cleanupPathField(defaultLocalVfsRoot, true);
 		}
 	}
 }
