@@ -24,12 +24,25 @@
 
 package com.mediaworx.intellij.opencmsplugin.exceptions;
 
+/**
+ * Exception that is thrown whenever the OpenCms Connector isn't working properly (e.g. an invalid HTTP status is
+ * returned
+ */
 public class OpenCmsConnectorException extends Exception {
 
+	/**
+	 * Creates a new OpenCmsConnectorException with the given message
+	 * @param message the error message
+	 */
 	public OpenCmsConnectorException(String message) {
 		super(message);
 	}
 
+	/**
+	 * Creates a new OpenCmsConnectorException with the given message
+	 * @param message the error message
+	 * @param cause Original Exception/Throwable that led to the exception
+	 */
 	public OpenCmsConnectorException(String message, Throwable cause) {
 		super(message, cause);
 	}

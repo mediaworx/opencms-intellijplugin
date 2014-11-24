@@ -22,28 +22,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.mediaworx.intellij.opencmsplugin.exceptions;
-
 /**
- * Exception that is thrown whenever the connection to OpenCms fails
+ * This package contains classes to determine and store information about OpenCms modules and the OpenCms configuration
  */
-public class CmsConnectionException extends Exception {
-
-	/**
-	 * Creates a new CmsConnectionException with the given message
-	 * @param message the error message
-	 */
-	public CmsConnectionException(String message) {
-		super(message);
-	}
-
-	/**
-	 * Creates a new CmsConnectionException with the given message
-	 * @param message the error message
-	 * @param cause Original Exception/Throwable that led to the exception
-	 */
-	public CmsConnectionException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-}
+package com.mediaworx.intellij.opencmsplugin.opencms;

@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="800" height="697"/>
+      <xy x="20" y="20" width="800" height="872"/>
     </constraints>
     <properties>
       <minimumSize width="800" height="650"/>
@@ -13,7 +13,7 @@
       <grid id="f9d49" layout-manager="FormLayout">
         <rowspec value="center:35px:noGrow"/>
         <rowspec value="top:4dlu:noGrow"/>
-        <rowspec value="center:620px:noGrow"/>
+        <rowspec value="center:771px:noGrow"/>
         <colspec value="fill:675px:grow"/>
         <colspec value="left:4dlu:noGrow"/>
         <colspec value="fill:max(d;4px):noGrow"/>
@@ -55,7 +55,7 @@
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:max(m;150px):noGrow"/>
+            <rowspec value="center:171px:noGrow"/>
             <colspec value="fill:15px:noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
             <colspec value="fill:125px:noGrow"/>

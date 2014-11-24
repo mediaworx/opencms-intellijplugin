@@ -24,12 +24,22 @@
 
 package com.mediaworx.intellij.opencmsplugin.exceptions;
 
+/** Exception that is thrown whenever pushing a resource to OpenCms fails (e.g. because of a name constraint) */
 public class CmsPushException extends Exception {
 
+	/**
+	 * Creates a new CmsPushException with the given message
+	 * @param message the error message
+	 */
 	public CmsPushException(String message) {
 		super(message);
 	}
 
+	/**
+	 * Creates a new CmsPushException with the given message
+	 * @param message the error message
+	 * @param cause Original Exception/Throwable that led to the exception
+	 */
 	public CmsPushException(String message, Throwable cause) {
 		super(message, cause);
 	}

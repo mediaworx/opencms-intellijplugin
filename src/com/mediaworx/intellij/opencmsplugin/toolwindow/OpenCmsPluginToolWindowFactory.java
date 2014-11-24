@@ -61,4 +61,14 @@ public class OpenCmsPluginToolWindowFactory implements ToolWindowFactory {
 	private void createUIComponents() {
 		console = new OpenCmsToolWindowConsole();
 	}
+
+	public void setData(OpenCmsToolWindowConsole data) {
+	}
+
+	public void getData(OpenCmsToolWindowConsole data) {
+	}
+
+	public boolean isModified(OpenCmsToolWindowConsole data) {
+		return false;
+	}
 }

@@ -62,6 +62,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Listener/handler for delete, move and rename events in the IntelliJ file system
+ */
 // TODO: handle cases where moves or deletions of parents of vfs resources take place (or don't handle those cases, whatever, at least think about it)
 public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 
@@ -79,6 +82,10 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 	List<VfsFileRenameInfo> vfsFilesToBeRenamed;
 	private List<File> refreshFiles;
 
+	/**
+	 * Creates a new listener/handler for delete, move and rename events in the IntelliJ file system
+	 * @param plugin the OpenCms plugin instance
+	 */
 	public OpenCmsModuleFileChangeListener(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
 		config = plugin.getPluginConfiguration();
@@ -91,6 +98,11 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		refreshFiles = new ArrayList<File>();
 	}
 
+	/**
+	 * Handler method that is called before IntelliJ executes the file change, stores a lookup of IntelliJ modules for
+	 * deleted files because the module can't be determined after the delete is executed
+	 * @param vFileEvents   List of file events, provided by IntelliJ
+	 */
 	public void before(@NotNull List<? extends VFileEvent> vFileEvents) {
 
 		// sometimes file events occur before the plugin was initialized, so lets make sure we have a plugin, a project and a configuration
@@ -115,6 +127,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/**
+	 * Handler method that is called after the file change has been executed by IntelliJ, handles file deletes, moves
+	 * and renames: Is used to present a dialog asking the user if the file change should be reflected in the OpenCms
+	 * VFS as well.
+	 * @param vFileEvents   List of file events, provided by IntelliJ
+	 */
 	public void after(@NotNull List<? extends VFileEvent> vFileEvents) {
 
 		if (config == null || !config.isOpenCmsPluginEnabled()) {
@@ -153,10 +171,19 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/**
+	 * Determines the number of files affected by deletes, moves and renames
+	 * @return the number of files affected by deletes, moves and renames
+	 */
 	private int getNumAffected() {
 		return vfsFilesToBeDeleted.size() + vfsFilesToBeMoved.size() + vfsFilesToBeRenamed.size();
 	}
 
+	/**
+	 * Returns the VFS adapter (initializing it if it wasn't initialized before)
+	 * @return the VFS adapter
+	 * @throws CmsConnectionException
+	 */
 	private VfsAdapter getVfsAdapter() throws CmsConnectionException {
 
 		if (vfsAdapter == null) {
@@ -171,6 +198,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		return vfsAdapter;
 	}
 
+
+	/**
+	 * Internal handler for file delete, move and rename events
+	 * @param event IntelliJ's file change event
+	 * @throws CmsConnectionException if the connection to OpenCms fails
+	 */
 	private void handleFileEvent(VFileEvent event) throws CmsConnectionException {
 		// File is deleted
 		if (event instanceof VFileDeleteEvent) {
@@ -190,6 +223,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/**
+	 * Internal handler for file delete events, fills a list of files to be deleted that is handled later in
+	 * {@link #handleAffectedFiles()}
+	 * @param event IntelliJ's file change event
+	 * @throws CmsConnectionException if the connection to OpenCms fails
+	 */
 	private void handleFileDeleteEvent(VFileEvent event) throws CmsConnectionException {
 		VirtualFile ideaVFile = event.getFile();
 		if (ideaVFile != null) {
@@ -205,12 +244,19 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 					}
 				}
 				catch (CmisPermissionDeniedException e) {
-					throw new CmsConnectionException("A local file has been deleted, but it can't be checked if the file exists in the VFS (permission denied).\nPlease check manually: " + vfsPath);
+					throw new
+							CmsConnectionException("A local file has been deleted, but it can't be checked if the file exists in the VFS (permission denied).\nPlease check manually: " + vfsPath);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Internal handler for file move events fills a list of files to be moved that is handled later in
+	 * {@link #handleAffectedFiles()}
+	 * @param event IntelliJ's file change event
+	 * @throws CmsConnectionException if the connection to OpenCms fails
+	 */
 	private void handleFileMoveEvent(VFileEvent event) throws CmsConnectionException {
 		VirtualFile ideaVFile = event.getFile();
 
@@ -248,6 +294,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/**
+	 * Internal handler for file rename events fills a list of files to be renamed that is handled later in
+	 * {@link #handleAffectedFiles()}
+	 * @param event IntelliJ's file change event
+	 * @throws CmsConnectionException if the connection to OpenCms fails
+	 */
 	private void handleFileRenameEvent(VFileEvent event) throws CmsConnectionException {
 		VirtualFile ideaVFile = event.getFile();
 		if (ideaVFile != null) {
@@ -267,6 +319,14 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/**
+	 * Handles all the lists of deleted, moved and renamed files collected in
+	 * {@link #handleFileDeleteEvent(com.intellij.openapi.vfs.newvfs.events.VFileEvent)},
+	 * {@link #handleFileMoveEvent(com.intellij.openapi.vfs.newvfs.events.VFileEvent)} and
+	 * {@link #handleFileRenameEvent(com.intellij.openapi.vfs.newvfs.events.VFileEvent)}
+	 * @return <code>true</code> if any action was executed
+	 * @throws CmsConnectionException
+	 */
 	private boolean handleAffectedFiles() throws CmsConnectionException {
 
 		boolean wasExecuted = false;
@@ -298,14 +358,35 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		return wasExecuted;
 	}
 
+	/**
+	 * Internal helper method constructing the meta data file path without the corresponding file suffix (used to
+	 * remove meta data folders)
+	 * @param ocmsModule    the OpenCms module containing the resource
+	 * @param vfsPath       VFS path of the resource whose meta data path is to be returned
+	 * @return the meta data file path without the corresponding file suffix
+	 */
 	private String getMetaDataFilePathWithoutSuffix(OpenCmsModule ocmsModule, String vfsPath) {
 		return ocmsModule.getManifestRoot() + vfsPath;
 	}
 
+	/**
+	 * Internal helper method constructing the path to the meta data XML file
+	 * @param ocmsModule    the OpenCms module containing the resource
+	 * @param vfsPath       VFS path of the resource whose meta data path is to be returned
+	 * @param isDirectory <code>true</code> if the resource is a folder, <code>false</code> otherwise
+	 * @return the path to the meta data XML file
+	 */
 	private String getMetaDataFilePath(OpenCmsModule ocmsModule, String vfsPath, boolean isDirectory) {
 		return OpenCmsModuleManifestGenerator.getMetaInfoPath(ocmsModule.getManifestRoot(), vfsPath, isDirectory);
 	}
 
+	/**
+	 * Presents a dialog asking the user if files are to be deleted from the VFS and handles the deletions if the user
+	 * chooses to do so
+	 * @return  <code>true</code> if the user elected to delete files, <code>false</code> if the user cancelled the
+	 *          deletion
+	 * @throws CmsConnectionException if the connection to OpenCms failed
+	 */
 	private boolean deleteFiles() throws CmsConnectionException {
 		StringBuilder msg = new StringBuilder("Do you want to delete the following files/folders from the OpenCms VFS?");
 		for (VfsFileDeleteInfo vfsFileToBeDeleted : vfsFilesToBeDeleted) {
@@ -344,6 +425,13 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		return false;
 	}
 
+	/**
+	 * Presents a dialog asking the user if files are to be moved in the VFS and handles the moves if the user
+	 * chooses to do so
+	 * @return  <code>true</code> if the user elected to move files, <code>false</code> if the user cancelled the
+	 *          move
+	 * @throws CmsConnectionException if the connection to OpenCms failed
+	 */
 	private boolean moveFiles() throws CmsConnectionException {
 		StringBuilder msg = new StringBuilder("Do you want to move the following files/folders in the OpenCms VFS as well?");
 		for (VfsFileMoveInfo vfsFileToBeMoved : vfsFilesToBeMoved) {
@@ -382,6 +470,13 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		return false;
 	}
 
+	/**
+	 * Presents a dialog asking the user if files are to be renamed in the VFS and handles the renames if the user
+	 * chooses to do so
+	 * @return  <code>true</code> if the user elected to rename files, <code>false</code> if the user cancelled the
+	 *          rename
+	 * @throws CmsConnectionException if the connection to OpenCms failed
+	 */
 	private boolean renameFiles() throws CmsConnectionException {
 		StringBuilder msg = new StringBuilder("Do you want to rename the following files/folders in the OpenCms VFS as well?");
 		for (VfsFileRenameInfo vfsFileToBeRenamed : vfsFilesToBeRenamed) {
@@ -422,6 +517,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		return false;
 	}
 
+	/**
+	 * Handles moves in export points for a moved resource
+	 * @param oldVfsPath the VFS path before the move
+	 * @param newVfsPath the VFS path after the move
+	 * @param newRfsPath the RFS path after the move
+	 */
 	private void handleExportPointsForMovedResources(String oldVfsPath, String newVfsPath, String newRfsPath) {
 		// if the old parent path was inside an export point, remove the exported file
 		deleteExportedFileIfNecessary(oldVfsPath);
@@ -443,6 +544,14 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/**
+	 * Moves meta data xml files for a moved resource
+	 * @param oldOcmsModule the source OpenCms module
+	 * @param newOcmsModule the target OpenCms module
+	 * @param oldVfsPath the VFS path before the move
+	 * @param newVfsPath the VFS path after the move
+	 * @param isDirectory <code>true</code> if the resource is a folder, <code>false</code> otherwise
+	 */
 	private void handleMetaDataForMovedResources(OpenCmsModule oldOcmsModule, OpenCmsModule newOcmsModule, String oldVfsPath, String newVfsPath, boolean isDirectory) {
 		String oldMetaDataFilePath = getMetaDataFilePath(oldOcmsModule, oldVfsPath, isDirectory);
 		String newMetaDataFilePath = getMetaDataFilePath(newOcmsModule, newVfsPath, isDirectory);
@@ -512,6 +621,9 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/**
+	 * Starts an OpenCms direct publish session for resources that were affected by the deletes/moves/renames
+	 */
 	private void publishAffectedVfsResources() {
 		ArrayList <String> affectedResourcePaths = new ArrayList<String>(getNumAffected());
 		for (VfsFileDeleteInfo deletedInfo : vfsFilesToBeDeleted) {
@@ -539,6 +651,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/** Internal bean to store infos for deleted resources */
 	private static class VfsFileDeleteInfo {
 		OpenCmsModule ocmsModule;
 		String vfsPath;
@@ -551,6 +664,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/** Internal bean to store infos for moved resources */
 	private static class VfsFileMoveInfo {
 		OpenCmsModule oldOcmsModule;
 		OpenCmsModule newOcmsModule;
@@ -573,6 +687,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 		}
 	}
 
+	/** Internal bean to store infos for renamed resources */
 	private static class VfsFileRenameInfo {
 		private OpenCmsModule ocmsModule;
 		private VirtualFile newIdeaVFile;

@@ -24,12 +24,22 @@
 
 package com.mediaworx.intellij.opencmsplugin.exceptions;
 
+/** Exception that is thrown whenever the connection to OpenCms fails because the permission is denied */
 public class CmsPermissionDeniedException extends Exception {
 
+	/**
+	 * Creates a new CmsPermissionDeniedException with the given message
+	 * @param message the error message
+	 */
 	public CmsPermissionDeniedException(String message) {
 		super(message);
 	}
 
+	/**
+	 * Creates a new CmsPermissionDeniedException with the given message
+	 * @param message the error message
+	 * @param cause Original Exception/Throwable that led to the exception
+	 */
 	public CmsPermissionDeniedException(String message, Throwable cause) {
 		super(message, cause);
 	}
