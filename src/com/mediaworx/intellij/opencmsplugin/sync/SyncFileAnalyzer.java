@@ -426,7 +426,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 				executeSync = false;
 				return;
 			}
-			String childVfsPath = vfsPath + child.getName();
+			String childVfsPath = vfsPath + "/" + child.getName();
 
 			// files
 			if (child.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
