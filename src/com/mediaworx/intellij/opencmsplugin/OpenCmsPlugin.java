@@ -320,7 +320,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public boolean checkWebappRootConfiguration(boolean showDialog) {
 		boolean configOK = true;
-		if (config.isOpenCmsPluginEnabled()) {
+		if (config != null && config.isOpenCmsPluginEnabled()) {
 			File file = new File(config.getWebappRoot());
 			// show an error message if the webapp root folder was not found
 			if (!file.exists()) {
