@@ -42,7 +42,7 @@
             See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki/Version-History">Version History</a> on GitHub.
         ]]>
     </change-notes>
-    <vendor url="http://www.mediaworx.com" email="">mediaworx berlin AG</vendor>
+    <vendor url="http://opencms.mediaworx.com" email="">mediaworx berlin AG</vendor>
 
 	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
 	<idea-version since-build="107.105"/>
