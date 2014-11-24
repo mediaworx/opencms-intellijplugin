@@ -105,9 +105,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 	/** Adapter used to sync the RFS with the OpenCms VFS */
 	private VfsAdapter vfsAdapter;
 
-	/** The plugin's configuration */
-	private OpenCmsPluginConfigurationData config;
-
 	/**
 	 * Connector used to retrieve module or resource information from OpenCms and execute actions in OpenCms
 	 * (e.g. publishing), backed by the OpenCms module "com.mediaworx.opencms.ideconnector"
@@ -147,14 +144,15 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public void initComponent() {
 		LOG.warn("initComponent called, project: " + project.getName());
 		actionManager = ActionManager.getInstance();
-		config = project.getComponent(OpenCmsPluginConfigurationComponent.class).getState();
+		
 	}
-
+	
 	/**
 	 * Enables the plugin (if it is enabled in the project level configuration), called by IntelliJ whenever a project
 	 * is opened.
 	 */
 	public void projectOpened() {
+		OpenCmsPluginConfigurationData config = getPluginConfiguration();
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			enable();
 		}
@@ -172,6 +170,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 */
 	public void enable() {
 		if (!wasInitialized) {
+			OpenCmsPluginConfigurationData config = getPluginConfiguration();
 			if (config != null && config.isOpenCmsPluginEnabled()) {
 				if (config.isPluginConnectorEnabled()) {
 					pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword(), config.isUseMetaVariablesEnabled());
@@ -320,6 +319,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	public boolean checkWebappRootConfiguration(boolean showDialog) {
 		boolean configOK = true;
+		OpenCmsPluginConfigurationData config = getPluginConfiguration();
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			File file = new File(config.getWebappRoot());
 			// show an error message if the webapp root folder was not found
@@ -354,7 +354,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 		openCmsModules = null;
 		vfsAdapter = null;
-		config = null;
 		pluginConnector = null;
 		toolWindow = null;
 		console = null;
@@ -384,6 +383,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 */
 	public OpenCmsConfiguration getOpenCmsConfiguration() {
 		if (openCmsConfiguration == null) {
+			OpenCmsPluginConfigurationData config = getPluginConfiguration();
 			openCmsConfiguration = new OpenCmsConfiguration(config);
 			openCmsConfiguration.startMonitoringConfigurationChanges();
 		}
@@ -395,7 +395,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 * @return  the project level configuration data
 	 */
 	public OpenCmsPluginConfigurationData getPluginConfiguration() {
-		return config;
+		return project.getComponent(OpenCmsPluginConfigurationComponent.class).getState();
 	}
 
 	/**
@@ -416,6 +416,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 */
 	public VfsAdapter getVfsAdapter() {
 		if (vfsAdapter == null) {
+			OpenCmsPluginConfigurationData config = getPluginConfiguration();
 			if (config != null && config.isOpenCmsPluginEnabled() && config.getPassword() != null && config.getPassword().length() > 0) {
 				vfsAdapter = new VfsAdapter(config.getRepository(), config.getUsername(), config.getPassword());
 			}
@@ -456,6 +457,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 		}
 		toolWindow = toolWindowManager.getToolWindow(OpenCmsPlugin.TOOLWINDOW_ID);
 		if (toolWindow == null) {
+			OpenCmsPluginConfigurationData config = getPluginConfiguration();
 			toolWindow = toolWindowManager.registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
 			toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
 			toolWindow.setAvailable(config != null && config.isOpenCmsPluginEnabled(), null);
