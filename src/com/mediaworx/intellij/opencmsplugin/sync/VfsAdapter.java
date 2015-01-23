@@ -258,7 +258,7 @@ public class VfsAdapter {
 	}
 
 	/**
-	 * pushs a file from the RFS to the VFS
+	 * pushes a file from the RFS to the VFS
 	 * @param entity    the sync entity representing the file to be pushed
 	 * @return  a CMIS document of the newly created VFS file
 	 * @throws CmsPushException
@@ -474,6 +474,10 @@ public class VfsAdapter {
 			folder = session.getRootFolder();
 		}
 		catch (CmisConnectionException e) {
+			LOG.info("Can't read CMIS repository root folder, not connected", e);
+			connected = false;
+		}
+		catch (CmisObjectNotFoundException e) {
 			LOG.info("Can't read CMIS repository root folder, not connected", e);
 			connected = false;
 		}
