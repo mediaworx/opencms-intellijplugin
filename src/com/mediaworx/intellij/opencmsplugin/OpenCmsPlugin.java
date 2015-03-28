@@ -395,7 +395,12 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 * @return  the project level configuration data
 	 */
 	public OpenCmsPluginConfigurationData getPluginConfiguration() {
-		return project.getComponent(OpenCmsPluginConfigurationComponent.class).getState();
+		if (project != null && project.getComponent(OpenCmsPluginConfigurationComponent.class) != null) {
+			return project.getComponent(OpenCmsPluginConfigurationComponent.class).getState();
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
