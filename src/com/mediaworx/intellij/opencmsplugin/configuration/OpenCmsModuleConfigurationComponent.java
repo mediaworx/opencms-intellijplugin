@@ -34,6 +34,7 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -181,8 +182,10 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	 * @see com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules
 	 */
 	private void handleOcmsModuleRegistration() {
+		module.getModuleFilePath();
 		if (configurationData.isOpenCmsModuleEnabled()) {
-			plugin.getOpenCmsModules().registerModule(module, configurationData);
+			String moduleBasePath = PluginTools.getModuleContentRoot(module);
+			plugin.getOpenCmsModules().registerModule(moduleBasePath, configurationData);
 		}
 		else {
 			plugin.getOpenCmsModules().unregisterModule(module);

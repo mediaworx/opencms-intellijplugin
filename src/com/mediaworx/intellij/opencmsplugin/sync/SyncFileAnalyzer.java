@@ -26,8 +26,6 @@ package com.mediaworx.intellij.opencmsplugin.sync;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFile;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFolder;
@@ -41,6 +39,8 @@ import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import java.io.File;
 import java.util.*;
@@ -59,7 +59,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 	private boolean pullAllMetaInformation;
 	private boolean executeSync = true;
 
-	SyncFileAnalyzer(final OpenCmsPlugin plugin, final VirtualFile[] syncFiles, boolean pullAllMetaInformation) throws CmsConnectionException {
+	SyncFileAnalyzer(final OpenCmsPlugin plugin, final List<File> syncFiles, boolean pullAllMetaInformation) throws CmsConnectionException {
 
 		super(plugin, syncFiles);
 
@@ -109,8 +109,9 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 	protected void handleModuleResourcePath(OpenCmsModule ocmsModule, String moduleResourceVfsPath) {
 		LOG.info("resource path: " + ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
-		VirtualFile resourceFile = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
-		if (resourceFile != null) {
+
+		File resourceFile = new File(ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
+		if (resourceFile.exists()) {
 			LOG.info("vFolder path: " + resourceFile.getPath());
 			handleModuleResource(ocmsModule, resourceFile);
 		}
@@ -120,12 +121,12 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		}
 	}
 
-	protected void handleModuleResource(OpenCmsModule ocmsModule, VirtualFile file) {
+	protected void handleModuleResource(OpenCmsModule ocmsModule, File file) {
 		walkFileTree(ocmsModule, file, FolderSyncMode.AUTO);
 	}
 
 	// TODO: handle cases where a folder on the vfs has the same name as a file on the rfs or vice versa
-	private void walkFileTree(OpenCmsModule ocmsModule, VirtualFile ideaVFile, FolderSyncMode folderSyncMode) {
+	private void walkFileTree(OpenCmsModule ocmsModule, File file, FolderSyncMode folderSyncMode) {
 
 		if (progressIndicator.isCanceled()) {
 			executeSync = false;
@@ -133,24 +134,25 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		}
 
 		// the file has already been handled, so skip
-		if (handledPaths.contains(ideaVFile.getPath())) {
-			LOG.info("already handled " + ideaVFile.getPath() + ", skipping");
+		if (handledPaths.contains(file.getPath())) {
+			LOG.info("already handled " + file.getPath() + ", skipping");
 			return;
 		}
 		else {
-			handledPaths.add(ideaVFile.getPath());
+			handledPaths.add(file.getPath());
 		}
 
-		if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), ideaVFile)) {
+		if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), file)) {
 			return;
 		}
 
+		// RTASK: handle intellij file system refresh somehow, if still required!
 		// check if the file/folder is contained in classes, refresh the IntelliJ VFS if necessary
-		if (ideaVFile.getPath().contains(CLASSES_FOLDER)) {
-			ideaVFile.refresh(false, false);
+		if (file.getPath().contains(CLASSES_FOLDER)) {
+			// file.refresh(false, false);
 		}
 
-		String vfsPath = ocmsModule.getVfsPathForIdeaVFile(ideaVFile);
+		String vfsPath = ocmsModule.getVfsPathForFile(file);
 
 		LOG.info("VFS path is " + vfsPath);
 
@@ -179,37 +181,37 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		}
 
 		// It's a folder, check if it is already there and compare contents
-		if (ideaVFile.isDirectory()) {
+		if (file.isDirectory()) {
 			// The folder is not there, so push it with all child contents
 			if (!vfsObjectExists) {
 				if (!pullAllMetaInformation) {
 					LOG.info("It's a folder that does not exist on the VFS, PUSH recursively");
-					addRfsOnlyFolderTreeToSyncList(ocmsModule, vfsPath, ideaVFile, false);
+					addRfsOnlyFolderTreeToSyncList(ocmsModule, vfsPath, file, false);
 				}
 			}
 			// The Folder is there, compare contents of VFS and RFS
 			else {
-				handleExistingFolder(ocmsModule, ideaVFile, (Folder)vfsObject, vfsPath);
+				handleExistingFolder(ocmsModule, file, (Folder)vfsObject, vfsPath);
 			}
 		}
-		// It's a file
-		else if (!ideaVFile.isSpecialFile()) {
+		// It's a file  // RTASK: Check what this isSpecialFile did (originally this was an IntelliJ VirtualFile) and if that's still needed after the switch to Java Files
+		else /* if (!file.isSpecialFile()) */ {
 			// The file is not there, so push it
 			if (!vfsObjectExists) {
 				if (!pullAllMetaInformation) {
 					LOG.info("It's a file that does not exist on the VFS, PUSH");
-					addRfsOnlyFileToSyncList(ocmsModule, vfsPath, ideaVFile, null);
+					addRfsOnlyFileToSyncList(ocmsModule, vfsPath, file, null);
 				}
 			}
 			// The file exists, check which one is newer
 			else {
-				handleExistingFile(ocmsModule, ideaVFile, vfsObject, vfsPath);
+				handleExistingFile(ocmsModule, file, vfsObject, vfsPath);
 			}
 		}
 
 	}
 
-	private void handleExistingFolder(OpenCmsModule ocmsModule, VirtualFile ideaVFile, Folder vfsObject, String vfsPath) {
+	private void handleExistingFolder(OpenCmsModule ocmsModule, File file, Folder vfsObject, String vfsPath) {
 		LOG.info("It's a folder that does exist on the VFS, compare");
 
 		// Get folder content from the vfs, put it in a set
@@ -217,7 +219,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		LOG.info("Children:");
 
 		if (pullAllMetaInformation) {
-			syncList.add(new SyncFolder(ocmsModule, vfsPath, ideaVFile, vfsObject, SyncAction.PULL, true));
+			syncList.add(new SyncFolder(ocmsModule, vfsPath, file, vfsObject, SyncAction.PULL, true));
 		}
 
 		ItemIterable<CmisObject> vfsChildren = vfsObject.getChildren();
@@ -228,10 +230,11 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		}
 
 		LOG.info("Looping RFS children");
-		VirtualFile[] rfsChildren = ideaVFile.getChildren();
+
+		Collection<File> rfsChildren = FileUtils.listFiles(file, TrueFileFilter.INSTANCE, null);
 
 		// handle resources in the RFS
-		for (VirtualFile rfsChild : rfsChildren) {
+		for (File rfsChild : rfsChildren) {
 			if (progressIndicator.isCanceled()) {
 				return;
 			}
@@ -280,14 +283,14 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		}
 	}
 
-	private void handleExistingFile(OpenCmsModule ocmsModule, VirtualFile ideaVFile, CmisObject vfsObject, String vfsPath) {
+	private void handleExistingFile(OpenCmsModule ocmsModule, File file, CmisObject vfsObject, String vfsPath) {
 		LOG.info("It's a file that exists on the VFS and the RFS");
 
 		if (pullAllMetaInformation) {
-			syncList.add(new SyncFile(ocmsModule, vfsPath, ideaVFile, vfsObject, SyncAction.PULL, true));
+			syncList.add(new SyncFile(ocmsModule, vfsPath, file, vfsObject, SyncAction.PULL, true));
 		}
 		else {
-			File realFile = new File(ideaVFile.getPath());
+			File realFile = new File(file.getPath());
 			Date localDate = new Date(realFile.lastModified());
 			Date vfsDate = vfsObject.getLastModificationDate().getTime();
 
@@ -295,11 +298,11 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 				LOG.info("SyncMode is SYNC, so compare dates");
 				if (localDate.after(vfsDate)) {
 					LOG.info("RFS file is newer, PUSH");
-					syncList.add(new SyncFile(ocmsModule, vfsPath, ideaVFile, vfsObject, SyncAction.PUSH, true));
+					syncList.add(new SyncFile(ocmsModule, vfsPath, file, vfsObject, SyncAction.PUSH, true));
 				}
 				else if (vfsDate.after(localDate)) {
 					LOG.info("VFS file is newer, PULL");
-					syncList.add(new SyncFile(ocmsModule, vfsPath, ideaVFile, vfsObject, SyncAction.PULL, true));
+					syncList.add(new SyncFile(ocmsModule, vfsPath, file, vfsObject, SyncAction.PULL, true));
 				}
 				else {
 					LOG.info("VFS file and RFS file have the same date, ignore");
@@ -309,7 +312,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			else if (vfsDate.compareTo(localDate) != 0) {
 				SyncAction syncAction = ocmsModule.getSyncMode() == SyncMode.PUSH ? SyncAction.PUSH : SyncAction.PULL;
 				LOG.info("SyncMode is " + ocmsModule.getSyncMode() + " and files are not equal, so force " + syncAction);
-				syncList.add(new SyncFile(ocmsModule, vfsPath, ideaVFile, vfsObject, syncAction, true));
+				syncList.add(new SyncFile(ocmsModule, vfsPath, file, vfsObject, syncAction, true));
 			}
 		}
 	}
@@ -349,14 +352,14 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		}
 	}
 
-	private void addRfsOnlyFileToSyncList(OpenCmsModule ocmsModule, String vfsPath, VirtualFile file, Document vfsFile) {
+	private void addRfsOnlyFileToSyncList(OpenCmsModule ocmsModule, String vfsPath, File file, Document vfsFile) {
 		LOG.info("Adding RFS only file " + vfsPath);
 		SyncAction syncAction = getRfsOnlySyncAction(ocmsModule.getSyncMode());
 		SyncFile syncFile = new SyncFile(ocmsModule, vfsPath, file, vfsFile, syncAction, vfsFile != null);
 		syncList.add(syncFile);
 	}
 
-	private void addRfsOnlyFolderTreeToSyncList(OpenCmsModule ocmsModule, String vfsPath, VirtualFile file, boolean replaceExistingEntity) {
+	private void addRfsOnlyFolderTreeToSyncList(OpenCmsModule ocmsModule, String vfsPath, File file, boolean replaceExistingEntity) {
 		LOG.info("Adding RFS only folder " + vfsPath);
 
 		SyncAction syncAction = getRfsOnlySyncAction(ocmsModule.getSyncMode());
@@ -365,10 +368,10 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 		if (syncAction != SyncAction.DELETE_RFS) {
 			LOG.info("Get children of folder " + vfsPath);
-			VirtualFile[] children = file.getChildren();
-			for (VirtualFile child : children) {
-				LOG.info("Handle PUSH child " + child.getPath());
-				walkFileTree(ocmsModule, child, FolderSyncMode.PUSH);
+			Collection<File> rfsChildren = FileUtils.listFiles(file, TrueFileFilter.INSTANCE, null);
+			for (File rfsChild : rfsChildren) {
+				LOG.info("Handle PUSH child " + rfsChild.getPath());
+				walkFileTree(ocmsModule, rfsChild, FolderSyncMode.PUSH);
 			}
 		}
 	}

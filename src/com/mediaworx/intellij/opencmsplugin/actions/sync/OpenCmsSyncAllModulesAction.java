@@ -25,9 +25,11 @@
 package com.mediaworx.intellij.opencmsplugin.actions.sync;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Action to sync all OpenCms modules in the project to/from the OpenCms VFS.
@@ -40,7 +42,7 @@ public class OpenCmsSyncAllModulesAction extends OpenCmsSyncAction {
 	 * @return An Array of Virtual Files representing all OpenCms modules
 	 */
 	@Override
-	protected VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event) {
-		return ActionTools.getAllModulesFileArray(plugin);
+	protected List<File> getSyncFiles(@NotNull AnActionEvent event) {
+		return ActionTools.getAllModulesFileList(plugin);
 	}
 }

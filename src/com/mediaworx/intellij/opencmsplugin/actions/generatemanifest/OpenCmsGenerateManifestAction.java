@@ -50,7 +50,7 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 	/**
 	 * Triggers the creation of module manifests depending on the menu entry the user chose. Which manifests are to
 	 * be created is determined by calling the abstract method
-	 * {@link #getModuleFileArray(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
+	 * {@link #getModuleFileList(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
 	 * For the manifest creation the OpenCmsModuleManifestGenerator is used that is provided as a separate library.
 	 * @param event the action event, provided by IntelliJ
 	 */
@@ -59,17 +59,17 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 		LOG.info("actionPerformed - event: " + event);
 		super.actionPerformed(event);
 
-		VirtualFile[] ideaVFiles = getModuleFileArray(event);
-		final List<File> filesToBeRefreshed = new ArrayList<File>(ideaVFiles.length);
+		List<File> moduleFiles = getModuleFileList(event);
+		final List<File> filesToBeRefreshed = new ArrayList<File>(moduleFiles.size());
 
 		OpenCmsModuleManifestGenerator manifestGenerator = new OpenCmsModuleManifestGenerator();
 		manifestGenerator.setReplaceMetaVariables(config.isUseMetaVariablesEnabled());
 		plugin.showConsole();
 		clearConsole();
 
-		for (VirtualFile ideaVFile : ideaVFiles) {
-			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
-			if (ocmsModule == null || !ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
+		for (File moduleFile : moduleFiles) {
+			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForFile(moduleFile);
+			if (ocmsModule == null || !ocmsModule.isFileModuleRoot(moduleFile)) {
 				continue;
 			}
 			try {
@@ -109,7 +109,7 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 	 * @param event the action event, provided by IntelliJ
 	 * @return  An array with virtual files representing OpenCms modules
 	 */
-	protected abstract VirtualFile[] getModuleFileArray(@NotNull AnActionEvent event);
+	protected abstract List<File> getModuleFileList(@NotNull AnActionEvent event);
 
 	/**
 	 * Enables or disables the generate manifest actions. If "pull meta data" is enabled in the plugin configuration,

@@ -28,7 +28,11 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 
-public class ModuleTools {
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PluginTools {
 
 	public static String getModuleContentRoot(Module module) {
 		String moduleContentRoot = null;
@@ -41,5 +45,14 @@ public class ModuleTools {
 			moduleContentRoot = moduleRoots[0].getPath();
 		}
 		return moduleContentRoot;
+	}
+
+
+	public static List<File> getRealFilesFromVirtualFiles(VirtualFile[] virtualFiles) {
+		List<File> realFiles = new ArrayList<>(virtualFiles.length);
+		for (VirtualFile virtualFile : virtualFiles) {
+			realFiles.add(new File(virtualFile.getPath()));
+		}
+		return realFiles;
 	}
 }

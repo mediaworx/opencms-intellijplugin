@@ -24,7 +24,6 @@
 
 package com.mediaworx.intellij.opencmsplugin.entities;
 
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
@@ -38,8 +37,7 @@ public abstract class SyncEntity {
 
 	private OpenCmsModule ocmsModule;
 	private String vfsPath;
-	private VirtualFile ideaVFile;
-	private File realFile;
+	private File file;
 	private CmisObject vfsObject;
 	private SyncAction syncAction;
 	private boolean replaceExistingEntity;
@@ -48,15 +46,15 @@ public abstract class SyncEntity {
 	 * Creates a new sync entity
 	 * @param ocmsModule the OpenCms module the entity is contained in
 	 * @param vfsPath the entity's VFS path
-	 * @param ideaVFile IntelliJs virtual file representing the entity
+	 * @param file The java file file representing the entity
 	 * @param vfsObject The CMIS object representing the entity
 	 * @param syncAction The Sync Action to be used for the entity (PUSH, PULL, DELETE_RFS or DELETE_VFS)
 	 * @param replaceExistingEntity <code>true</code> if an existing entity is replaced during sync
 	 */
-	public SyncEntity(OpenCmsModule ocmsModule, String vfsPath, VirtualFile ideaVFile, CmisObject vfsObject, SyncAction syncAction, boolean replaceExistingEntity) {
+	public SyncEntity(OpenCmsModule ocmsModule, String vfsPath, File file, CmisObject vfsObject, SyncAction syncAction, boolean replaceExistingEntity) {
 		setOcmsModule(ocmsModule);
 		setVfsPath(vfsPath);
-		setIdeaVFile(ideaVFile);
+		setFile(file);
 		setVfsObject(vfsObject);
 		setSyncAction(syncAction);
 		setReplaceExistingEntity(replaceExistingEntity);
@@ -118,35 +116,16 @@ public abstract class SyncEntity {
 	 * Returns a File handle for the entity in the real file system
 	 * @return a File handle for the entity in the RFS
 	 */
-	public File getRealFile() {
-		return this.realFile;
+	public File getFile() {
+		return this.file;
 	}
 
 	/**
 	 * Sets the File handle handle for the entity in the real file system
-	 * @param realFile the File handle for the entity in the RFS
+	 * @param file the File handle for the entity in the RFS
 	 */
-	public void setRealFile(File realFile) {
-		this.realFile = realFile;
-	}
-
-	/**
-	 * Returns the IntelliJ virtual file for the entity
-	 * @return the IntelliJ virtual file for the entity
-	 */
-	public VirtualFile getIdeaVFile() {
-		return ideaVFile;
-	}
-
-	/**
-	 * Sets the IntelliJ virtual file for the entity
-	 * @param ideaVFile the IntelliJ virtual file for the entity
-	 */
-	public void setIdeaVFile(VirtualFile ideaVFile) {
-		if (ideaVFile != null) {
-			this.ideaVFile = ideaVFile;
-			this.realFile = new File(ideaVFile.getPath());
-		}
+	public void setFile(File file) {
+		this.file = file;
 	}
 
 	/**

@@ -27,7 +27,6 @@ package com.mediaworx.intellij.opencmsplugin.actions.packagemodule;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.opencms.moduleutils.packager.OpenCmsModulePackager;
@@ -60,19 +59,22 @@ public abstract class OpenCmsPackageModuleAction extends OpenCmsPluginAction {
 		LOG.info("actionPerformed - event: " + event);
 		super.actionPerformed(event);
 
-		VirtualFile[] ideaVFiles = getModuleFileArray(event);
-		final List<File> filesToBeRefreshed = new ArrayList<File>(ideaVFiles.length);
+		List<File> moduleFiles = getModuleFileArray(event);
+		final List<File> filesToBeRefreshed = new ArrayList<File>(moduleFiles.size());
 
 		OpenCmsModulePackager packager = new OpenCmsModulePackager();
 		plugin.showConsole();
 		clearConsole();
-		for (VirtualFile ideaVFile : ideaVFiles) {
-			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
-			if (ocmsModule == null || !ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
+		for (File moduleFile : moduleFiles) {
+			if (!moduleFile.exists()) {
+				continue;
+			}
+			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForFile(moduleFile);
+			if (ocmsModule == null || !ocmsModule.isFileModuleRoot(moduleFile)) {
 				continue;
 			}
 
-			String zipTargetPath = ocmsModule.getIntelliJModuleRoot();
+			String zipTargetPath = ocmsModule.getModuleBasePath();
 			try {
 				String packageName = packager.packageModule(ocmsModule.getManifestRoot(), ocmsModule.getLocalVfsRoot(), zipTargetPath);
 				plugin.getConsole().info(packageName + " was saved at " + zipTargetPath);
@@ -98,7 +100,7 @@ public abstract class OpenCmsPackageModuleAction extends OpenCmsPluginAction {
 	 * @param event the action event, provided by IntelliJ
 	 * @return  An array with virtual files representing OpenCms modules
 	 */
-	protected abstract VirtualFile[] getModuleFileArray(@NotNull AnActionEvent event);
+	protected abstract List<File> getModuleFileArray(@NotNull AnActionEvent event);
 
 	/**
 	 * Enables or disables the "package module zip" actions. If "pull meta data" is enabled in the plugin configuration,

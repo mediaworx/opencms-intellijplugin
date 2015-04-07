@@ -28,12 +28,12 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 
+import java.io.File;
 import java.util.List;
 
 public class OpenCmsSyncer {
@@ -55,7 +55,7 @@ public class OpenCmsSyncer {
 	}
 
 
-	public void syncFiles(VirtualFile[] syncFiles) {
+	public void syncFiles(List<File> syncFiles) {
 
 		SyncFileAnalyzer analyzer;
 

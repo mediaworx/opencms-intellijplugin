@@ -26,7 +26,6 @@ package com.mediaworx.intellij.opencmsplugin.actions.publish;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
@@ -35,6 +34,7 @@ import com.mediaworx.intellij.opencmsplugin.exceptions.OpenCmsConnectorException
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -58,9 +58,9 @@ public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 
 		try {
 			OpenCmsToolWindowConsole console = plugin.getConsole();
-			VirtualFile[] publishFiles = getPublishFileArray(event);
+			List<File> publishFiles = getPublishFileArray(event);
 
-			if (publishFiles == null || publishFiles.length == 0) {
+			if (publishFiles == null || publishFiles.size() == 0) {
 				console.info("nothing to publish");
 			}
 
@@ -104,7 +104,7 @@ public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 	 * @param event the action event, provided by IntelliJ
 	 * @return  An array with virtual files representing OpenCms module resources
 	 */
-	protected abstract VirtualFile[] getPublishFileArray(AnActionEvent event);
+	protected abstract List<File> getPublishFileArray(AnActionEvent event);
 
 	/**
 	 * Enables the action if the OpenCms plugin connector is enabled in the plugin's configuration.

@@ -24,12 +24,12 @@
 
 package com.mediaworx.intellij.opencmsplugin.connector;
 
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,10 +43,10 @@ public class PublishFileAnalyzer extends VfsFileAnalyzer {
 	/**
 	 * Creates a new PublishFileAnalyzer
 	 * @param plugin the OpenCms plugin instance
-	 * @param files Virtual file array containing the files selected in IntelliJ's project tree
+	 * @param files File array containing the files selected in IntelliJ's project tree
 	 * @throws CmsConnectionException is needed because of the abstract classe's interface, but never thrown
 	 */
-	public PublishFileAnalyzer(OpenCmsPlugin plugin, VirtualFile[] files) throws CmsConnectionException {
+	public PublishFileAnalyzer(OpenCmsPlugin plugin, List<File> files) throws CmsConnectionException {
 		super(plugin, files);
 
 		publishList = new ArrayList<String>();
@@ -58,8 +58,8 @@ public class PublishFileAnalyzer extends VfsFileAnalyzer {
 	 * @param file IntelliJ's virtual file
 	 */
 	@Override
-	protected void handleModuleResource(OpenCmsModule ocmsModule, VirtualFile file) {
-		publishList.add(ocmsModule.getVfsPathForIdeaVFile(file));
+	protected void handleModuleResource(OpenCmsModule ocmsModule, File file) {
+		publishList.add(ocmsModule.getVfsPathForFile(file));
 		handledPaths.add(file.getPath());
 	}
 

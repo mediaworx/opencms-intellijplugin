@@ -76,8 +76,8 @@ public class OpenCmsEditorPopupMenu extends OpenCmsMenu {
 		VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 		boolean enableMenu;
 		if (selectedFiles != null && selectedFiles.length == 1) {
-			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(selectedFiles[0]);
-			enableMenu = ocmsModule != null && ocmsModule.isIdeaVFileInVFSPath(selectedFiles[0]);
+			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForPath(selectedFiles[0].getPath());
+			enableMenu = ocmsModule != null && ocmsModule.isPathInVFSPath(selectedFiles[0].getPath());
 		}
 		else {
 			enableMenu = false;

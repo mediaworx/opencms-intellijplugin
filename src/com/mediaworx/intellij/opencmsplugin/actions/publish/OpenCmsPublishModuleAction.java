@@ -25,10 +25,12 @@
 package com.mediaworx.intellij.opencmsplugin.actions.publish;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Action to publish a specific module that was selected from the OpenCms "Publish Module" menu.
@@ -42,12 +44,12 @@ public class OpenCmsPublishModuleAction extends OpenCmsPublishAction {
 	 * @return Virtual file array containing exactly one file representing the module selected by the user
 	 */
 	@Override
-	protected VirtualFile[] getPublishFileArray(AnActionEvent event) {
-		VirtualFile[] publishFiles = new VirtualFile[1];
+	protected List<File> getPublishFileArray(AnActionEvent event) {
+		List<File> publishFiles = new ArrayList<>(1);
 		String actionId = event.getActionManager().getId(this);
 		// the module's root path is contained in the action id (after a prefix)
 		String moduleRoot = actionId.substring(OpenCmsMainMenu.PUBLISH_MODULE_ID_PREFIX.length());
-		publishFiles[0] = LocalFileSystem.getInstance().findFileByPath(moduleRoot);
+		publishFiles.add(new File(moduleRoot));
 		return publishFiles;
 	}
 

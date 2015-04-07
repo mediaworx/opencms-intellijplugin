@@ -26,14 +26,14 @@ package com.mediaworx.intellij.opencmsplugin.opencms;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 
+import java.io.File;
 import java.util.*;
 
+// RTASK: decouple intellij module and OpenCms module. Save OpenCms modules by their base path, replace "findModuleForFile" with custom implementation
 public class OpenCmsModules {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsModules.class);
@@ -41,27 +41,27 @@ public class OpenCmsModules {
 	OpenCmsPlugin plugin;
 	List<OpenCmsModuleExportPoint> allExportPoints;
 
-	private Map<Module, OpenCmsModule> OCMSMODULE_BY_IDEAMODULE = new LinkedHashMap<Module, OpenCmsModule>();
+	private Map<String, OpenCmsModule> openCmsModuleMap = new LinkedHashMap<String, OpenCmsModule>();
 
 	public OpenCmsModules(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
 	}
 
-	public void registerModule(Module ideaModule, OpenCmsModuleConfigurationData moduleConfig) {
+	public void registerModule(String moduleBasePath, OpenCmsModuleConfigurationData moduleConfig) {
 		LOG.info("registering module: " + moduleConfig.getModuleName());
 		allExportPoints = null;
 		if (!moduleConfig.isOpenCmsModuleEnabled()) {
 			return;
 		}
 		OpenCmsModule ocmsModule;
-		if (OCMSMODULE_BY_IDEAMODULE.containsKey(ideaModule)) {
-			ocmsModule = OCMSMODULE_BY_IDEAMODULE.get(ideaModule);
+		if (openCmsModuleMap.containsKey(moduleBasePath)) {
+			ocmsModule = openCmsModuleMap.get(moduleBasePath);
 			ocmsModule.refresh(moduleConfig);
 		}
 		else {
-			ocmsModule = new OpenCmsModule(plugin, ideaModule);
+			ocmsModule = new OpenCmsModule(plugin, moduleBasePath);
 			ocmsModule.init(moduleConfig);
-			OCMSMODULE_BY_IDEAMODULE.put(ideaModule, ocmsModule);
+			openCmsModuleMap.put(moduleBasePath, ocmsModule);
 		}
 		// TODO: think about using an event instead
 		OpenCmsMainMenu.getInstance(plugin).registerModuleActions();
@@ -70,37 +70,53 @@ public class OpenCmsModules {
 	public void unregisterModule(Module ideaModule) {
 		LOG.info("unregistering module: " + ideaModule.getName());
 		allExportPoints = null;
-		OCMSMODULE_BY_IDEAMODULE.remove(ideaModule);
+		openCmsModuleMap.remove(ideaModule);
 		// TODO: think about using an event instead
 		OpenCmsMainMenu.getInstance(plugin).registerModuleActions();
 	}
 
 	public Collection<OpenCmsModule> getAllModules() {
-		return OCMSMODULE_BY_IDEAMODULE.values();
+		return openCmsModuleMap.values();
 	}
 
-	public OpenCmsModule getModuleForIdeaVFile(VirtualFile ideaVFile) {
-		if (ideaVFile == null || plugin.getProject() == null) {
+	public OpenCmsModule getModuleForFile(File file) {
+		if (file == null) {
 			return null;
 		}
-		Module ideaModule = ModuleUtil.findModuleForFile(ideaVFile, plugin.getProject());
-		return OCMSMODULE_BY_IDEAMODULE.get(ideaModule);
+		for (String basePath : openCmsModuleMap.keySet()) {
+			if (file.getPath().startsWith(basePath)) {
+				return openCmsModuleMap.get(basePath);
+			}
+		}
+		return null;
 	}
 
-	public OpenCmsModule getModuleForIdeaModule(Module ideaModule) {
-		if (ideaModule == null) {
+	public OpenCmsModule getModuleForPath(String path) {
+		if (path == null) {
 			return null;
 		}
-		return OCMSMODULE_BY_IDEAMODULE.get(ideaModule);
+		for (String basePath : openCmsModuleMap.keySet()) {
+			if (path.startsWith(basePath)) {
+				return openCmsModuleMap.get(basePath);
+			}
+		}
+		return null;
 	}
 
-	public boolean isIdeaVFileOpenCmsModuleResource(final VirtualFile file) {
-		OpenCmsModule ocmsModule = getModuleForIdeaVFile(file);
+	public OpenCmsModule getModuleForBasePath(String moduleBasePath) {
+		if (moduleBasePath == null) {
+			return null;
+		}
+		return openCmsModuleMap.get(moduleBasePath);
+	}
+
+	public boolean isFileOpenCmsModuleResource(final File file) {
+		OpenCmsModule ocmsModule = getModuleForFile(file);
 		if (ocmsModule == null) {
 			LOG.info("No module configured for the file " + file.getPath());
 			return false;
 		}
-		return ocmsModule.isIdeaVFileModuleResource(file);
+		return ocmsModule.isFileModuleResource(file);
 	}
 
 	public OpenCmsModuleExportPoint getExportPointForVfsResource(String resourcePath) {

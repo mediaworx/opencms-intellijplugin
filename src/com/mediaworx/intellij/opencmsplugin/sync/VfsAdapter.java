@@ -269,7 +269,7 @@ public class VfsAdapter {
 			return null;
 		}
 
-		File rfsFile = entity.getRealFile();
+		File rfsFile = entity.getFile();
 		FileInputStream rfsFileInputStream = null;
 		Document vfsFile = null;
 		long vfsFileModifiedTime = 0;
@@ -417,7 +417,7 @@ public class VfsAdapter {
 				LOG.warn("There was an Exception creating the local file " + syncEntity.getRfsPath(), e);
 			}
 		}
-		syncEntity.setRealFile(realFile);
+		syncEntity.setFile(realFile);
 		return realFile;
 	}
 

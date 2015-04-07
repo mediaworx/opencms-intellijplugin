@@ -281,7 +281,7 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	 */
 	private void registerModuleAction(OpenCmsModule ocmsModule, DefaultActionGroup group, OpenCmsPluginAction action, String idPrefix) {
 		int moduleNo = group.getChildrenCount() + 1;
-		String actionId = idPrefix + ocmsModule.getIntelliJModuleRoot();
+		String actionId = idPrefix + ocmsModule.getModuleBasePath();
 		String text = (moduleNo < 10 ? "_" : "") + moduleNo + " " + ocmsModule.getModuleName();
 		plugin.addAction(group, actionId, action, text);
 	}

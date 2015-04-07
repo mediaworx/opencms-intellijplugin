@@ -25,9 +25,11 @@
 package com.mediaworx.intellij.opencmsplugin.actions.generatemanifest;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Action to generate module manifests for all OpenCms modules in the project.
@@ -40,7 +42,7 @@ public class OpenCmsGenerateAllManifestsAction extends OpenCmsGenerateManifestAc
 	 * @return An Array of Virtual Files representing all OpenCms modules
 	 */
 	@Override
-	protected VirtualFile[] getModuleFileArray(@NotNull AnActionEvent event) {
-		return ActionTools.getAllModulesFileArray(plugin);
+	protected List<File> getModuleFileList(@NotNull AnActionEvent event) {
+		return ActionTools.getAllModulesFileList(plugin);
 	}
 }

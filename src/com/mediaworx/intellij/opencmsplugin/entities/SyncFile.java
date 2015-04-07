@@ -24,11 +24,12 @@
 
 package com.mediaworx.intellij.opencmsplugin.entities;
 
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
 import com.mediaworx.opencms.moduleutils.manifestgenerator.OpenCmsModuleManifestGenerator;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
+
+import java.io.File;
 
 public class SyncFile extends SyncEntity {
 
@@ -36,12 +37,12 @@ public class SyncFile extends SyncEntity {
 	 * Creates a new sync file
 	 * @param ocmsModule the OpenCms module the file is contained in
 	 * @param vfsPath the file's VFS path
-	 * @param ideaVFile IntelliJs virtual file representing the file
+	 * @param file The java file instance representing the file
 	 * @param vfsObject The CMIS object representing the file
 	 * @param syncAction The Sync Action to be used for the file (PUSH, PULL, DELETE_RFS or DELETE_VFS)
 	 */
-	public SyncFile(OpenCmsModule ocmsModule, String vfsPath, VirtualFile ideaVFile, CmisObject vfsObject, SyncAction syncAction, boolean replaceExistingEntity) {
-		super(ocmsModule, vfsPath, ideaVFile, vfsObject, syncAction, replaceExistingEntity);
+	public SyncFile(OpenCmsModule ocmsModule, String vfsPath, File file, CmisObject vfsObject, SyncAction syncAction, boolean replaceExistingEntity) {
+		super(ocmsModule, vfsPath, file, vfsObject, syncAction, replaceExistingEntity);
 	}
 
 	/**

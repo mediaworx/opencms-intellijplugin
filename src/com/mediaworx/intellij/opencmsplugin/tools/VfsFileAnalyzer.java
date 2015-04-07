@@ -26,13 +26,14 @@ package com.mediaworx.intellij.opencmsplugin.tools;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
+import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Abstract class used for analyzing a user selection in IntelliJ's project tree. All selected entities are checked
@@ -53,7 +54,7 @@ import java.util.HashSet;
  *     </li>
  *     <li>
  *         if the selected entity is a file or a folder contained in an OpenCms module resource path, it is handled
- *         by calling {@link #handleModuleResource(OpenCmsModule, VirtualFile)}
+ *         by calling {@link #handleModuleResource(OpenCmsModule, File)}
  *     </li>
  *     <li>
  *         if the selected entity is a folder that's an ancestor to an OpenCms module resource path, it is handled
@@ -71,13 +72,13 @@ public abstract class VfsFileAnalyzer {
 	private static final Logger LOG = Logger.getInstance(VfsFileAnalyzer.class);
 
 	protected final OpenCmsPlugin plugin;
-	protected final VirtualFile[] files;
+	protected final List<File> files;
 	protected final StringBuilder warnings;
 	protected HashSet<String> handledPaths;
 	protected ProgressIndicator progressIndicator;
 
 
-	public VfsFileAnalyzer(final OpenCmsPlugin plugin, final VirtualFile[] files) throws CmsConnectionException {
+	public VfsFileAnalyzer(final OpenCmsPlugin plugin, final List<File> files) throws CmsConnectionException {
 		this.files = files;
 		this.plugin = plugin;
 		warnings = new StringBuilder();
@@ -86,8 +87,8 @@ public abstract class VfsFileAnalyzer {
 
 	public void analyzeFiles() {
 
-		if (files != null && files.length > 0) {
-			for (VirtualFile file : files) {
+		if (files != null && files.size() > 0) {
+			for (File file : files) {
 				if (progressIndicator != null && progressIndicator.isCanceled()) {
 					return;
 				}
@@ -97,7 +98,7 @@ public abstract class VfsFileAnalyzer {
 				}
 
 				// if the file does not belong to a module, ignore
-				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(file);
+				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForFile(file);
 				if (ocmsModule == null) {
 					LOG.info("file/folder is not within a configured OpenCms module, ignore");
 					handledPaths.add(file.getPath());
@@ -113,19 +114,19 @@ public abstract class VfsFileAnalyzer {
 				}
 
 				// it's a folder that is a module root, so handle all corresponding module resources
-				if (file.isDirectory() && ocmsModule.isIdeaVFileModuleRoot(file)) {
+				if (file.isDirectory() && ocmsModule.isFileModuleRoot(file)) {
 					LOG.info("Module root selected, handling the module " + ocmsModule.getModuleName());
 					handleModule(ocmsModule);
 				}
 
 				// file/folder is within a module resource path, handle it
-				else if (ocmsModule.isIdeaVFileModuleResource(file)) {
+				else if (ocmsModule.isFileModuleResource(file)) {
 					LOG.info("Handling a module resource path, a folder or a file in a module");
 					handleModuleResource(ocmsModule, file);
 				}
 
 				// if it is a folder that is not a resource path, but within the VFS path ...
-				else if (file.isDirectory()  && ocmsModule.isIdeaVFileInVFSPath(file)) {
+				else if (file.isDirectory()  && ocmsModule.isFileInVFSPath(file)) {
 					LOG.info("Handling a VFS path outside of the module resources");
 					String relativeFolderPath = file.getPath().substring(ocmsModule.getLocalVfsRoot().length());
 					// ... get all module resources under the folder and add them
@@ -164,7 +165,7 @@ public abstract class VfsFileAnalyzer {
 	 * @param ocmsModule the OpenCms module the resource is contained in
 	 * @param file IntelliJ file representing the resource in the real file system
 	 */
-	protected abstract void handleModuleResource(OpenCmsModule ocmsModule, VirtualFile file);
+	protected abstract void handleModuleResource(OpenCmsModule ocmsModule, File file);
 
 	/**
 	 * Abstract method handling resource paths
@@ -176,11 +177,23 @@ public abstract class VfsFileAnalyzer {
 	/**
 	 * Utility method used to check if a resource is ignored due to the ignored files/folders configuration
 	 * @param config the project level plugin configuration data
-	 * @param ideaVFile IntelliJ file representing the resource to be checked
+	 * @param file Java file instance representing the resource to be checked
 	 * @return <code>true</code> if the resource is ignored, <code>false</code> otherwise
 	 */
-	public static boolean fileOrPathIsIgnored(OpenCmsPluginConfigurationData config, final VirtualFile ideaVFile) {
-		final String path = ideaVFile.getPath();
+	public static boolean fileOrPathIsIgnored(OpenCmsPluginConfigurationData config, final File file) {
+		final String path = file.getPath();
+		final String filename = file.getName();
+		return fileOrPathIsIgnored(config, path, filename);
+	}
+
+	/**
+	 * Utility method used to check if a resource is ignored due to the ignored files/folders configuration
+	 * @param config the project level plugin configuration data
+	 * @param path full file system path of the file to check
+	 * @param filename name of the file to check
+	 * @return <code>true</code> if the resource is ignored, <code>false</code> otherwise
+	 */
+	public static boolean fileOrPathIsIgnored(OpenCmsPluginConfigurationData config, final String path, String filename) {
 		for (String ignoredPath : config.getIgnoredPathsArray()) {
 			if (path.matches(".*/"+ignoredPath+"(/.*)?")) {
 				LOG.info("path " + ignoredPath + " is ignored");
@@ -188,7 +201,6 @@ public abstract class VfsFileAnalyzer {
 			}
 		}
 
-		final String filename = ideaVFile.getName();
 		for (String ignoredFilename : config.getIgnoredFilesArray()) {
 			if (filename.matches(ignoredFilename)) {
 				LOG.info("file " + ignoredFilename + " is ignored");

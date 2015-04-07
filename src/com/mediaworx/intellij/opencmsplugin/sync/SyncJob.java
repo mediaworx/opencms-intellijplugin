@@ -186,7 +186,7 @@ public class SyncJob implements Runnable {
 			List<File> refreshFiles = new ArrayList<File>(pullEntityList.size());
 
 			for (SyncEntity entity : pullEntityList) {
-				refreshFiles.add(entity.getRealFile());
+				refreshFiles.add(entity.getFile());
 			}
 
 			try {
@@ -352,7 +352,7 @@ public class SyncJob implements Runnable {
 
 	private void doDeleteFromRfs(SyncEntity entity) {
 		StringBuilder confirmation = new StringBuilder("DELETE ").append(entity.getVfsPath()).append(" from ").append(entity.getOcmsModule().getLocalVfsRoot()).append(" (not in the VFS) - ");
-		File rfsFile = entity.getRealFile();
+		File rfsFile = entity.getFile();
 		if (FileUtils.deleteQuietly(rfsFile)) {
 			confirmation.append(" SUCCESS");
 			console.info(confirmation.toString());

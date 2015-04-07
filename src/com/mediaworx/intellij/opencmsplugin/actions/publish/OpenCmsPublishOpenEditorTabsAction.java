@@ -25,8 +25,10 @@
 package com.mediaworx.intellij.opencmsplugin.actions.publish;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Action to publish all OpenCms resources contained in open editor tabs.
@@ -39,7 +41,7 @@ public class OpenCmsPublishOpenEditorTabsAction extends OpenCmsPublishAction {
 	 * @return An Array containing the file(s) that are open in editor tabs
 	 */
 	@Override
-	protected VirtualFile[] getPublishFileArray(AnActionEvent event) {
-		return ActionTools.getOpenTabsFileArray();
+	protected List<File> getPublishFileArray(AnActionEvent event) {
+		return ActionTools.getOpenTabsFileList();
 	}
 }

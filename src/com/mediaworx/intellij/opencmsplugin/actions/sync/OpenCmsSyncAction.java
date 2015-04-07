@@ -26,10 +26,12 @@ package com.mediaworx.intellij.opencmsplugin.actions.sync;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Parent action for all actions used to sync module resources to/from the OpenCms VFS
@@ -42,7 +44,7 @@ public abstract class OpenCmsSyncAction extends OpenCmsPluginAction {
 	/**
 	 * Triggers the sync of module resources depending on the menu entry the user chose. Which resources are to
 	 * be synced is determined by calling the abstract method
-	 * {@link #getSyncFileArray(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
+	 * {@link #getSyncFiles(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
 	 */
 	@Override
 	public void actionPerformed(AnActionEvent event) {
@@ -50,12 +52,13 @@ public abstract class OpenCmsSyncAction extends OpenCmsPluginAction {
 		super.actionPerformed(event);
 
 		try {
-			VirtualFile[] syncFiles = getSyncFileArray(event);
-			if (syncFiles.length > 0) {
+			List<File> syncFiles = getSyncFiles(event);
+			if (syncFiles.size() > 0) {
 				clearConsole();
 			}
 			OpenCmsSyncer syncer = new OpenCmsSyncer(plugin);
 			setSyncerOptions(syncer);
+
 			syncer.syncFiles(syncFiles);
 		}
 		catch (Throwable t) {
@@ -68,7 +71,7 @@ public abstract class OpenCmsSyncAction extends OpenCmsPluginAction {
 	 * @param event the action event, provided by IntelliJ
 	 * @return  An array with virtual files representing OpenCms module resources
 	 */
-	protected abstract VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event);
+	protected abstract List<File> getSyncFiles(@NotNull AnActionEvent event);
 
 	/**
 	 * Sets options for the given OpenCmsSyncer. Does nothing by default (the syncer works with default actions)

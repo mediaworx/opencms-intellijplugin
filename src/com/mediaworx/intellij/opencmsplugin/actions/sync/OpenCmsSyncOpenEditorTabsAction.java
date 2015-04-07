@@ -25,9 +25,11 @@
 package com.mediaworx.intellij.opencmsplugin.actions.sync;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Action to sync all OpenCms resources contained in open editor tabs to/from the OpenCms VFS.
@@ -40,8 +42,8 @@ public class OpenCmsSyncOpenEditorTabsAction extends OpenCmsSyncAction {
 	 * @return An Array containing the file(s) that are open in editor tabs
 	 */
 	@Override
-	protected VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event) {
-		return ActionTools.getOpenTabsFileArray();
+	protected List<File> getSyncFiles(@NotNull AnActionEvent event) {
+		return ActionTools.getOpenTabsFileList();
 	}
 
 }

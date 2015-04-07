@@ -26,9 +26,12 @@ package com.mediaworx.intellij.opencmsplugin.actions.publish;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Action to publish all OpenCms resources selected in the project tree.
@@ -41,8 +44,8 @@ public class OpenCmsPublishSelectedAction extends OpenCmsPublishAction {
 	 * @return An Array containing the file(s) selected in the project tree
 	 */
 	@Override
-	protected VirtualFile[] getPublishFileArray(AnActionEvent event) {
-		return event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+	protected List<File> getPublishFileArray(AnActionEvent event) {
+		return PluginTools.getRealFilesFromVirtualFiles(event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY));
 	}
 
 	/**

@@ -31,13 +31,14 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Collection of static utility methods used by actions
@@ -47,33 +48,32 @@ public class ActionTools {
 	/**
 	 * @return  A file array containing all files open in editor tabs
 	 */
-	public static VirtualFile[] getOpenTabsFileArray() {
-		VirtualFile[] publishFiles = null;
+	public static List<File> getOpenTabsFileList() {
 		Editor[] editors = EditorFactory.getInstance().getAllEditors();
+		List<File> openFiles = new ArrayList<>(editors.length);
 		if (editors.length > 0) {
-			ArrayList<VirtualFile> openFiles = new ArrayList<VirtualFile>(editors.length);
 			FileDocumentManager fileDocManager = FileDocumentManager.getInstance();
 			for (Editor editor : editors) {
 				VirtualFile vf = fileDocManager.getFile(editor.getDocument());
 				if (vf != null) {
-					openFiles.add(vf);
+					openFiles.add(new File(vf.getPath()));
 				}
 			}
-			publishFiles = openFiles.toArray(new VirtualFile[openFiles.size()]);
 		}
-		return publishFiles;
+		return openFiles;
 	}
 
 	/**
 	 * @param plugin the current OpenCms plugin instance
 	 * @return  A file array containing files representing all the OpenCms modules in the current project.
 	 */
-	public static VirtualFile[] getAllModulesFileArray(OpenCmsPlugin plugin) {
-		VirtualFile[] moduleFiles;Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
-		moduleFiles = new VirtualFile[ocmsModules.size()];
+	public static List<File> getAllModulesFileList(OpenCmsPlugin plugin) {
+		List<File> moduleFiles;
+		Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
+		moduleFiles = new ArrayList<>(ocmsModules.size());
 		int i = 0;
 		for (OpenCmsModule ocmsModule : ocmsModules) {
-			moduleFiles[i++] = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getIntelliJModuleRoot());
+			moduleFiles.add(new File(ocmsModule.getModuleBasePath()));
 		}
 		return moduleFiles;
 	}
@@ -136,8 +136,8 @@ public class ActionTools {
 		if (selectedFiles != null) {
 			// check if only module roots have been selected
 			for (VirtualFile ideaVFile : selectedFiles) {
-				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
-				if (ocmsModule == null || !ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
+				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForPath(ideaVFile.getPath());
+				if (ocmsModule == null || !ocmsModule.isPathModuleRoot(ideaVFile.getPath())) {
 					enableAction = false;
 					break;
 				}

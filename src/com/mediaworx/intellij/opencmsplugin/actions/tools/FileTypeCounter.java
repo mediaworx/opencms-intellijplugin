@@ -73,16 +73,17 @@ public class FileTypeCounter {
 		// calculate the number of selected modules, folders and files
 		for (VirtualFile ideaVFile : selectedFiles) {
 
-			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForIdeaVFile(ideaVFile);
+			String filePath = ideaVFile.getPath();
+			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForPath(filePath);
 
 			if (ocmsModule == null) {
 				continue;
 			}
 
-			if (ocmsModule.isIdeaVFileModuleRoot(ideaVFile)) {
+			if (ocmsModule.isPathModuleRoot(filePath)) {
 				numModules += 1;
 			}
-			else if (ocmsModule.isIdeaVFileInVFSPath(ideaVFile)) {
+			else if (ocmsModule.isPathInVFSPath(ideaVFile.getPath())) {
 				if (ideaVFile.isDirectory()) {
 					numFolders += 1;
 				}

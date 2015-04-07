@@ -25,9 +25,11 @@
 package com.mediaworx.intellij.opencmsplugin.actions.pullmetadata;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.actions.tools.ActionTools;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Action to pull meta data for all resources in OpenCms module resource paths.
@@ -40,8 +42,8 @@ public class OpenCmsPullAllMetaDataAction extends OpenCmsPullMetaDataAction {
 	 * @return An Array of Virtual Files representing all OpenCms modules
 	 */
 	@Override
-	protected VirtualFile[] getSyncFileArray(@NotNull AnActionEvent event) {
-		return ActionTools.getAllModulesFileArray(plugin);
+	protected List<File> getSyncFiles(@NotNull AnActionEvent event) {
+		return ActionTools.getAllModulesFileList(plugin);
 	}
 
 }
