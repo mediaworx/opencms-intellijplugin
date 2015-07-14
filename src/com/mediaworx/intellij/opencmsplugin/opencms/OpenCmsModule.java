@@ -66,7 +66,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 
 		if (moduleConfig.isUseProjectDefaultModuleNameEnabled()) {
 			String moduleNamingScheme = pluginConfig.getModuleNamingScheme();
-			String moduleFolderName = StringUtils.substringAfter(this.moduleBasePath, File.separator);
+			String moduleFolderName = StringUtils.substringAfterLast(this.moduleBasePath, File.separator);
 			if (moduleNamingScheme != null && moduleNamingScheme.length() > 0) {
 				moduleName = moduleNamingScheme.replaceAll(Pattern.quote("${modulename}"), moduleFolderName);
 			}
@@ -187,7 +187,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 	}
 
 	public boolean isPathInVFSPath(String path) {
-		String filename = StringUtils.substringAfter(path, File.separator);
+		String filename = StringUtils.substringAfterLast(path, File.separator);
 		if (VfsFileAnalyzer.fileOrPathIsIgnored(plugin.getPluginConfiguration(), path, filename)) {
 			return false;
 		}

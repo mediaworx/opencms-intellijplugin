@@ -188,9 +188,9 @@ public class OpenCmsConfiguration {
 		if (configDocument != null) {
 			try {
 				NodeList nl = xmlHelper.getNodeListForXPath(configDocument, String.format(MODULE_RESOURCE_XPATH, moduleName));
-				int numExportPoints = nl.getLength();
+				int numResources = nl.getLength();
 
-				for (int i = 0; i < numExportPoints; i++) {
+				for (int i = 0; i < numResources; i++) {
 					Node n = nl.item(i);
 					NamedNodeMap attr = n.getAttributes();
 					String uri = attr.getNamedItem("uri").getNodeValue();
