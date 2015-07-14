@@ -231,29 +231,33 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 		LOG.info("Looping RFS children");
 
-		Collection<File> rfsChildren = FileUtils.listFiles(file, TrueFileFilter.INSTANCE, null);
 
-		// handle resources in the RFS
-		for (File rfsChild : rfsChildren) {
-			if (progressIndicator.isCanceled()) {
-				return;
-			}
-			String filename = rfsChild.getName();
 
-			// The file/folder does not exist on the VFS, recurse in PUSH mode (all children will be pushed)
-			if (!vfsChildMap.containsKey(filename)) {
-				if (!pullAllMetaInformation) {
-					LOG.info("RFS child " + rfsChild.getName() + " is not on the VFS, handle it in PUSH mode");
-					walkFileTree(ocmsModule, rfsChild, FolderSyncMode.PUSH);
+		File[] rfsChildren = file.listFiles();
+
+		if (rfsChildren != null && rfsChildren.length > 0) {
+			// handle resources in the RFS
+			for (File rfsChild : rfsChildren) {
+				if (progressIndicator.isCanceled()) {
+					return;
 				}
-			}
-			// The file/folder does exist on the VFS, recurse in AUTO mode (children will be pushed or pulled depending on their date)
-			else {
-				LOG.info("RFS child " + rfsChild.getName() + " exists on the VFS, handle it in AUTO mode");
-				walkFileTree(ocmsModule, rfsChild, FolderSyncMode.AUTO);
+				String filename = rfsChild.getName();
 
-				// remove the file from the vfsChildren map, so that only files that exist only on the vfs will be left
-				vfsChildMap.remove(filename);
+				// The file/folder does not exist on the VFS, recurse in PUSH mode (all children will be pushed)
+				if (!vfsChildMap.containsKey(filename)) {
+					if (!pullAllMetaInformation) {
+						LOG.info("RFS child " + rfsChild.getName() + " is not on the VFS, handle it in PUSH mode");
+						walkFileTree(ocmsModule, rfsChild, FolderSyncMode.PUSH);
+					}
+				}
+				// The file/folder does exist on the VFS, recurse in AUTO mode (children will be pushed or pulled depending on their date)
+				else {
+					LOG.info("RFS child " + rfsChild.getName() + " exists on the VFS, handle it in AUTO mode");
+					walkFileTree(ocmsModule, rfsChild, FolderSyncMode.AUTO);
+
+					// remove the file from the vfsChildren map, so that only files that exist only on the vfs will be left
+					vfsChildMap.remove(filename);
+				}
 			}
 		}
 
