@@ -82,6 +82,9 @@ import java.io.File;
  *
  * @author Kai Widmann, 2007-2014 mediaworx berlin AG
  */
+// TODO: make new service configurable
+// TODO: introduce Import menu actions only if the service is configured (should be displayed but greyed out or should display message)
+
 public class OpenCmsPlugin implements ProjectComponent {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);

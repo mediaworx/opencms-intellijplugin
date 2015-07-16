@@ -25,12 +25,7 @@
 package com.mediaworx.intellij.opencmsplugin.actions.importmodule;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.diagnostic.Logger;
-import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
-import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
-import com.mediaworx.intellij.opencmsplugin.toolwindow.ConsolePrinter;
-import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
-import org.apache.commons.lang3.StringUtils;
+import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -38,83 +33,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Parent action for all actions used to generate module manifest files (manifest.xml)
+ * Action to sync a specific module that was selected from the OpenCms "Sync Module" menu.
  */
 @SuppressWarnings("ComponentNotRegistered")
-public abstract class OpenCmsImportModuleAction extends OpenCmsPluginAction {
-
-	private static final Logger LOG = Logger.getInstance(OpenCmsImportModuleAction.class);
+public class OpenCmsImportModuleAction extends OpenCmsImportAction {
 
 	/**
-	 * Triggers the import of modules depending on the menu entry the user chose. Which modules are to
-	 * be imported is determined by calling the abstract method
-	 * {@link #getModuleFileList(AnActionEvent)} that's implemented by subclasses.
-	 * For the moduel import the IDEConnectorClient is used that is provided as a separate library.
+	 * Determines the module selected by the user and returns a corresponding file array containing one entry.
 	 * @param event the action event, provided by IntelliJ
+	 * @return Virtual file array containing exactly one file representing the module selected by the user
 	 */
 	@Override
-	public void actionPerformed(AnActionEvent event) {
-		LOG.info("actionPerformed - event: " + event);
-		super.actionPerformed(event);
-
-		final List<File> moduleFiles = getModuleFileList(event);
-
-		final OpenCmsToolWindowConsole console = plugin.getConsole();
-
-		final List<String> moduleZipPaths = new ArrayList<>();
-		for (File moduleFile : moduleFiles) {
-			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForFile(moduleFile);
-			if (ocmsModule == null || !ocmsModule.isFileModuleRoot(moduleFile)) {
-				continue;
-			}
-			String moduleZipPath = ocmsModule.findNewestModuleZipPath();
-			if (StringUtils.isNotBlank(moduleZipPath)) {
-				moduleZipPaths.add(moduleZipPath);
-			}
-			else {
-				// TODO: display target after it was made configurable
-				console.error("No module zip for module " + ocmsModule.getModuleName() + " found in target");
-			}
-		}
-		if (moduleZipPaths.size() > 0) {
-
-			plugin.showConsole();
-			clearConsole();
-
-			Runnable runnable = new Runnable() {
-				@Override
-				public void run() {
-					connectorClient.login(config.getUsername(), config.getPassword());
-					connectorClient.importModules(moduleZipPaths, new ConsolePrinter(console));
-					connectorClient.logout();
-				}
-			};
-			Thread thread = new Thread(runnable);
-			thread.start();
-		}
+	protected List<File> getModuleFileList(@NotNull AnActionEvent event) {
+		List<File> publishFiles = new ArrayList<>(1);
+		String actionId = event.getActionManager().getId(this);
+		// the module's root path is contained in the action id (after a prefix)
+		String moduleRoot = actionId.substring(OpenCmsMainMenu.IMPORT_MODULE_ID_PREFIX.length());
+		publishFiles.add(new File(moduleRoot));
+		return publishFiles;
 	}
-
-	/**
-	 * Abstract method to determine the manifests for what modules are to be created, implemented in subclasses.
-	 * @param event the action event, provided by IntelliJ
-	 * @return  An array with virtual files representing OpenCms modules
-	 */
-	protected abstract List<File> getModuleFileList(@NotNull AnActionEvent event);
-
-	/**
-	 * Enables or disables the generate manifest actions. If "pull meta data" is enabled in the plugin configuration,
-	 * the actions are enabled, otherwise they are disabled.
-	 * @param event the action event, provided by IntelliJ
-	 */
-	@Override
-	public void update(@NotNull AnActionEvent event) {
-		super.update(event);
-		if (isPluginEnabled() && isPullMetaDataEnabled()) {
-			event.getPresentation().setEnabled(true);
-		}
-		else {
-			event.getPresentation().setEnabled(false);
-		}
-	}
-
 }

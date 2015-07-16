@@ -34,6 +34,7 @@ import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.actions.generatemanifest.OpenCmsGenerateAllManifestsAction;
 import com.mediaworx.intellij.opencmsplugin.actions.generatemanifest.OpenCmsGenerateSelectedModuleManifestsAction;
 import com.mediaworx.intellij.opencmsplugin.actions.importmodule.OpenCmsImportAllModulesAction;
+import com.mediaworx.intellij.opencmsplugin.actions.importmodule.OpenCmsImportModuleAction;
 import com.mediaworx.intellij.opencmsplugin.actions.importmodule.OpenCmsImportSelectedModuleAction;
 import com.mediaworx.intellij.opencmsplugin.actions.packagemodule.OpenCmsPackageAllModulesAction;
 import com.mediaworx.intellij.opencmsplugin.actions.packagemodule.OpenCmsPackageSelectedModulesAction;
@@ -79,10 +80,11 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	private static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
 	private static final String GENERATE_SELECTED_MODULE_MANIFEST_ID = "OpenCmsPlugin.GenerateManifestAction";
 	private static final String GENERATE_ALL_MANIFESTS_ID = "OpenCmsPlugin.GenerateAllManifestsAction";
-	private static final String IMPORT_SELECTED_MODULE_ID = "OpenCmsPlugin.ImportModuleAction";
-	private static final String IMPORT_ALL_MODULES_ID = "OpenCmsPlugin.ImportAllModulesAction";
 	private static final String PACKAGE_SELECTED_MODULE_ID = "OpenCmsPlugin.PackageModuleAction";
 	private static final String PACKAGE_ALL_MODULES_ID = "OpenCmsPlugin.PackageAllModulesAction";
+	private static final String IMPORT_SELECTED_MODULE_ID = "OpenCmsPlugin.ImportModuleAction";
+	private static final String IMPORT_ALL_MODULES_ID = "OpenCmsPlugin.ImportAllModulesAction";
+	public static final String IMPORT_MODULE_ID_PREFIX = "OpenCmsPlugin.ImportModule.";
 	private static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.PublishAction";
 	private static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.PublishOpenTabsAction";
 	private static final String PUBLSH_ALL_MODULES_ID = "OpenCmsPlugin.PublishAllModules";
@@ -92,6 +94,7 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 	private Keymap keymap;
 	private DefaultActionGroup syncModuleActions;
+	private DefaultActionGroup importModuleActions;
 	private DefaultActionGroup publishModuleActions;
 
 	private static OpenCmsMainMenu instance;
@@ -139,6 +142,9 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		syncModuleActions = new DefaultActionGroup();
 		syncModuleActions.getTemplatePresentation().setText("Sync &Module");
 		syncModuleActions.setPopup(true);
+		importModuleActions = new DefaultActionGroup();
+		importModuleActions.getTemplatePresentation().setText("Impor&t Module");
+		importModuleActions.setPopup(true);
 		publishModuleActions = new DefaultActionGroup();
 		publishModuleActions.getTemplatePresentation().setText("Pu&blish Module");
 		publishModuleActions.setPopup(true);
@@ -169,6 +175,7 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 		plugin.addAction(this, IMPORT_SELECTED_MODULE_ID, new OpenCmsImportSelectedModuleAction(), "_Import selected Modules");
 		plugin.addAction(this, IMPORT_ALL_MODULES_ID, new OpenCmsImportAllModulesAction(), "Impo_rt all Modules");
+		add(importModuleActions);
 
 		add(Separator.getInstance());
 
@@ -234,6 +241,9 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 		if (syncModuleActions.getChildrenCount() > 0) {
 			unregisterCurrentSyncModuleActions();
 		}
+		if (importModuleActions.getChildrenCount() > 0) {
+			unregisterCurrentImportModuleActions();
+		}
 		if (publishModuleActions.getChildrenCount() > 0) {
 			unregisterCurrentPublishModuleActions();
 		}
@@ -251,8 +261,7 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 				Collection<OpenCmsModule> ocmsModules = plugin.getOpenCmsModules().getAllModules();
 				for (OpenCmsModule ocmsModule : ocmsModules) {
 					registerSyncModuleAction(ocmsModule);
-				}
-				for (OpenCmsModule ocmsModule : ocmsModules) {
+					registerImportModuleAction(ocmsModule);
 					registerPublishModuleAction(ocmsModule);
 				}
 			}
@@ -271,6 +280,14 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	 */
 	private void registerSyncModuleAction(OpenCmsModule ocmsModule) {
 		registerModuleAction(ocmsModule, syncModuleActions, new OpenCmsSyncModuleAction(), SYNC_MODULE_ID_PREFIX);
+	}
+
+	/**
+	 * Registers an import action for the given module
+	 * @param ocmsModule    an OpenCms module
+	 */
+	private void registerImportModuleAction(OpenCmsModule ocmsModule) {
+		registerModuleAction(ocmsModule, importModuleActions, new OpenCmsImportModuleAction(), IMPORT_MODULE_ID_PREFIX);
 	}
 
 	/**
@@ -299,28 +316,31 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	 * Unregisters all current sync module actions
 	 */
 	private void unregisterCurrentSyncModuleActions() {
-		AnAction[] allActions = syncModuleActions.getChildActionsOrStubs();
-		for (AnAction action : allActions) {
-			String actionId = actionManager.getId(action);
-			if (actionId != null) {
-				keymap.removeAllActionShortcuts(actionId);
-				actionManager.unregisterAction(actionId);
-			}
-		}
-		syncModuleActions.removeAll();
+		unregisterChildActions(syncModuleActions);
+	}
+
+	/**
+	 * Unregisters all current import module actions
+	 */
+	private void unregisterCurrentImportModuleActions() {
+		unregisterChildActions(importModuleActions);
 	}
 
 	/**
 	 * Unregisters all current publish module actions
 	 */
 	private void unregisterCurrentPublishModuleActions() {
-		AnAction[] allActions = publishModuleActions.getChildActionsOrStubs();
+		unregisterChildActions(publishModuleActions);
+	}
+
+	private void unregisterChildActions(DefaultActionGroup parentGroup) {
+		AnAction[] allActions = parentGroup.getChildActionsOrStubs();
 		for (AnAction action : allActions) {
 			String actionId = actionManager.getId(action);
 			keymap.removeAllActionShortcuts(actionId);
 			actionManager.unregisterAction(actionId);
 		}
-		publishModuleActions.removeAll();
+		parentGroup.removeAll();
 	}
 
 }

@@ -35,7 +35,7 @@ import java.util.List;
  * Action to generate module manifests for all OpenCms modules in the project.
  */
 @SuppressWarnings("ComponentNotRegistered")
-public class OpenCmsImportAllModulesAction extends OpenCmsImportModuleAction {
+public class OpenCmsImportAllModulesAction extends OpenCmsImportAction {
 
 	/**
 	 * @param event the action event, provided by IntelliJ
