@@ -24,7 +24,6 @@
 
 package com.mediaworx.intellij.opencmsplugin.toolwindow;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 
 import javax.swing.*;
@@ -66,6 +65,10 @@ public class OpenCmsToolWindowConsole extends JTextPane {
 		setText("");
 	}
 
+	public void append(String str) {
+		append(str, null);
+	}
+
 	public void info(String str) {
 		append(str + "\n", null);
 	}
@@ -79,7 +82,11 @@ public class OpenCmsToolWindowConsole extends JTextPane {
 	}
 
 	private void append(String str, AttributeSet attributeSet) {
-		ApplicationManager.getApplication().invokeLater(new ConsoleAppender(str, attributeSet));
+		SwingUtilities.invokeLater(new ConsoleAppender(str, attributeSet));
+	}
+
+	public StyledDocument getConsoleDocument() {
+		return consoleDocument;
 	}
 
 	private class ConsoleAppender implements Runnable {
@@ -96,13 +103,13 @@ public class OpenCmsToolWindowConsole extends JTextPane {
 		public void run() {
 			try {
 				consoleDocument.insertString(consoleDocument.getLength(), stringToAppend, attributeSet);
-				if (scrollPane != null && scrollPane.getVerticalScrollBar() != null) {
-					JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
-					scrollPane.getVerticalScrollBar().setValue(scrollbar.getMaximum() - scrollbar.getVisibleAmount());
-				}
 			}
 			catch (BadLocationException e) {
 				LOG.warn("Exception while appending content to the console", e);
+			}
+			if (scrollPane != null && scrollPane.getVerticalScrollBar() != null) {
+				JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
+				scrollPane.getVerticalScrollBar().setValue(scrollbar.getMaximum() - scrollbar.getVisibleAmount());
 			}
 		}
 

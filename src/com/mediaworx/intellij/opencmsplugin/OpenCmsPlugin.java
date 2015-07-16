@@ -49,6 +49,8 @@ import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
+import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
+import com.mediaworx.opencms.ideconnector.client.IDEConnectorClientConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -110,6 +112,11 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 * (e.g. publishing), backed by the OpenCms module "com.mediaworx.opencms.ideconnector"
 	 */
 	private OpenCmsPluginConnector pluginConnector;
+
+	/**
+	 * Client used to execute actions in OpenCms (
+	 */
+	private IDEConnectorClient connectorClient;
 
 	/**
 	 * ToolWindow for the OpenCms plugin
@@ -181,6 +188,12 @@ public class OpenCmsPlugin implements ProjectComponent {
 			wasInitialized = true;
 
 			checkWebappRootConfiguration(true);
+
+			// Initialize the IDE connector client (TODO: configuration must be dynamic)
+			IDEConnectorClientConfiguration clientConfig = new IDEConnectorClientConfiguration();
+			clientConfig.setConnectorServiceBaseUrl("http://kaibook.local:8080/ideConnector");
+			connectorClient = new IDEConnectorClient(clientConfig);
+
 		}
 		else {
 			setToolWindowAvailable(true);
@@ -436,6 +449,15 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 */
 	public OpenCmsPluginConnector getPluginConnector() {
 		return pluginConnector;
+	}
+
+	/**
+	 * Returns the IDE connector client that may be used to execute actions on the local OpenCms instance (must be
+	 * running)
+	 * @return the IDE connector client
+	 */
+	public IDEConnectorClient getConnectorClient() {
+		return connectorClient;
 	}
 
 	/**

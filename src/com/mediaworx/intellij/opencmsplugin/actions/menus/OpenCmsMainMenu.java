@@ -33,6 +33,8 @@ import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.actions.generatemanifest.OpenCmsGenerateAllManifestsAction;
 import com.mediaworx.intellij.opencmsplugin.actions.generatemanifest.OpenCmsGenerateSelectedModuleManifestsAction;
+import com.mediaworx.intellij.opencmsplugin.actions.importmodule.OpenCmsImportAllModulesAction;
+import com.mediaworx.intellij.opencmsplugin.actions.importmodule.OpenCmsImportSelectedModuleAction;
 import com.mediaworx.intellij.opencmsplugin.actions.packagemodule.OpenCmsPackageAllModulesAction;
 import com.mediaworx.intellij.opencmsplugin.actions.packagemodule.OpenCmsPackageSelectedModulesAction;
 import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishAllModulesAction;
@@ -77,6 +79,8 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	private static final String PULL_ALL_METADATA_ID = "OpenCmsPlugin.PullAllMetaDataAction";
 	private static final String GENERATE_SELECTED_MODULE_MANIFEST_ID = "OpenCmsPlugin.GenerateManifestAction";
 	private static final String GENERATE_ALL_MANIFESTS_ID = "OpenCmsPlugin.GenerateAllManifestsAction";
+	private static final String IMPORT_SELECTED_MODULE_ID = "OpenCmsPlugin.ImportModuleAction";
+	private static final String IMPORT_ALL_MODULES_ID = "OpenCmsPlugin.ImportAllModulesAction";
 	private static final String PACKAGE_SELECTED_MODULE_ID = "OpenCmsPlugin.PackageModuleAction";
 	private static final String PACKAGE_ALL_MODULES_ID = "OpenCmsPlugin.PackageAllModulesAction";
 	private static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.PublishAction";
@@ -160,6 +164,11 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 		plugin.addAction(this, PACKAGE_SELECTED_MODULE_ID, new OpenCmsPackageSelectedModulesAction(), "Package Module _Zip for selected Modules");
 		plugin.addAction(this, PACKAGE_ALL_MODULES_ID, new OpenCmsPackageAllModulesAction(), "Package Module Z_ip for all Modules");
+
+		add(Separator.getInstance());
+
+		plugin.addAction(this, IMPORT_SELECTED_MODULE_ID, new OpenCmsImportSelectedModuleAction(), "_Import selected Modules");
+		plugin.addAction(this, IMPORT_ALL_MODULES_ID, new OpenCmsImportAllModulesAction(), "Impo_rt all Modules");
 
 		add(Separator.getInstance());
 

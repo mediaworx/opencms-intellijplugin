@@ -29,11 +29,13 @@ import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigura
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
 import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -212,6 +214,28 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		return relativeName;
 	}
 
+	public String findNewestModuleZipPath() {
+		// TODO: make configurable, handle relative or absolute target paths along the way
+		String targetPath = "/target";
+
+		String basePath = getModuleBasePath();
+		String zipParentPath = basePath + targetPath;
+		Collection<File> moduleZips = FileUtils.listFiles(new File(zipParentPath), new String[]{"zip"}, false);
+		File newestModuleZip = null;
+		for (File moduleZip : moduleZips) {
+			if (newestModuleZip == null || FileUtils.isFileNewer(moduleZip, newestModuleZip)) {
+				newestModuleZip = moduleZip;
+			}
+		}
+		if (newestModuleZip != null) {
+			return newestModuleZip.getPath();
+		}
+		else {
+			return null;
+		}
+	}
+
+
 	@Override
 	public void handleOpenCmsConfigurationChange(OpenCmsConfiguration.ConfigurationChangeType changeType) {
 		if (changeType == OpenCmsConfiguration.ConfigurationChangeType.MODULECONFIGURATION) {
@@ -219,4 +243,5 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 			moduleResources = openCmsConfig.getModuleResourcesForModule(moduleName);
 		}
 	}
+
 }

@@ -418,7 +418,7 @@
                         <constraints/>
                         <properties>
                           <font swing-font="TextArea.font"/>
-                          <text value="\.gitignore&#10;\.svnignore&#10;\.cvsignore&#10;\.config&#10;#SyncJob\.txt&#10;manifest\.xml&#10;desktop\.ini&#10;sass"/>
+                          <text value="\.gitignore&#10;\.svnignore&#10;\.cvsignore&#10;#SyncJob\.txt&#10;manifest\.xml&#10;desktop\.ini&#10;sass&#10;\.DS_Store"/>
                         </properties>
                         <clientProperties>
                           <html.disable class="java.lang.Boolean" value="true"/>

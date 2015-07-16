@@ -8,7 +8,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="httpclient-4.3.1" level="project" />
+    <orderEntry type="library" name="httpclient-4.3.3" level="project" />
     <orderEntry type="library" name="json-simple-1.1.1" level="project" />
     <orderEntry type="library" name="chemistry-opencmis-client-impl-0.8.0" level="project" />
     <orderEntry type="module-library" scope="RUNTIME">
@@ -22,6 +22,37 @@
     </orderEntry>
     <orderEntry type="library" name="opencms-manifestgenerator-1.5" level="project" />
     <orderEntry type="library" name="opencms-modulepackager-1.1" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/ideconnector-client-1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../opencms-ideconnector/client/src/main/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/ideconnector-common-1.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/commons-lang3-3.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="jackson-2.4.2" level="project" />
+    <orderEntry type="library" name="ideconnector-client-1.5" level="project" />
   </component>
   <component name="OpenCmsModuleConfigurationData">
     <option name="localVfsRoot" value="" />
@@ -221,4 +252,3 @@
     </option>
   </component>
 </module>
-

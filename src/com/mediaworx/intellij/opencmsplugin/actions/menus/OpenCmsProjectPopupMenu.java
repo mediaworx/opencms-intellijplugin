@@ -26,6 +26,7 @@ package com.mediaworx.intellij.opencmsplugin.actions.menus;
 
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.generatemanifest.OpenCmsGenerateSelectedModuleManifestsAction;
+import com.mediaworx.intellij.opencmsplugin.actions.importmodule.OpenCmsImportSelectedModuleAction;
 import com.mediaworx.intellij.opencmsplugin.actions.packagemodule.OpenCmsPackageSelectedModulesAction;
 import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishSelectedAction;
 import com.mediaworx.intellij.opencmsplugin.actions.pullmetadata.OpenCmsPullSelectedModuleMetaDataAction;
@@ -52,6 +53,7 @@ public class OpenCmsProjectPopupMenu extends OpenCmsMenu {
 	private static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.ProjectPopupPublishAction";
 	private static final String GENERATE_SELECTED_MODULE_MANIFEST_ID = "OpenCmsPlugin.ProjectPopupGenerateManifestAction";
 	private static final String PACKAGE_SELECTED_MODULE_ID = "OpenCmsPlugin.ProjectPopupPackageModuleAction";
+	private static final String IMPORT_SELECTED_MODULE_ID = "OpenCmsPlugin.ProjectPopupImportModuleAction";
 
 	/**
 	 * Creates the OpenCms menu for the project popup menu
@@ -72,6 +74,7 @@ public class OpenCmsProjectPopupMenu extends OpenCmsMenu {
 		plugin.addAction(this, PUBLISH_SELECTED_ID, new OpenCmsPublishSelectedAction(), "_Publish selected Modules/Folders/Files");
 		plugin.addAction(this, GENERATE_SELECTED_MODULE_MANIFEST_ID, new OpenCmsGenerateSelectedModuleManifestsAction(), "_Generate manifest.xml for selected modules");
 		plugin.addAction(this, PACKAGE_SELECTED_MODULE_ID, new OpenCmsPackageSelectedModulesAction(), "Package Module _Zip for selected modules");
+		plugin.addAction(this, IMPORT_SELECTED_MODULE_ID, new OpenCmsImportSelectedModuleAction(), "_Import selected module");
 	}
 
 }

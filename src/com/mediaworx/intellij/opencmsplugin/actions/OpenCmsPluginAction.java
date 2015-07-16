@@ -30,6 +30,8 @@ import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
+import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -41,6 +43,8 @@ public abstract class OpenCmsPluginAction extends AnAction {
 	protected Project project;
 	protected OpenCmsPlugin plugin;
 	protected OpenCmsPluginConfigurationData config;
+	protected OpenCmsToolWindowConsole console;
+	protected IDEConnectorClient connectorClient;
 
 	/**
 	 * Method triggered by IntelliJ whenever a menu action is executed by the user. Does nothing by itself besides
@@ -90,6 +94,7 @@ public abstract class OpenCmsPluginAction extends AnAction {
 			return;
 		}
 		config = plugin.getPluginConfiguration();
+		connectorClient = plugin.getConnectorClient();
 	}
 
 	/**
