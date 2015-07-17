@@ -36,7 +36,7 @@
         <p>See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki">GitHub Wiki</a> for details</p>
         ]]>
     </description>
-    <version>1.6</version>
+    <version>1.7</version>
     <change-notes>
         <![CDATA[
             See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki/Version-History">Version History</a> on GitHub.

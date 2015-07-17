@@ -45,8 +45,11 @@ public class OpenCmsPluginConfigurationData {
 	private String[] ignoredFilesArray;
 	private String ignoredPaths;
 	private String[] ignoredPathsArray;
+	private String moduleZipTargetFolderPath;
 	private boolean pluginConnectorEnabled;
 	private String connectorUrl;
+	private boolean pluginConnectorServiceEnabled;
+	private String connectorServiceUrl;
 	private AutoPublishMode autoPublishMode;
 	private boolean pullMetadataEnabled;
 	private String manifestRoot;
@@ -263,6 +266,18 @@ public class OpenCmsPluginConfigurationData {
 	}
 
 	/**
+	 * Gets the configured folder that is used to store packaged module zips
+	 * @return folder that is used to store packaged module zips
+	 */
+	public String getModuleZipTargetFolderPath() {
+		return moduleZipTargetFolderPath;
+	}
+
+	public void setModuleZipTargetFolderPath(String moduleZipTargetFolderPath) {
+		this.moduleZipTargetFolderPath = moduleZipTargetFolderPath;
+	}
+
+	/**
 	 * Flag denoting if the Plugin Connector is enabled
 	 * @return  <code>true</code> if the Plugin Connector is enabled, <code>false</code> otherwise
 	 */
@@ -279,8 +294,28 @@ public class OpenCmsPluginConfigurationData {
 		this.pluginConnectorEnabled = pluginConnectorEnabled;
 	}
 
+
 	/**
-	 * Gets the configured Url under which the Plugin Connector can be called.
+	 * Flag denoting if the Plugin Connector Service is enabled (requires Plugin Connector 1.5)
+	 * @return  <code>true</code> if the Plugin Connector is enabled, <code>false</code> otherwise
+	 */
+	public boolean isPluginConnectorServiceEnabled() {
+		return pluginConnectorServiceEnabled;
+	}
+
+	/**
+	 * Sets the flag denoting if the Plugin Connector Service is enabled
+	 * @param pluginConnectorServiceEnabled <code>true</code> if the Plugin Connector Service should be enabled,
+	 *                                      <code>false</code> otherwise
+	 */
+	public void setPluginConnectorServiceEnabled(boolean pluginConnectorServiceEnabled) {
+		this.pluginConnectorServiceEnabled = pluginConnectorServiceEnabled;
+	}
+
+
+	/**
+	 * Gets the configured Url under which the old Plugin Connector JSP can be called.
+	 *
 	 * @return the configured Url under which the Plugin Connector can be called
 	 */
 	public String getConnectorUrl() {
@@ -288,12 +323,31 @@ public class OpenCmsPluginConfigurationData {
 	}
 
 	/**
-	 * Sets the Url under which the Plugin Connector can be called.
-	 * @param connectorUrl the Plugin Connector's Url (e.g.
-	 *                     http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.ideconnector/connector.jsp
+	 * Sets the Url under which the old Plugin Connector JSP can be called.
+	 *
+	 * @param connectorUrl the Plugin Connector JSP's Url (e.g.
+	 *                     http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.ideconnector/connector.jsp)
 	 */
 	public void setConnectorUrl(String connectorUrl) {
 		this.connectorUrl = connectorUrl;
+	}
+
+	/**
+	 * Gets the configured Url under which the new Plugin Connector Service can be called.
+	 *
+	 * @return the configured Url under which the Plugin Connector can be called
+	 */
+	public String getConnectorServiceUrl() {
+		return connectorServiceUrl;
+	}
+
+	/**
+	 * Sets the Url under which the new Plugin Connector Service can be called.
+	 *
+	 * @param connectorServiceUrl the Plugin Connector Service Url (e.g. http://localhost:8080/opencms/ideConnector)
+	 */
+	public void setConnectorServiceUrl(String connectorServiceUrl) {
+		this.connectorServiceUrl = connectorServiceUrl;
 	}
 
 	/**

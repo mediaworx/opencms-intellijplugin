@@ -74,7 +74,7 @@ public abstract class OpenCmsPackageModuleAction extends OpenCmsPluginAction {
 				continue;
 			}
 
-			String zipTargetPath = ocmsModule.getModuleBasePath();
+			String zipTargetPath = ocmsModule.getModuleBasePath() + "/" + config.getModuleZipTargetFolderPath();
 			try {
 				String packageName = packager.packageModule(ocmsModule.getManifestRoot(), ocmsModule.getLocalVfsRoot(), zipTargetPath);
 				plugin.getConsole().info(packageName + " was saved at " + zipTargetPath);

@@ -1,523 +1,623 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationForm">
-  <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-    <margin top="0" left="0" bottom="0" right="0"/>
+  <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="5"/>
     <constraints>
-      <xy x="20" y="20" width="800" height="872"/>
+      <xy x="20" y="20" width="963" height="872"/>
     </constraints>
     <properties>
       <minimumSize width="800" height="650"/>
     </properties>
     <border type="none" title=""/>
     <children>
-      <grid id="f9d49" layout-manager="FormLayout">
-        <rowspec value="center:35px:noGrow"/>
-        <rowspec value="top:4dlu:noGrow"/>
-        <rowspec value="center:771px:noGrow"/>
-        <colspec value="fill:675px:grow"/>
-        <colspec value="left:4dlu:noGrow"/>
-        <colspec value="fill:max(d;4px):noGrow"/>
+      <scrollpane id="8796a">
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <minimum-size width="-1" height="600"/>
-          </grid>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
-        <border type="empty"/>
+        <border type="none"/>
         <children>
-          <component id="2fdbf" class="javax.swing.JCheckBox" binding="enabledCheckBox" default-binding="true">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <actionCommand value="Active"/>
-              <text value="Activate Plugin for this Project"/>
-            </properties>
-          </component>
-          <grid id="a22aa" binding="formPanel" layout-manager="FormLayout">
-            <rowspec value="center:max(d;4px):noGrow"/>
+          <grid id="f9d49" layout-manager="FormLayout">
+            <rowspec value="center:35px:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:max(d;4px):noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:max(d;4px):noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:max(d;4px):noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:max(d;4px):noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:max(d;4px):noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:max(d;4px):noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="fill:d:noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:max(d;4px):noGrow"/>
-            <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:171px:noGrow"/>
-            <colspec value="fill:15px:noGrow"/>
+            <rowspec value="center:771px:noGrow"/>
+            <colspec value="fill:54px:grow"/>
             <colspec value="left:4dlu:noGrow"/>
-            <colspec value="fill:125px:noGrow"/>
+            <colspec value="fill:399px:grow"/>
             <colspec value="left:4dlu:noGrow"/>
-            <colspec value="fill:max(d;4px):grow"/>
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-              <forms defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <minimumSize width="500" height="550"/>
-            </properties>
-            <border type="none"/>
+            <colspec value="fill:82px:noGrow"/>
+            <constraints/>
+            <properties/>
+            <border type="empty"/>
             <children>
-              <component id="61a28" class="javax.swing.JLabel">
+              <component id="2fdbf" class="javax.swing.JCheckBox" binding="enabledCheckBox" default-binding="true">
                 <constraints>
-                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                    <preferred-size width="163" height="16"/>
-                  </grid>
-                  <forms/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <text value="&amp;CMIS Repository"/>
+                  <actionCommand value="Active"/>
+                  <text value="Ac&amp;tivate Plugin for this Project"/>
                 </properties>
               </component>
-              <component id="aface" class="javax.swing.JTextField" binding="repository">
-                <constraints>
-                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties>
-                  <text value="http://localhost:8080/opencms/cmisatom/cmis-offline/"/>
-                </properties>
-              </component>
-              <component id="3beee" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                    <preferred-size width="163" height="16"/>
-                  </grid>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <text value="&amp;Username"/>
-                </properties>
-              </component>
-              <component id="82a68" class="javax.swing.JTextField" binding="username">
-                <constraints>
-                  <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties>
-                  <text value="Admin"/>
-                </properties>
-              </component>
-              <component id="d230c" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                    <preferred-size width="163" height="16"/>
-                  </grid>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <focusable value="true"/>
-                  <text value="OpenCms &amp;Webapp Root"/>
-                </properties>
-              </component>
-              <component id="89d49" class="javax.swing.JTextField" binding="webappRoot">
-                <constraints>
-                  <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties>
-                  <text value="/your/tomcat/root/webapps/opencms"/>
-                  <toolTipText value="The vfsPath to your OpenCms webapp, usually [Tomcat root]/webapps/opencms"/>
-                </properties>
-              </component>
-              <component id="9f197" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <text value="Default &amp;Local VFS Root"/>
-                </properties>
-              </component>
-              <component id="cce4e" class="javax.swing.JTextField" binding="defaultLocalVfsRoot">
-                <constraints>
-                  <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties>
-                  <text value="src/main/vfs"/>
-                </properties>
-              </component>
-              <component id="a7939" class="javax.swing.JPasswordField" binding="password">
-                <constraints>
-                  <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties/>
-              </component>
-              <component id="cfc9d" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                    <preferred-size width="163" height="16"/>
-                  </grid>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <text value="&amp;Password"/>
-                </properties>
-              </component>
-              <hspacer id="77a22">
-                <constraints>
-                  <grid row="0" column="0" row-span="20" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-              </hspacer>
-              <component id="b8c62" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="17" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <text value="Plugin &amp;Connector"/>
-                </properties>
-              </component>
-              <component id="afe50" class="javax.swing.JCheckBox" binding="usePluginConnectorCheckBox">
-                <constraints>
-                  <grid row="17" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <minimumSize width="400" height="22"/>
-                  <text value="Use the Plugin Connector (OpenCms Module providing meta information and publish functionality)"/>
-                </properties>
-              </component>
-              <grid id="3c46f" binding="connectorOptionsPanel" layout-manager="FormLayout">
+              <grid id="a22aa" binding="formPanel" layout-manager="FormLayout">
                 <rowspec value="center:max(d;4px):noGrow"/>
-                <rowspec value="top:4dlu:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
+                <rowspec value="center:d:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
+                <rowspec value="center:d:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
+                <rowspec value="center:d:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
+                <rowspec value="center:d:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
+                <rowspec value="center:d:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
+                <rowspec value="center:d:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
+                <rowspec value="fill:226px:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
                 <rowspec value="center:max(d;4px):noGrow"/>
-                <rowspec value="top:4dlu:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
                 <rowspec value="center:max(d;4px):noGrow"/>
-                <rowspec value="top:4dlu:noGrow"/>
-                <rowspec value="center:max(d;4px):noGrow"/>
-                <colspec value="fill:125px:noGrow"/>
+                <rowspec value="top:3dlu:noGrow"/>
+                <rowspec value="center:236px:noGrow"/>
+                <colspec value="fill:15px:noGrow"/>
                 <colspec value="left:4dlu:noGrow"/>
-                <colspec value="fill:d:grow"/>
+                <colspec value="fill:157px:noGrow"/>
+                <colspec value="left:4dlu:noGrow"/>
+                <colspec value="fill:max(d;4px):grow"/>
                 <constraints>
-                  <grid row="19" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                   <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <enabled value="true"/>
-                  <minimumSize width="500" height="128"/>
+                  <minimumSize width="500" height="550"/>
                 </properties>
                 <border type="none"/>
                 <children>
-                  <component id="681fa" class="javax.swing.JLabel">
+                  <component id="61a28" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                        <preferred-size width="163" height="16"/>
+                      </grid>
                       <forms/>
                     </constraints>
                     <properties>
-                      <text value="Connector &amp;URL"/>
+                      <text value="&amp;CMIS Repository"/>
                     </properties>
                   </component>
-                  <component id="7004" class="javax.swing.JTextField" binding="connectorUrl">
+                  <component id="aface" class="javax.swing.JTextField" binding="repository">
                     <constraints>
-                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                      <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                         <preferred-size width="150" height="-1"/>
                       </grid>
                       <forms defaultalign-horz="false"/>
                     </constraints>
                     <properties>
-                      <enabled value="true"/>
-                      <text value="http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.ideconnector/connector.jsp"/>
+                      <font size="12"/>
+                      <text value="http://localhost:8080/opencms/cmisatom/cmis-offline/"/>
                     </properties>
                   </component>
-                  <component id="95e5d" class="javax.swing.JLabel">
+                  <component id="3beee" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                        <preferred-size width="163" height="16"/>
+                      </grid>
                       <forms/>
                     </constraints>
                     <properties>
-                      <text value="Pull Meta &amp;Data"/>
+                      <text value="&amp;Username"/>
                     </properties>
                   </component>
-                  <component id="fd0d0" class="javax.swing.JCheckBox" binding="pullMetaDataCheckbox">
+                  <component id="82a68" class="javax.swing.JTextField" binding="username">
                     <constraints>
-                      <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                    <properties>
+                      <font size="12"/>
+                      <text value="Admin"/>
+                    </properties>
+                  </component>
+                  <component id="d230c" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                        <preferred-size width="163" height="16"/>
+                      </grid>
                       <forms/>
                     </constraints>
                     <properties>
+                      <focusable value="true"/>
+                      <text value="OpenCms &amp;Webapp Root"/>
+                    </properties>
+                  </component>
+                  <component id="89d49" class="javax.swing.JTextField" binding="webappRoot">
+                    <constraints>
+                      <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                    <properties>
+                      <font size="12"/>
+                      <text value="/your/tomcat/root/webapps/opencms"/>
+                      <toolTipText value="The vfsPath to your OpenCms webapp, usually [Tomcat root]/webapps/opencms"/>
+                    </properties>
+                  </component>
+                  <component id="9f197" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Default &amp;Local VFS Root"/>
+                    </properties>
+                  </component>
+                  <component id="cce4e" class="javax.swing.JTextField" binding="defaultLocalVfsRoot">
+                    <constraints>
+                      <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                    <properties>
+                      <font size="12"/>
+                      <text value="src/main/vfs"/>
+                    </properties>
+                  </component>
+                  <component id="a7939" class="javax.swing.JPasswordField" binding="password">
+                    <constraints>
+                      <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                    <properties/>
+                  </component>
+                  <component id="cfc9d" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                        <preferred-size width="163" height="16"/>
+                      </grid>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="&amp;Password"/>
+                    </properties>
+                  </component>
+                  <hspacer id="77a22">
+                    <constraints>
+                      <grid row="0" column="0" row-span="21" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                  </hspacer>
+                  <component id="b8c62" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="18" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Plugin Co&amp;nnector"/>
+                    </properties>
+                  </component>
+                  <component id="afe50" class="javax.swing.JCheckBox" binding="usePluginConnectorCheckBox">
+                    <constraints>
+                      <grid row="18" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <font size="12"/>
                       <minimumSize width="400" height="22"/>
-                      <text value="Enable Meta Data Pull (VFS module and resource meta data will be pulled to the manifest root)"/>
+                      <text value="Use the Plugin Connector (OpenCms Module providing meta information and publish functionality)"/>
                     </properties>
                   </component>
-                  <component id="df20f" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                    <properties>
-                      <text value="Auto &amp;Publish Mode"/>
-                    </properties>
-                  </component>
-                  <component id="f7bbf" class="javax.swing.JComboBox" binding="autoPublishMode">
-                    <constraints>
-                      <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                    <properties>
-                      <model>
-                        <item value="OFF - Nothing will be published automatically"/>
-                        <item value="FILECHANGE - File changes (delete, move and rename) will be published automatically"/>
-                        <item value="ALL - All resources synced to the VFS will be published automatically"/>
-                      </model>
-                      <preferredSize width="400" height="24"/>
-                    </properties>
-                  </component>
-                  <grid id="310a2" binding="pullMetaDataOptionsPanel" layout-manager="FormLayout">
+                  <grid id="3c46f" binding="connectorOptionsPanel" layout-manager="FormLayout">
                     <rowspec value="center:d:noGrow"/>
-                    <rowspec value="top:4dlu:noGrow"/>
+                    <rowspec value="top:3dlu:noGrow"/>
+                    <rowspec value="center:d:noGrow"/>
+                    <rowspec value="top:3dlu:noGrow"/>
                     <rowspec value="center:max(d;4px):noGrow"/>
-                    <colspec value="fill:125px:noGrow"/>
+                    <rowspec value="top:3dlu:noGrow"/>
+                    <rowspec value="center:d:noGrow"/>
+                    <rowspec value="top:3dlu:noGrow"/>
+                    <rowspec value="center:d:noGrow"/>
+                    <rowspec value="top:3dlu:noGrow"/>
+                    <rowspec value="center:67px:noGrow"/>
+                    <colspec value="fill:157px:noGrow"/>
                     <colspec value="left:4dlu:noGrow"/>
                     <colspec value="fill:d:grow"/>
                     <constraints>
-                      <grid row="6" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                      <forms/>
+                      <grid row="20" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <forms defaultalign-vert="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <enabled value="true"/>
+                      <minimumSize width="500" height="128"/>
+                    </properties>
                     <border type="none"/>
                     <children>
-                      <component id="45698" class="javax.swing.JLabel">
+                      <component id="681fa" class="javax.swing.JLabel">
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                           <forms/>
                         </constraints>
                         <properties>
-                          <text value="&amp;Manifest Root"/>
+                          <text value="Connector U&amp;RL"/>
                         </properties>
                       </component>
-                      <component id="202ad" class="javax.swing.JTextField" binding="manifestRoot">
+                      <component id="7004" class="javax.swing.JTextField" binding="connectorUrl">
                         <constraints>
-                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                             <preferred-size width="150" height="-1"/>
                           </grid>
                           <forms defaultalign-horz="false"/>
                         </constraints>
                         <properties>
                           <enabled value="true"/>
-                          <text value="src/main/manifest"/>
+                          <font size="12"/>
+                          <text value="http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.ideconnector/connector.jsp"/>
                         </properties>
                       </component>
-                      <component id="7c23c" class="javax.swing.JLabel">
+                      <component id="95e5d" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <forms/>
+                        </constraints>
+                        <properties>
+                          <text value="Pull Meta &amp;Data"/>
+                        </properties>
+                      </component>
+                      <component id="fd0d0" class="javax.swing.JCheckBox" binding="pullMetaDataCheckbox">
+                        <constraints>
+                          <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <forms/>
+                        </constraints>
+                        <properties>
+                          <font size="12"/>
+                          <minimumSize width="400" height="22"/>
+                          <text value="En&amp;able Meta Data Pull (VFS module and resource meta data will be pulled to the manifest root)"/>
+                        </properties>
+                      </component>
+                      <component id="df20f" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <forms/>
+                        </constraints>
+                        <properties>
+                          <text value="Auto Pu&amp;blish Mode"/>
+                        </properties>
+                      </component>
+                      <component id="f7bbf" class="javax.swing.JComboBox" binding="autoPublishMode">
+                        <constraints>
+                          <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <forms/>
+                        </constraints>
+                        <properties>
+                          <font size="12"/>
+                          <model>
+                            <item value="OFF - Nothing will be published automatically"/>
+                            <item value="FILECHANGE - File changes (delete, move and rename) will be published automatically"/>
+                            <item value="ALL - All resources synced to the VFS will be published automatically"/>
+                          </model>
+                          <preferredSize width="400" height="24"/>
+                        </properties>
+                      </component>
+                      <grid id="310a2" binding="pullMetaDataOptionsPanel" layout-manager="FormLayout">
+                        <rowspec value="center:d:noGrow"/>
+                        <rowspec value="top:4dlu:noGrow"/>
+                        <rowspec value="center:max(d;4px):noGrow"/>
+                        <colspec value="fill:157px:noGrow"/>
+                        <colspec value="left:4dlu:noGrow"/>
+                        <colspec value="fill:742px:grow"/>
+                        <constraints>
+                          <grid row="10" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                          <forms/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="45698" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                              <forms/>
+                            </constraints>
+                            <properties>
+                              <text value="&amp;Manifest Root"/>
+                            </properties>
+                          </component>
+                          <component id="202ad" class="javax.swing.JTextField" binding="manifestRoot">
+                            <constraints>
+                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="-1"/>
+                              </grid>
+                              <forms defaultalign-horz="false"/>
+                            </constraints>
+                            <properties>
+                              <enabled value="true"/>
+                              <font size="12"/>
+                              <text value="src/main/manifest"/>
+                            </properties>
+                          </component>
+                          <component id="7c23c" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                              <forms/>
+                            </constraints>
+                            <properties>
+                              <text value="Use Meta &amp;Variables"/>
+                            </properties>
+                          </component>
+                          <component id="a3af2" class="javax.swing.JCheckBox" binding="useMetaVariablesCheckbox">
+                            <constraints>
+                              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                              <forms/>
+                            </constraints>
+                            <properties>
+                              <font size="12"/>
+                              <text value="Replace UUIDs (structure, resource) and dates (created, modified) with placeholders when pulling resource meta data"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                      <component id="38008" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <forms/>
+                        </constraints>
+                        <properties>
+                          <text value="&amp;Service URL"/>
+                        </properties>
+                      </component>
+                      <component id="96fcd" class="javax.swing.JTextField" binding="connectorServiceUrl">
+                        <constraints>
+                          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="-1"/>
+                          </grid>
+                          <forms defaultalign-horz="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="true"/>
+                          <font size="12"/>
+                          <text value="http://localhost:8080/opencms/ideConnector"/>
+                        </properties>
+                      </component>
+                      <component id="a0722" class="javax.swing.JLabel">
                         <constraints>
                           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                           <forms/>
                         </constraints>
                         <properties>
-                          <text value="Use Meta &amp;Variables"/>
+                          <text value="Connecto&amp;r Service"/>
                         </properties>
                       </component>
-                      <component id="a3af2" class="javax.swing.JCheckBox" binding="useMetaVariablesCheckbox">
+                      <component id="9ba83" class="javax.swing.JCheckBox" binding="usePluginConnectorServiceCheckBox">
                         <constraints>
                           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                           <forms/>
                         </constraints>
                         <properties>
-                          <text value="Replace UUIDs (structure, resource) and dates (created, modified) with placeholders when pulling resource meta data"/>
+                          <font size="12"/>
+                          <minimumSize width="400" height="22"/>
+                          <text value="Use the Plugin Connector Service (Service providing module import functionality, since 1.7, see Wiki for Details)"/>
                         </properties>
                       </component>
                     </children>
                   </grid>
-                </children>
-              </grid>
-              <component id="9f820" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                    <preferred-size width="163" height="16"/>
-                  </grid>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <text value="&amp;Default Sync Mode"/>
-                </properties>
-              </component>
-              <component id="f07b4" class="javax.swing.JComboBox" binding="defaultSyncMode">
-                <constraints>
-                  <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                  <forms/>
-                </constraints>
-                <properties>
-                  <minimumSize width="400" height="24"/>
-                  <model>
-                    <item value="PUSH - local FS is master, VFS resources not existing locally will be deleted from the VFS"/>
-                    <item value="SYNC - sync files to and from the VFS based on the modification date"/>
-                    <item value="PULL - VFS is master, local resources not existing in the VFS will be deleted from the RFS"/>
-                  </model>
-                </properties>
-              </component>
-              <grid id="4df14" layout-manager="FormLayout">
-                <rowspec value="center:max(m;132px):noGrow"/>
-                <rowspec value="top:4dlu:noGrow"/>
-                <rowspec value="center:83px:noGrow"/>
-                <colspec value="fill:125px:noGrow"/>
-                <colspec value="left:4dlu:noGrow"/>
-                <colspec value="fill:d:grow"/>
-                <colspec value="left:4dlu:noGrow"/>
-                <colspec value="fill:300px:noGrow"/>
-                <constraints>
-                  <grid row="15" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
-                  <forms defaultalign-vert="false"/>
-                </constraints>
-                <properties>
-                  <font swing-font="Label.font"/>
-                  <minimumSize width="450" height="221"/>
-                </properties>
-                <border type="none"/>
-                <children>
-                  <component id="a4758" class="javax.swing.JLabel">
+                  <component id="9f820" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-                      <forms defaultalign-vert="false"/>
+                      <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                        <preferred-size width="163" height="16"/>
+                      </grid>
+                      <forms/>
                     </constraints>
                     <properties>
-                      <text value="&amp;Ignored Files"/>
+                      <text value="Default Sync M&amp;ode"/>
                     </properties>
                   </component>
-                  <component id="918f5" class="javax.swing.JLabel">
+                  <component id="f07b4" class="javax.swing.JComboBox" binding="defaultSyncMode">
                     <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-                      <forms defaultalign-vert="false"/>
+                      <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                      <forms/>
                     </constraints>
                     <properties>
-                      <text value="Ignored &amp;Folders"/>
+                      <font size="12"/>
+                      <minimumSize width="400" height="24"/>
+                      <model>
+                        <item value="PUSH - local FS is master, VFS resources not existing locally will be deleted from the VFS"/>
+                        <item value="SYNC - sync files to and from the VFS based on the modification date"/>
+                        <item value="PULL - VFS is master, local resources not existing in the VFS will be deleted from the RFS"/>
+                      </model>
                     </properties>
                   </component>
-                  <scrollpane id="5ddd">
-                    <constraints>
-                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                      <forms defaultalign-horz="false" defaultalign-vert="false"/>
-                    </constraints>
-                    <properties/>
-                    <border type="none"/>
-                    <children>
-                      <component id="d7c7d" class="javax.swing.JTextArea" binding="ignoredFiles">
-                        <constraints/>
-                        <properties>
-                          <font swing-font="TextArea.font"/>
-                          <text value="\.gitignore&#10;\.svnignore&#10;\.cvsignore&#10;#SyncJob\.txt&#10;manifest\.xml&#10;desktop\.ini&#10;sass&#10;\.DS_Store"/>
-                        </properties>
-                        <clientProperties>
-                          <html.disable class="java.lang.Boolean" value="true"/>
-                        </clientProperties>
-                      </component>
-                    </children>
-                  </scrollpane>
-                  <scrollpane id="840dc">
-                    <constraints>
-                      <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                      <forms defaultalign-horz="false" defaultalign-vert="false"/>
-                    </constraints>
-                    <properties/>
-                    <border type="none"/>
-                    <children>
-                      <component id="9ee8d" class="javax.swing.JTextArea" binding="ignoredPaths">
-                        <constraints/>
-                        <properties>
-                          <font swing-font="TextArea.font"/>
-                          <text value="\.git&#10;\.svn&#10;\.cvs&#10;\.sass-cache"/>
-                        </properties>
-                      </component>
-                    </children>
-                  </scrollpane>
-                  <grid id="443f8" layout-manager="FormLayout">
-                    <rowspec value="fill:219px:noGrow"/>
+                  <grid id="4df14" layout-manager="FormLayout">
+                    <rowspec value="center:129px:noGrow"/>
+                    <rowspec value="top:3dlu:noGrow"/>
+                    <rowspec value="center:92px:noGrow"/>
+                    <colspec value="fill:157px:noGrow"/>
+                    <colspec value="left:4dlu:noGrow"/>
+                    <colspec value="fill:415px:noGrow"/>
+                    <colspec value="left:4dlu:noGrow"/>
                     <colspec value="fill:300px:noGrow"/>
                     <constraints>
-                      <grid row="0" column="4" row-span="3" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                      <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                      <grid row="14" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                      <forms defaultalign-vert="false"/>
                     </constraints>
                     <properties>
-                      <enabled value="true"/>
+                      <font swing-font="Label.font"/>
+                      <minimumSize width="450" height="221"/>
                     </properties>
-                    <border type="line">
-                      <color color="-16777216"/>
-                    </border>
+                    <border type="none"/>
                     <children>
-                      <component id="8c534" class="javax.swing.JTextArea" binding="ignoredFilesAndFoldersTextArea" default-binding="true">
+                      <component id="a4758" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="9" fill="0" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="50"/>
-                          </grid>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                          <forms defaultalign-vert="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="&amp;Ignored Files"/>
+                        </properties>
+                      </component>
+                      <component id="918f5" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                          <forms defaultalign-vert="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Ignored &amp;Folders"/>
+                        </properties>
+                      </component>
+                      <scrollpane id="5ddd">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                          <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="d7c7d" class="javax.swing.JTextArea" binding="ignoredFiles">
+                            <constraints/>
+                            <properties>
+                              <font swing-font="TextArea.font"/>
+                              <text value="\.gitignore&#10;\.svnignore&#10;\.cvsignore&#10;#SyncJob\.txt&#10;manifest\.xml&#10;desktop\.ini&#10;sass&#10;\.DS_Store"/>
+                            </properties>
+                            <clientProperties>
+                              <html.disable class="java.lang.Boolean" value="true"/>
+                            </clientProperties>
+                          </component>
+                        </children>
+                      </scrollpane>
+                      <scrollpane id="840dc">
+                        <constraints>
+                          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                          <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="9ee8d" class="javax.swing.JTextArea" binding="ignoredPaths">
+                            <constraints/>
+                            <properties>
+                              <font swing-font="TextArea.font"/>
+                              <text value="\.git&#10;\.svn&#10;\.cvs&#10;\.sass-cache"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </scrollpane>
+                      <grid id="443f8" layout-manager="FormLayout">
+                        <rowspec value="fill:226px:noGrow"/>
+                        <colspec value="fill:307px:noGrow"/>
+                        <constraints>
+                          <grid row="0" column="4" row-span="3" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                           <forms defaultalign-horz="false" defaultalign-vert="false"/>
                         </constraints>
                         <properties>
-                          <background color="-986896"/>
-                          <editable value="false"/>
                           <enabled value="true"/>
-                          <focusable value="false"/>
-                          <font swing-font="EditorPane.font"/>
-                          <lineWrap value="true"/>
-                          <maximumSize width="298" height="350"/>
-                          <minimumSize width="298" height="220"/>
-                          <opaque value="false"/>
-                          <preferredSize width="298" height="220"/>
-                          <requestFocusEnabled value="false"/>
-                          <text value="Ignored files and folders use Regular Expressions. &#10;Dots (&quot;.&quot;) have to be escaped (&quot;\.&quot;) if meant literally.&#10;&#10;You can use the full Regular Expression syntax, e.g.:&#10;  • &quot;.*&quot; can be used as wildcard&#10;  • &quot;.+&quot; matches at least one character&#10;  • &quot;[0-9]+&quot; matches 1-n numbers&#10;  • &quot;[a-z]+&quot; matches 1-n lowercase letters&#10;  • &quot;[A-Z]+&quot; matches 1-n uppercase letters&#10;&#10;Use the search engine of your choice to find out more about the power of Regular Expressions."/>
-                          <wrapStyleWord value="true"/>
                         </properties>
-                      </component>
+                        <border type="line">
+                          <color color="-16777216"/>
+                        </border>
+                        <children>
+                          <component id="8c534" class="javax.swing.JTextArea" default-binding="true">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="50"/>
+                              </grid>
+                              <forms top="0" left="0" bottom="0" right="5" defaultalign-horz="false" defaultalign-vert="false"/>
+                            </constraints>
+                            <properties>
+                              <background color="-986896"/>
+                              <editable value="false"/>
+                              <enabled value="true"/>
+                              <focusable value="false"/>
+                              <font size="12"/>
+                              <lineWrap value="true"/>
+                              <maximumSize width="298" height="350"/>
+                              <minimumSize width="298" height="220"/>
+                              <opaque value="false"/>
+                              <preferredSize width="298" height="220"/>
+                              <requestFocusEnabled value="false"/>
+                              <text value="Ignored files and folders use Regular Expressions. &#10;Dots (&quot;.&quot;) have to be escaped (&quot;\.&quot;) if meant literally.&#10;&#10;You can use the full Regular Expression syntax, e.g.:&#10;  • &quot;.*&quot; can be used as wildcard&#10;  • &quot;.+&quot; matches at least one character&#10;  • &quot;[0-9]+&quot; matches 1-n numbers&#10;  • &quot;[a-z]+&quot; matches 1-n lowercase letters&#10;  • &quot;[A-Z]+&quot; matches 1-n uppercase letters&#10;&#10;Use the search engine of your choice to find out more about the power of Regular Expressions."/>
+                              <wrapStyleWord value="true"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
                     </children>
                   </grid>
+                  <component id="46bf3" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Module Namin&amp;g Scheme"/>
+                    </properties>
+                  </component>
+                  <component id="8f5e1" class="javax.swing.JTextField" binding="moduleNamingScheme">
+                    <constraints>
+                      <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                    <properties>
+                      <font size="12"/>
+                      <text value="com.yourcompany.opencms.${modulename}"/>
+                      <toolTipText value="${modulename} will be replaced by IntelliJ's module name. Reload the project after changes to this field."/>
+                    </properties>
+                  </component>
+                  <component id="a6914" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="16" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Module Zip Target Folder"/>
+                    </properties>
+                  </component>
+                  <component id="26dd6" class="javax.swing.JTextField" binding="moduleZipTargetFolderPath">
+                    <constraints>
+                      <grid row="16" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                      <forms defaultalign-horz="false"/>
+                    </constraints>
+                    <properties>
+                      <font size="12"/>
+                      <text value="target"/>
+                    </properties>
+                  </component>
                 </children>
               </grid>
-              <component id="46bf3" class="javax.swing.JLabel">
+              <component id="3e97b" class="javax.swing.JLabel" binding="pluginVersionLabel">
                 <constraints>
-                  <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms/>
+                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms top="4" left="0" bottom="0" right="3" defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <text value="Module &amp;Naming Scheme"/>
+                  <text value="Version 99.9"/>
                 </properties>
               </component>
-              <component id="8f5e1" class="javax.swing.JTextField" binding="moduleNamingScheme">
+              <component id="239a5" class="javax.swing.JTextArea" binding="consultThePluginWikiTextArea" default-binding="true">
                 <constraints>
-                  <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="50"/>
                   </grid>
-                  <forms defaultalign-horz="false"/>
+                  <forms top="6" left="0" bottom="0" right="0" defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <text value="com.yourcompany.opencms.${modulename}"/>
-                  <toolTipText value="${modulename} will be replaced by IntelliJ's module name. Reload the project after changes to this field."/>
+                  <font size="11"/>
+                  <opaque value="false"/>
+                  <text value="Consult the plugin Wiki (https://github.com/mediaworx/opencms-intellijplugin/wiki) for configuration hints."/>
                 </properties>
               </component>
             </children>
           </grid>
-          <component id="3e97b" class="javax.swing.JLabel" binding="pluginVersionLabel">
-            <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false"/>
-              <forms top="4" left="0" bottom="0" right="0" defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <text value="Version 99.9"/>
-            </properties>
-          </component>
         </children>
-      </grid>
+      </scrollpane>
     </children>
   </grid>
 </form>

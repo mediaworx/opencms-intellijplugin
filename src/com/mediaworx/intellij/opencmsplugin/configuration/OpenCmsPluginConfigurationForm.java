@@ -58,14 +58,17 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	private JTextArea ignoredPaths;
 	private JCheckBox usePluginConnectorCheckBox;
 	private JTextField connectorUrl;
+	private JCheckBox usePluginConnectorServiceCheckBox;
+	private JTextField connectorServiceUrl;
 	private JTextField manifestRoot;
 	private JPanel connectorOptionsPanel;
 	private JCheckBox pullMetaDataCheckbox;
 	private JComboBox autoPublishMode;
-	private JTextArea ignoredFilesAndFoldersTextArea;
 	private JLabel pluginVersionLabel;
 	private JPanel pullMetaDataOptionsPanel;
 	private JCheckBox useMetaVariablesCheckbox;
+	private JTextField moduleZipTargetFolderPath;
+	private JTextArea consultThePluginWikiTextArea;
 
 	private static String pluginVersion = null;
 
@@ -77,6 +80,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		enabledCheckBox.addActionListener(this);
 		webappRoot.addFocusListener(this);
 		defaultLocalVfsRoot.addFocusListener(this);
+		moduleZipTargetFolderPath.addFocusListener(this);
 		usePluginConnectorCheckBox.addActionListener(this);
 		pullMetaDataCheckbox.addActionListener(this);
 
@@ -140,9 +144,13 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		FormTools.setConfiguredOrKeepDefault(ignoredFiles, data.getIgnoredFiles());
 		FormTools.setConfiguredOrKeepDefault(ignoredPaths, data.getIgnoredPaths());
 
+		FormTools.setConfiguredOrKeepDefault(moduleZipTargetFolderPath, data.getModuleZipTargetFolderPath());
+
 		usePluginConnectorCheckBox.setSelected(data.isPluginConnectorEnabled());
+		usePluginConnectorServiceCheckBox.setSelected(data.isPluginConnectorServiceEnabled());
 		connectorOptionsPanel.setVisible(data.isPluginConnectorEnabled());
 		FormTools.setConfiguredOrKeepDefault(connectorUrl, data.getConnectorUrl());
+		FormTools.setConfiguredOrKeepDefault(connectorServiceUrl, data.getConnectorServiceUrl());
 		pullMetaDataCheckbox.setSelected(data.isPullMetadataEnabled());
 		pullMetaDataOptionsPanel.setVisible(data.isPullMetadataEnabled());
 		FormTools.setConfiguredOrKeepDefault(manifestRoot, data.getManifestRoot());
@@ -165,8 +173,11 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		data.setDefaultSyncMode(FormTools.getSyncModeFromComboBox(defaultSyncMode));
 		data.setIgnoredFiles(ignoredFiles.getText());
 		data.setIgnoredPaths(ignoredPaths.getText());
+		data.setModuleZipTargetFolderPath(moduleZipTargetFolderPath.getText());
 		data.setPluginConnectorEnabled(usePluginConnectorCheckBox.isSelected());
+		data.setPluginConnectorServiceEnabled(usePluginConnectorServiceCheckBox.isSelected());
 		data.setConnectorUrl(connectorUrl.getText());
+		data.setConnectorServiceUrl(connectorServiceUrl.getText());
 		data.setAutoPublishMode(FormTools.getAutoPublishModeFromCombobox(autoPublishMode));
 		data.setPullMetadataEnabled(pullMetaDataCheckbox.isSelected());
 		data.setManifestRoot(manifestRoot.getText());
@@ -191,8 +202,11 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			!FormTools.getSyncModeFromComboBox(defaultSyncMode).equals(data.getDefaultSyncMode()) ||
 			FormTools.isTextFieldModified(ignoredFiles, data.getIgnoredFiles()) ||
 			FormTools.isTextFieldModified(ignoredPaths, data.getIgnoredPaths()) ||
+			FormTools.isTextFieldModified(moduleZipTargetFolderPath, data.getModuleZipTargetFolderPath()) ||
 			usePluginConnectorCheckBox.isSelected() != data.isPluginConnectorEnabled() ||
+			usePluginConnectorServiceCheckBox.isSelected() != data.isPluginConnectorServiceEnabled() ||
 			FormTools.isTextFieldModified(connectorUrl, data.getConnectorUrl()) ||
+			FormTools.isTextFieldModified(connectorServiceUrl, data.getConnectorServiceUrl()) ||
 			!FormTools.getAutoPublishModeFromCombobox(autoPublishMode).equals(data.getAutoPublishMode()) ||
 			pullMetaDataCheckbox.isSelected() != data.isPullMetadataEnabled() ||
 			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot()) ||
@@ -251,6 +265,9 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		}
 		else if (source == defaultLocalVfsRoot) {
 			FormTools.cleanupPathField(defaultLocalVfsRoot, true);
+		}
+		else if (source == moduleZipTargetFolderPath) {
+			FormTools.cleanupPathField(moduleZipTargetFolderPath, true);
 		}
 	}
 }

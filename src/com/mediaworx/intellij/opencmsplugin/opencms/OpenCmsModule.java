@@ -215,11 +215,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 	}
 
 	public String findNewestModuleZipPath() {
-		// TODO: make configurable, handle relative or absolute target paths along the way
-		String targetPath = "/target";
-
-		String basePath = getModuleBasePath();
-		String zipParentPath = basePath + targetPath;
+		String zipParentPath = getModuleBasePath() + "/" + plugin.getPluginConfiguration().getModuleZipTargetFolderPath();
 		Collection<File> moduleZips = FileUtils.listFiles(new File(zipParentPath), new String[]{"zip"}, false);
 		File newestModuleZip = null;
 		for (File moduleZip : moduleZips) {

@@ -31,6 +31,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
+import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
+import com.mediaworx.opencms.ideconnector.client.IDEConnectorClientConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -177,6 +180,20 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 			}
 			else {
 				plugin.setPluginConnector(null);
+			}
+
+			if (configurationData.isPluginConnectorServiceEnabled() && StringUtils.isNotBlank(configurationData.getConnectorServiceUrl())) {
+				if (plugin.getConnectorClient() != null) {
+					plugin.getConnectorClient().getConfiguration().setConnectorServiceBaseUrl(configurationData.getConnectorServiceUrl());
+				}
+				else {
+					IDEConnectorClientConfiguration clientConfiguration = new IDEConnectorClientConfiguration();
+					clientConfiguration.setConnectorServiceBaseUrl(configurationData.getConnectorServiceUrl());
+					plugin.setConnectorClient(new IDEConnectorClient(clientConfiguration));
+				}
+			}
+			else {
+				plugin.setConnectorClient(null);
 			}
 
 			if (pluginActivationWasModified) {

@@ -72,8 +72,7 @@ public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
 				moduleZipPaths.add(moduleZipPath);
 			}
 			else {
-				// TODO: display target after it was made configurable
-				console.error("No module zip for module " + ocmsModule.getModuleName() + " found in target");
+				console.error("No module zip for module " + ocmsModule.getModuleName() + " found in target folder " + config.getModuleZipTargetFolderPath());
 			}
 		}
 		if (moduleZipPaths.size() > 0) {

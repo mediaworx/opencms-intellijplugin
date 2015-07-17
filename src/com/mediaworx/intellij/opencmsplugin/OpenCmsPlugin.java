@@ -50,7 +50,6 @@ import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
-import com.mediaworx.opencms.ideconnector.client.IDEConnectorClientConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -191,12 +190,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 			wasInitialized = true;
 
 			checkWebappRootConfiguration(true);
-
-			// Initialize the IDE connector client (TODO: configuration must be dynamic)
-			IDEConnectorClientConfiguration clientConfig = new IDEConnectorClientConfiguration();
-			clientConfig.setConnectorServiceBaseUrl("http://kaibook.local:8080/ideConnector");
-			connectorClient = new IDEConnectorClient(clientConfig);
-
 		}
 		else {
 			setToolWindowAvailable(true);
@@ -449,9 +442,25 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 * Returns the connector used to retrieve module or resource information from OpenCms and execute actions in
 	 * OpenCms (e.g. publishing)
 	 * @return the OpenCms plugin connector for information retrieval and publishing
+	 * @deprecated the old connector (via JSP) will be removed once all functionality is moved to the new connector
+	 *             service (via Servlet)
 	 */
+	@Deprecated
 	public OpenCmsPluginConnector getPluginConnector() {
 		return pluginConnector;
+	}
+
+	/**
+	 * Sets the connector used to retrieve module or resource information from OpenCms and execute actions in
+	 * OpenCms (e.g. publishing)
+	 *
+	 * @param pluginConnector the OpenCms plugin connector for information retrieval and publishing
+	 * @deprecated the old connector (via JSP) will be removed once all functionality is moved to the new connector
+	 *             service (via Servlet)
+	 */
+	@Deprecated
+	public void setPluginConnector(OpenCmsPluginConnector pluginConnector) {
+		this.pluginConnector = pluginConnector;
 	}
 
 	/**
@@ -464,12 +473,11 @@ public class OpenCmsPlugin implements ProjectComponent {
 	}
 
 	/**
-	 * Sets the connector used to retrieve module or resource information from OpenCms and execute actions in
-	 * OpenCms (e.g. publishing)
-	 * @param pluginConnector   the OpenCms plugin connector for information retrieval and publishing
+	 * Sets the connector client used to access the new IDE Connector Service (e.g. for importing modules)
+	 * @param connectorClient
 	 */
-	public void setPluginConnector(OpenCmsPluginConnector pluginConnector) {
-		this.pluginConnector = pluginConnector;
+	public void setConnectorClient(IDEConnectorClient connectorClient) {
+		this.connectorClient = connectorClient;
 	}
 
 	/**
