@@ -26,6 +26,7 @@ package com.mediaworx.intellij.opencmsplugin.actions.importmodule;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.ui.Messages;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.ConsolePrinter;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Parent action for all actions used to generate module manifest files (manifest.xml)
+ * Parent action for all actions used to import module zips into the local OpenCms instance
  */
 @SuppressWarnings("ComponentNotRegistered")
 public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
@@ -57,39 +58,49 @@ public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
 		LOG.info("actionPerformed - event: " + event);
 		super.actionPerformed(event);
 
-		final List<File> moduleFiles = getModuleFileList(event);
+		if (config.isPluginConnectorServiceEnabled() && StringUtils.isNotBlank(config.getConnectorServiceUrl())) {
+			final List<File> moduleFiles = getModuleFileList(event);
 
-		final OpenCmsToolWindowConsole console = plugin.getConsole();
+			final OpenCmsToolWindowConsole console = plugin.getConsole();
 
-		final List<String> moduleZipPaths = new ArrayList<>();
-		for (File moduleFile : moduleFiles) {
-			OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForFile(moduleFile);
-			if (ocmsModule == null || !ocmsModule.isFileModuleRoot(moduleFile)) {
-				continue;
+			final List<String> moduleZipPaths = new ArrayList<>();
+			for (File moduleFile : moduleFiles) {
+				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForFile(moduleFile);
+				if (ocmsModule == null || !ocmsModule.isFileModuleRoot(moduleFile)) {
+					continue;
+				}
+				String moduleZipPath = ocmsModule.findNewestModuleZipPath();
+				if (StringUtils.isNotBlank(moduleZipPath)) {
+					moduleZipPaths.add(moduleZipPath);
+				}
+				else {
+					console.error("No module zip for module " + ocmsModule.getModuleName() + " found in target folder " + config.getModuleZipTargetFolderPath());
+				}
 			}
-			String moduleZipPath = ocmsModule.findNewestModuleZipPath();
-			if (StringUtils.isNotBlank(moduleZipPath)) {
-				moduleZipPaths.add(moduleZipPath);
-			}
-			else {
-				console.error("No module zip for module " + ocmsModule.getModuleName() + " found in target folder " + config.getModuleZipTargetFolderPath());
+			if (moduleZipPaths.size() > 0) {
+
+				plugin.showConsole();
+				clearConsole();
+
+				Runnable runnable = new Runnable() {
+					@Override
+					public void run() {
+						try {
+							connectorClient.login(config.getUsername(), config.getPassword());
+							connectorClient.importModules(moduleZipPaths, new ConsolePrinter(console));
+							connectorClient.logout();
+						}
+						catch (Exception e) {
+							Messages.showDialog("This function is only available if the IDE Connector module 1.5 is installed and configured in OpenCms. Consult the Plugin Wiki for mor information.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+						}
+					}
+				};
+				Thread thread = new Thread(runnable);
+				thread.start();
 			}
 		}
-		if (moduleZipPaths.size() > 0) {
-
-			plugin.showConsole();
-			clearConsole();
-
-			Runnable runnable = new Runnable() {
-				@Override
-				public void run() {
-					connectorClient.login(config.getUsername(), config.getPassword());
-					connectorClient.importModules(moduleZipPaths, new ConsolePrinter(console));
-					connectorClient.logout();
-				}
-			};
-			Thread thread = new Thread(runnable);
-			thread.start();
+		else {
+			Messages.showDialog("This function is only available if the IDE Connector Service URL is provided and the Connector Service is activated (IDE connector module 1.5 required).", "Error - Please Check Your OpenCms Plugin Configuration.", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 		}
 	}
 
