@@ -29,6 +29,7 @@ import com.intellij.openapi.module.Module;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 
 import java.io.File;
 import java.util.*;
@@ -49,6 +50,7 @@ public class OpenCmsModules {
 
 	public void registerModule(String moduleBasePath, OpenCmsModuleConfigurationData moduleConfig) {
 		LOG.info("registering module: " + moduleConfig.getModuleName());
+		moduleBasePath = PluginTools.ensureUnixPath(moduleBasePath);
 		allExportPoints = null;
 		if (!moduleConfig.isOpenCmsModuleEnabled()) {
 			return;
@@ -84,7 +86,8 @@ public class OpenCmsModules {
 			return null;
 		}
 		for (String basePath : openCmsModuleMap.keySet()) {
-			if (file.getPath().startsWith(basePath)) {
+			String filePath = PluginTools.ensureUnixPath(file.getPath());
+			if (filePath.startsWith(basePath)) {
 				return openCmsModuleMap.get(basePath);
 			}
 		}
@@ -113,7 +116,7 @@ public class OpenCmsModules {
 	public boolean isFileOpenCmsModuleResource(final File file) {
 		OpenCmsModule ocmsModule = getModuleForFile(file);
 		if (ocmsModule == null) {
-			LOG.info("No module configured for the file " + file.getPath());
+			LOG.info("No module configured for the file " + PluginTools.ensureUnixPath(file.getPath()));
 			return false;
 		}
 		return ocmsModule.isFileModuleResource(file);

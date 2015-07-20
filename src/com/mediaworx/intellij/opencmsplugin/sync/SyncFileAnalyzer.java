@@ -33,6 +33,7 @@ import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleResource;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -112,7 +113,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 		File resourceFile = new File(ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
 		if (resourceFile.exists()) {
-			LOG.info("vFolder path: " + resourceFile.getPath());
+			LOG.info("vFolder path: " + PluginTools.ensureUnixPath(resourceFile.getPath()));
 			handleModuleResource(ocmsModule, resourceFile);
 		}
 		else {
@@ -134,12 +135,12 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 		}
 
 		// the file has already been handled, so skip
-		if (handledPaths.contains(file.getPath())) {
+		if (fileWasHandled(file)) {
 			LOG.info("already handled " + file.getPath() + ", skipping");
 			return;
 		}
 		else {
-			handledPaths.add(file.getPath());
+			addHandledFile(file);
 		}
 
 		if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), file)) {
@@ -148,7 +149,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 
 		// RTASK: handle intellij file system refresh somehow, if still required!
 		// check if the file/folder is contained in classes, refresh the IntelliJ VFS if necessary
-		if (file.getPath().contains(CLASSES_FOLDER)) {
+		if (PluginTools.ensureUnixPath(file.getPath()).contains(CLASSES_FOLDER)) {
 			// file.refresh(false, false);
 		}
 
@@ -294,8 +295,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			syncList.add(new SyncFile(ocmsModule, vfsPath, file, vfsObject, SyncAction.PULL, true));
 		}
 		else {
-			File realFile = new File(file.getPath());
-			Date localDate = new Date(realFile.lastModified());
+			Date localDate = new Date(file.lastModified());
 			Date vfsDate = vfsObject.getLastModificationDate().getTime();
 
 			if (ocmsModule.getSyncMode() == SyncMode.SYNC) {

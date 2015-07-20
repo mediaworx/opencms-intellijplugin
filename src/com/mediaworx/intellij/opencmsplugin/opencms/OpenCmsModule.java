@@ -28,6 +28,7 @@ import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import com.mediaworx.intellij.opencmsplugin.tools.VfsFileAnalyzer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,7 +69,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 
 		if (moduleConfig.isUseProjectDefaultModuleNameEnabled()) {
 			String moduleNamingScheme = pluginConfig.getModuleNamingScheme();
-			String moduleFolderName = StringUtils.substringAfterLast(this.moduleBasePath, File.separator);
+			String moduleFolderName = StringUtils.substringAfterLast(this.moduleBasePath, "/");
 			if (moduleNamingScheme != null && moduleNamingScheme.length() > 0) {
 				moduleName = moduleNamingScheme.replaceAll(Pattern.quote("${modulename}"), moduleFolderName);
 			}
@@ -150,6 +151,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 	}
 
 	public boolean isPathModuleResource(String resourcePath) {
+		resourcePath = PluginTools.ensureUnixPath(resourcePath);
 		for (String moduleResourcePath : getModuleResources()) {
 			String localModuleResourcePath = getLocalVfsRoot() + moduleResourcePath;
 			if ((resourcePath + "/").endsWith(localModuleResourcePath)) {
@@ -168,7 +170,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		if (!file.isDirectory()) {
 			return false;
 		}
-		String filePath = file.getPath();
+		String filePath = PluginTools.ensureUnixPath(file.getPath());
 		return filePath.equals(moduleBasePath);
 	}
 
@@ -184,12 +186,12 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		if (VfsFileAnalyzer.fileOrPathIsIgnored(plugin.getPluginConfiguration(), file)) {
 			return false;
 		}
-		String filePath = file.getPath();
+		String filePath = PluginTools.ensureUnixPath(file.getPath());
 		return filePath.startsWith(localVfsRoot);
 	}
 
 	public boolean isPathInVFSPath(String path) {
-		String filename = StringUtils.substringAfterLast(path, File.separator);
+		String filename = StringUtils.substringAfterLast(path, "/");
 		if (VfsFileAnalyzer.fileOrPathIsIgnored(plugin.getPluginConfiguration(), path, filename)) {
 			return false;
 		}
@@ -198,7 +200,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 
 
 	public String getVfsPathForFile(final File file) {
-		String filepath = file.getPath();
+		String filepath = PluginTools.ensureUnixPath(file.getPath());
 		String relativeName = filepath.substring(localVfsRoot.length());
 		if (relativeName.length() == 0) {
 			relativeName = "/";

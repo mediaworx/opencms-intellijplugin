@@ -34,6 +34,7 @@ import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +92,14 @@ public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
 							connectorClient.logout();
 						}
 						catch (Exception e) {
-							Messages.showDialog("This function is only available if the IDE Connector module 1.5 is installed and configured in OpenCms. Consult the Plugin Wiki for mor information.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+							SwingUtilities.invokeLater(
+								new Runnable() {
+									@Override
+									public void run() {
+										Messages.showDialog("This function is only available if the IDE Connector module 1.5 is installed and configured in OpenCms. Consult the Plugin Wiki for mor information.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+									}
+								}
+							);
 						}
 					}
 				};

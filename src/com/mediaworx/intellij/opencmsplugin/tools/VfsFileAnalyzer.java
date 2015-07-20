@@ -74,7 +74,7 @@ public abstract class VfsFileAnalyzer {
 	protected final OpenCmsPlugin plugin;
 	protected final List<File> files;
 	protected final StringBuilder warnings;
-	protected HashSet<String> handledPaths;
+	private HashSet<String> handledPaths;
 	protected ProgressIndicator progressIndicator;
 
 
@@ -82,7 +82,7 @@ public abstract class VfsFileAnalyzer {
 		this.files = files;
 		this.plugin = plugin;
 		warnings = new StringBuilder();
-		handledPaths = new HashSet<String>();
+		handledPaths = new HashSet<>();
 	}
 
 	public void analyzeFiles() {
@@ -93,7 +93,7 @@ public abstract class VfsFileAnalyzer {
 					return;
 				}
 
-				if (handledPaths.contains(file.getPath())) {
+				if (fileWasHandled(file)) {
 					continue;
 				}
 
@@ -101,7 +101,7 @@ public abstract class VfsFileAnalyzer {
 				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForFile(file);
 				if (ocmsModule == null) {
 					LOG.info("file/folder is not within a configured OpenCms module, ignore");
-					handledPaths.add(file.getPath());
+					addHandledFile(file);
 					continue;
 				}
 
@@ -109,7 +109,7 @@ public abstract class VfsFileAnalyzer {
 				if (fileOrPathIsIgnored(plugin.getPluginConfiguration(), file)) {
 					// do nothing (filter files defined in the file and folder ignore lists)
 					plugin.getConsole().info("File or path is ignored: " + file.getPath());
-					handledPaths.add(file.getPath());
+					addHandledFile(file);
 					continue;
 				}
 
@@ -128,7 +128,8 @@ public abstract class VfsFileAnalyzer {
 				// if it is a folder that is not a resource path, but within the VFS path ...
 				else if (file.isDirectory()  && ocmsModule.isFileInVFSPath(file)) {
 					LOG.info("Handling a VFS path outside of the module resources");
-					String relativeFolderPath = file.getPath().substring(ocmsModule.getLocalVfsRoot().length());
+					String filePath = PluginTools.ensureUnixPath(file.getPath());
+					String relativeFolderPath = filePath.substring(ocmsModule.getLocalVfsRoot().length());
 					// ... get all module resources under the folder and add them
 					for (String moduleResourceVfsPath : ocmsModule.getModuleResources()) {
 						// if the module resource is within the selected folder ...
@@ -181,9 +182,9 @@ public abstract class VfsFileAnalyzer {
 	 * @return <code>true</code> if the resource is ignored, <code>false</code> otherwise
 	 */
 	public static boolean fileOrPathIsIgnored(OpenCmsPluginConfigurationData config, final File file) {
-		final String path = file.getPath();
+		final String filePath = PluginTools.ensureUnixPath(file.getPath());
 		final String filename = file.getName();
-		return fileOrPathIsIgnored(config, path, filename);
+		return fileOrPathIsIgnored(config, filePath, filename);
 	}
 
 	/**
@@ -208,6 +209,23 @@ public abstract class VfsFileAnalyzer {
 			}
 		}
 		return false;
+	}
+	
+	
+	protected void addHandledFilePath(String path) {
+		handledPaths.add(PluginTools.ensureUnixPath(path));
+	}
+	
+	protected void addHandledFile(File file) {
+		addHandledFilePath(file.getPath());
+	}
+	
+	protected boolean filePathWasHandled(String path) {
+		return handledPaths.contains(PluginTools.ensureUnixPath(path));
+	}
+	
+	protected boolean fileWasHandled(File file) {
+		return filePathWasHandled(file.getPath());		
 	}
 
 	/**

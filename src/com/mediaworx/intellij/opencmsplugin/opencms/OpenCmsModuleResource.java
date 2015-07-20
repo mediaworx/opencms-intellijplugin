@@ -24,6 +24,8 @@
 
 package com.mediaworx.intellij.opencmsplugin.opencms;
 
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
+
 public class OpenCmsModuleResource {
 
 	private OpenCmsModule openCmsModule;
@@ -31,7 +33,7 @@ public class OpenCmsModuleResource {
 
 	public OpenCmsModuleResource(OpenCmsModule openCmsModule, String resourcePath) {
 		this.openCmsModule = openCmsModule;
-		this.resourcePath = resourcePath;
+		this.resourcePath = PluginTools.ensureUnixPath(resourcePath);
 	}
 
 	public OpenCmsModule getOpenCmsModule() {

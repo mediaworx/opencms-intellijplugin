@@ -26,6 +26,7 @@ package com.mediaworx.intellij.opencmsplugin.entities;
 
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 
 import java.io.File;
@@ -101,7 +102,7 @@ public abstract class SyncEntity {
 	 * @param vfsPath the entity's VFS path
 	 */
 	public void setVfsPath(String vfsPath) {
-		this.vfsPath = vfsPath;
+		this.vfsPath = PluginTools.ensureUnixPath(vfsPath);
 	}
 
 	/**

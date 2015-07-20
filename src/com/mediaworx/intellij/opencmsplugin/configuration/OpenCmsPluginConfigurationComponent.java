@@ -24,15 +24,17 @@
 
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
-import com.intellij.openapi.components.*;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.components.StorageScheme;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
-import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
-import com.mediaworx.opencms.ideconnector.client.IDEConnectorClientConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -183,14 +185,7 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 			}
 
 			if (configurationData.isPluginConnectorServiceEnabled() && StringUtils.isNotBlank(configurationData.getConnectorServiceUrl())) {
-				if (plugin.getConnectorClient() != null) {
-					plugin.getConnectorClient().getConfiguration().setConnectorServiceBaseUrl(configurationData.getConnectorServiceUrl());
-				}
-				else {
-					IDEConnectorClientConfiguration clientConfiguration = new IDEConnectorClientConfiguration();
-					clientConfiguration.setConnectorServiceBaseUrl(configurationData.getConnectorServiceUrl());
-					plugin.setConnectorClient(new IDEConnectorClient(clientConfiguration));
-				}
+				plugin.getConnectorClient().getConfiguration().setConnectorServiceBaseUrl(configurationData.getConnectorServiceUrl());
 			}
 			else {
 				plugin.setConnectorClient(null);

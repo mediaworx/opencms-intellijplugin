@@ -60,7 +60,7 @@ public class PublishFileAnalyzer extends VfsFileAnalyzer {
 	@Override
 	protected void handleModuleResource(OpenCmsModule ocmsModule, File file) {
 		publishList.add(ocmsModule.getVfsPathForFile(file));
-		handledPaths.add(file.getPath());
+		addHandledFile(file);
 	}
 
 	/**
@@ -71,9 +71,9 @@ public class PublishFileAnalyzer extends VfsFileAnalyzer {
 	@Override
 	protected void handleModuleResourcePath(OpenCmsModule ocmsModule, String moduleResourceVfsPath) {
 		publishList.add(moduleResourceVfsPath);
-		handledPaths.add(ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
+		addHandledFilePath(ocmsModule.getLocalVfsRoot() + moduleResourceVfsPath);
 	}
-
+	
 	/**
 	 * returns the list of VFS resource paths to be published
 	 * @return the list of VFS resource paths to be published

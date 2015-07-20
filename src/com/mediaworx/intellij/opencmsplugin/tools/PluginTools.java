@@ -55,4 +55,8 @@ public class PluginTools {
 		}
 		return realFiles;
 	}
+	
+	public static String ensureUnixPath(String path) {
+		return path.replaceAll("\\\\", "/");
+	}
 }

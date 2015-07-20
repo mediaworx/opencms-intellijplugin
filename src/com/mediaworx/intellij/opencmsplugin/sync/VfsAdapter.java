@@ -30,6 +30,7 @@ import com.mediaworx.intellij.opencmsplugin.entities.SyncEntity;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPermissionDeniedException;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsPushException;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
@@ -189,6 +190,7 @@ public class VfsAdapter {
 		    LOG.warn("not connected");
 		    return null;
 	    }
+		path = PluginTools.ensureUnixPath(path);
 	    try {
 	        return session.getObjectByPath(path);
 	    }

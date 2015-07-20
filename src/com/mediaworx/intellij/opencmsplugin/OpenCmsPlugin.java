@@ -50,6 +50,7 @@ import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
+import com.mediaworx.opencms.ideconnector.client.IDEConnectorClientConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -81,9 +82,6 @@ import java.io.File;
  *
  * @author Kai Widmann, 2007-2014 mediaworx berlin AG
  */
-// TODO: make new service configurable
-// TODO: introduce Import menu actions only if the service is configured (should be displayed but greyed out or should display message)
-
 public class OpenCmsPlugin implements ProjectComponent {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
@@ -469,9 +467,24 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 * @return the IDE connector client
 	 */
 	public IDEConnectorClient getConnectorClient() {
+		if (connectorClient == null) {
+			initConnectorClient();
+		}
 		return connectorClient;
 	}
 
+	/**
+	 * Initializes the connector client
+	 */
+	private void initConnectorClient() {
+		OpenCmsPluginConfigurationData config = getPluginConfiguration();
+		IDEConnectorClientConfiguration clientConfiguration = new IDEConnectorClientConfiguration();
+		clientConfiguration.setConnectorServiceBaseUrl(config.getConnectorServiceUrl());
+		connectorClient = new IDEConnectorClient(clientConfiguration);
+	}
+	
+	
+	
 	/**
 	 * Sets the connector client used to access the new IDE Connector Service (e.g. for importing modules)
 	 * @param connectorClient
