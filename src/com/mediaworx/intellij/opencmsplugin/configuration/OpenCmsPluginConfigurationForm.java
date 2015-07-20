@@ -94,7 +94,7 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 				pluginVersion = "unknown";
 			}
 		}
-		pluginVersionLabel.setText("Version " + pluginVersion);
+		pluginVersionLabel.setText("V " + pluginVersion);
 	}
 
 	/**

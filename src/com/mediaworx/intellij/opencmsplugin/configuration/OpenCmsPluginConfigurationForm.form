@@ -3,10 +3,11 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="5"/>
     <constraints>
-      <xy x="20" y="20" width="963" height="872"/>
+      <xy x="20" y="20" width="981" height="769"/>
     </constraints>
     <properties>
-      <minimumSize width="800" height="650"/>
+      <minimumSize width="715" height="300"/>
+      <preferredSize width="755" height="755"/>
     </properties>
     <border type="none" title=""/>
     <children>
@@ -15,19 +16,30 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
-        <border type="none"/>
+        <border type="none">
+          <color color="-16764673"/>
+        </border>
         <children>
           <grid id="f9d49" layout-manager="FormLayout">
-            <rowspec value="center:35px:noGrow"/>
+            <rowspec value="top:35px:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="center:771px:noGrow"/>
-            <colspec value="fill:54px:grow"/>
+            <rowspec value="top:d:noGrow"/>
+            <colspec value="left:200px:noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
-            <colspec value="fill:399px:grow"/>
+            <colspec value="left:max(d;480px):grow(0.7999999999999999)"/>
+            <colspec value="left:5px:noGrow"/>
+            <colspec value="right:max(p;30px):noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
-            <colspec value="fill:82px:noGrow"/>
+            <colspec value="fill:max(d;4px):noGrow"/>
             <constraints/>
-            <properties/>
+            <properties>
+              <alignmentX value="0.0"/>
+              <alignmentY value="0.0"/>
+              <autoscrolls value="false"/>
+              <minimumSize width="525" height="300"/>
+              <preferredSize width="555" height="400"/>
+              <verifyInputWhenFocusTarget value="false"/>
+            </properties>
             <border type="empty"/>
             <children>
               <component id="2fdbf" class="javax.swing.JCheckBox" binding="enabledCheckBox" default-binding="true">
@@ -37,6 +49,9 @@
                 </constraints>
                 <properties>
                   <actionCommand value="Active"/>
+                  <maximumSize width="220" height="24"/>
+                  <minimumSize width="200" height="24"/>
+                  <preferredSize width="200" height="24"/>
                   <text value="Ac&amp;tivate Plugin for this Project"/>
                 </properties>
               </component>
@@ -61,20 +76,23 @@
                 <rowspec value="top:3dlu:noGrow"/>
                 <rowspec value="center:max(d;4px):noGrow"/>
                 <rowspec value="top:3dlu:noGrow"/>
-                <rowspec value="center:236px:noGrow"/>
+                <rowspec value="center:211px:noGrow"/>
                 <colspec value="fill:15px:noGrow"/>
                 <colspec value="left:4dlu:noGrow"/>
-                <colspec value="fill:157px:noGrow"/>
+                <colspec value="fill:150px:noGrow"/>
                 <colspec value="left:4dlu:noGrow"/>
-                <colspec value="fill:max(d;4px):grow"/>
+                <colspec value="fill:max(d;200px):grow"/>
                 <constraints>
                   <grid row="2" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                  <forms defaultalign-vert="false"/>
+                  <forms defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <minimumSize width="500" height="550"/>
+                  <minimumSize width="500" height="265"/>
+                  <preferredSize width="500" height="720"/>
                 </properties>
-                <border type="none"/>
+                <border type="none">
+                  <color color="-64768"/>
+                </border>
                 <children>
                   <component id="61a28" class="javax.swing.JLabel">
                     <constraints>
@@ -96,6 +114,7 @@
                     </constraints>
                     <properties>
                       <font size="12"/>
+                      <preferredSize width="200" height="24"/>
                       <text value="http://localhost:8080/opencms/cmisatom/cmis-offline/"/>
                     </properties>
                   </component>
@@ -143,6 +162,7 @@
                     </constraints>
                     <properties>
                       <font size="12"/>
+                      <preferredSize width="200" height="24"/>
                       <text value="/your/tomcat/root/webapps/opencms"/>
                       <toolTipText value="The vfsPath to your OpenCms webapp, usually [Tomcat root]/webapps/opencms"/>
                     </properties>
@@ -226,16 +246,17 @@
                     <rowspec value="center:d:noGrow"/>
                     <rowspec value="top:3dlu:noGrow"/>
                     <rowspec value="center:67px:noGrow"/>
-                    <colspec value="fill:157px:noGrow"/>
+                    <colspec value="fill:150px:noGrow"/>
                     <colspec value="left:4dlu:noGrow"/>
-                    <colspec value="fill:d:grow"/>
+                    <colspec value="fill:max(d;200px):grow"/>
                     <constraints>
                       <grid row="20" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                       <forms defaultalign-vert="false"/>
                     </constraints>
                     <properties>
                       <enabled value="true"/>
-                      <minimumSize width="500" height="128"/>
+                      <minimumSize width="300" height="80"/>
+                      <preferredSize width="400" height="150"/>
                     </properties>
                     <border type="none"/>
                     <children>
@@ -258,6 +279,7 @@
                         <properties>
                           <enabled value="true"/>
                           <font size="12"/>
+                          <preferredSize width="200" height="24"/>
                           <text value="http://localhost:8080/opencms/opencms/system/modules/com.mediaworx.opencms.ideconnector/connector.jsp"/>
                         </properties>
                       </component>
@@ -277,7 +299,8 @@
                         </constraints>
                         <properties>
                           <font size="12"/>
-                          <minimumSize width="400" height="22"/>
+                          <minimumSize width="300" height="22"/>
+                          <preferredSize width="300" height="24"/>
                           <text value="En&amp;able Meta Data Pull (VFS module and resource meta data will be pulled to the manifest root)"/>
                         </properties>
                       </component>
@@ -297,21 +320,22 @@
                         </constraints>
                         <properties>
                           <font size="12"/>
+                          <minimumSize width="300" height="26"/>
                           <model>
                             <item value="OFF - Nothing will be published automatically"/>
                             <item value="FILECHANGE - File changes (delete, move and rename) will be published automatically"/>
                             <item value="ALL - All resources synced to the VFS will be published automatically"/>
                           </model>
-                          <preferredSize width="400" height="24"/>
+                          <preferredSize width="300" height="24"/>
                         </properties>
                       </component>
                       <grid id="310a2" binding="pullMetaDataOptionsPanel" layout-manager="FormLayout">
                         <rowspec value="center:d:noGrow"/>
                         <rowspec value="top:4dlu:noGrow"/>
                         <rowspec value="center:max(d;4px):noGrow"/>
-                        <colspec value="fill:157px:noGrow"/>
+                        <colspec value="fill:150px:noGrow"/>
                         <colspec value="left:4dlu:noGrow"/>
-                        <colspec value="fill:742px:grow"/>
+                        <colspec value="fill:d:grow"/>
                         <constraints>
                           <grid row="10" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                           <forms/>
@@ -357,7 +381,9 @@
                             </constraints>
                             <properties>
                               <font size="12"/>
-                              <text value="Replace UUIDs (structure, resource) and dates (created, modified) with placeholders when pulling resource meta data"/>
+                              <minimumSize width="300" height="24"/>
+                              <preferredSize width="300" height="24"/>
+                              <text value="Replace UUIDs (structure, resource) and dates (created, modified) with placeholders when pulling meta data"/>
                             </properties>
                           </component>
                         </children>
@@ -400,8 +426,8 @@
                         </constraints>
                         <properties>
                           <font size="12"/>
-                          <minimumSize width="400" height="22"/>
-                          <text value="Use the Plugin Connector Service (Service providing module import functionality, since 1.7, see Wiki for Details)"/>
+                          <minimumSize width="300" height="22"/>
+                          <text value="Use the Plugin Connector Service (Service for module import functionality, since 1.7, see Wiki for Details)"/>
                         </properties>
                       </component>
                     </children>
@@ -424,23 +450,25 @@
                     </constraints>
                     <properties>
                       <font size="12"/>
-                      <minimumSize width="400" height="24"/>
+                      <maximumSize width="525" height="32767"/>
+                      <minimumSize width="200" height="24"/>
                       <model>
                         <item value="PUSH - local FS is master, VFS resources not existing locally will be deleted from the VFS"/>
                         <item value="SYNC - sync files to and from the VFS based on the modification date"/>
                         <item value="PULL - VFS is master, local resources not existing in the VFS will be deleted from the RFS"/>
                       </model>
+                      <preferredSize width="200" height="26"/>
                     </properties>
                   </component>
                   <grid id="4df14" layout-manager="FormLayout">
                     <rowspec value="center:129px:noGrow"/>
                     <rowspec value="top:3dlu:noGrow"/>
                     <rowspec value="center:92px:noGrow"/>
-                    <colspec value="fill:157px:noGrow"/>
+                    <colspec value="fill:150px:noGrow"/>
                     <colspec value="left:4dlu:noGrow"/>
-                    <colspec value="fill:415px:noGrow"/>
+                    <colspec value="fill:max(d;100px):grow"/>
                     <colspec value="left:4dlu:noGrow"/>
-                    <colspec value="fill:300px:noGrow"/>
+                    <colspec value="fill:295px:noGrow"/>
                     <constraints>
                       <grid row="14" column="2" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
                       <forms defaultalign-vert="false"/>
@@ -481,6 +509,8 @@
                             <constraints/>
                             <properties>
                               <font swing-font="TextArea.font"/>
+                              <minimumSize width="100" height="128"/>
+                              <preferredSize width="100" height="128"/>
                               <text value="\.gitignore&#10;\.svnignore&#10;\.cvsignore&#10;#SyncJob\.txt&#10;manifest\.xml&#10;desktop\.ini&#10;sass&#10;\.DS_Store"/>
                             </properties>
                             <clientProperties>
@@ -501,6 +531,8 @@
                             <constraints/>
                             <properties>
                               <font swing-font="TextArea.font"/>
+                              <minimumSize width="100" height="64"/>
+                              <preferredSize width="100" height="64"/>
                               <text value="\.git&#10;\.svn&#10;\.cvs&#10;\.sass-cache"/>
                             </properties>
                           </component>
@@ -508,7 +540,7 @@
                       </scrollpane>
                       <grid id="443f8" layout-manager="FormLayout">
                         <rowspec value="fill:226px:noGrow"/>
-                        <colspec value="fill:307px:noGrow"/>
+                        <colspec value="fill:307px:grow"/>
                         <constraints>
                           <grid row="0" column="4" row-span="3" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                           <forms defaultalign-horz="false" defaultalign-vert="false"/>
@@ -532,7 +564,7 @@
                               <editable value="false"/>
                               <enabled value="true"/>
                               <focusable value="false"/>
-                              <font size="12"/>
+                              <font swing-font="Menu.font"/>
                               <lineWrap value="true"/>
                               <maximumSize width="298" height="350"/>
                               <minimumSize width="298" height="220"/>
@@ -565,6 +597,7 @@
                     </constraints>
                     <properties>
                       <font size="12"/>
+                      <preferredSize width="200" height="24"/>
                       <text value="com.yourcompany.opencms.${modulename}"/>
                       <toolTipText value="${modulename} will be replaced by IntelliJ's module name. Reload the project after changes to this field."/>
                     </properties>
@@ -595,10 +628,10 @@
               <component id="3e97b" class="javax.swing.JLabel" binding="pluginVersionLabel">
                 <constraints>
                   <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms top="4" left="0" bottom="0" right="3" defaultalign-horz="false" defaultalign-vert="false"/>
+                  <forms top="4" left="0" bottom="0" right="0" defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <text value="Version 99.9"/>
+                  <text value="V 99.9"/>
                 </properties>
               </component>
               <component id="239a5" class="javax.swing.JTextArea" binding="consultThePluginWikiTextArea" default-binding="true">
@@ -609,9 +642,14 @@
                   <forms top="6" left="0" bottom="0" right="0" defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <font size="11"/>
+                  <editable value="false"/>
+                  <focusable value="true"/>
+                  <font swing-font="Menu.acceleratorFont"/>
+                  <minimumSize width="495" height="14"/>
                   <opaque value="false"/>
+                  <preferredSize width="495" height="14"/>
                   <text value="Consult the plugin Wiki (https://github.com/mediaworx/opencms-intellijplugin/wiki) for configuration hints."/>
+                  <verifyInputWhenFocusTarget value="false"/>
                 </properties>
               </component>
             </children>
