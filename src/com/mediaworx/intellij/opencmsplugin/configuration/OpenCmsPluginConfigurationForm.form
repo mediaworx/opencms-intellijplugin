@@ -24,7 +24,7 @@
             <rowspec value="top:35px:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
             <rowspec value="top:d:noGrow"/>
-            <colspec value="left:200px:noGrow"/>
+            <colspec value="left:max(d;232px):noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
             <colspec value="left:max(d;480px):grow(0.7999999999999999)"/>
             <colspec value="left:5px:noGrow"/>
@@ -49,9 +49,10 @@
                 </constraints>
                 <properties>
                   <actionCommand value="Active"/>
-                  <maximumSize width="220" height="24"/>
-                  <minimumSize width="200" height="24"/>
-                  <preferredSize width="200" height="24"/>
+                  <maximumSize width="232" height="24"/>
+                  <minimumSize width="230" height="24"/>
+                  <preferredSize width="230" height="24"/>
+                  <selected value="false"/>
                   <text value="Ac&amp;tivate Plugin for this Project"/>
                 </properties>
               </component>
@@ -466,7 +467,7 @@
                     <rowspec value="center:92px:noGrow"/>
                     <colspec value="fill:150px:noGrow"/>
                     <colspec value="left:4dlu:noGrow"/>
-                    <colspec value="fill:max(d;100px):grow"/>
+                    <colspec value="fill:max(d;100px):grow(0.7)"/>
                     <colspec value="left:4dlu:noGrow"/>
                     <colspec value="fill:295px:noGrow"/>
                     <constraints>
@@ -540,7 +541,7 @@
                       </scrollpane>
                       <grid id="443f8" layout-manager="FormLayout">
                         <rowspec value="fill:226px:noGrow"/>
-                        <colspec value="fill:307px:grow"/>
+                        <colspec value="fill:294px:grow"/>
                         <constraints>
                           <grid row="0" column="4" row-span="3" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                           <forms defaultalign-horz="false" defaultalign-vert="false"/>
@@ -557,19 +558,19 @@
                               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="50"/>
                               </grid>
-                              <forms top="0" left="0" bottom="0" right="5" defaultalign-horz="false" defaultalign-vert="false"/>
+                              <forms top="2" left="2" bottom="2" right="2" defaultalign-horz="false" defaultalign-vert="false"/>
                             </constraints>
                             <properties>
                               <background color="-986896"/>
                               <editable value="false"/>
                               <enabled value="true"/>
                               <focusable value="false"/>
-                              <font swing-font="Menu.font"/>
+                              <font name="SansSerif" size="11"/>
                               <lineWrap value="true"/>
-                              <maximumSize width="298" height="350"/>
-                              <minimumSize width="298" height="220"/>
+                              <maximumSize width="290" height="350"/>
+                              <minimumSize width="290" height="220"/>
                               <opaque value="false"/>
-                              <preferredSize width="298" height="220"/>
+                              <preferredSize width="290" height="220"/>
                               <requestFocusEnabled value="false"/>
                               <text value="Ignored files and folders use Regular Expressions. &#10;Dots (&quot;.&quot;) have to be escaped (&quot;\.&quot;) if meant literally.&#10;&#10;You can use the full Regular Expression syntax, e.g.:&#10;  • &quot;.*&quot; can be used as wildcard&#10;  • &quot;.+&quot; matches at least one character&#10;  • &quot;[0-9]+&quot; matches 1-n numbers&#10;  • &quot;[a-z]+&quot; matches 1-n lowercase letters&#10;  • &quot;[A-Z]+&quot; matches 1-n uppercase letters&#10;&#10;Use the search engine of your choice to find out more about the power of Regular Expressions."/>
                               <wrapStyleWord value="true"/>
@@ -639,12 +640,12 @@
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="50"/>
                   </grid>
-                  <forms top="6" left="0" bottom="0" right="0" defaultalign-horz="false" defaultalign-vert="false"/>
+                  <forms top="7" left="0" bottom="0" right="0" defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties>
                   <editable value="false"/>
                   <focusable value="true"/>
-                  <font swing-font="Menu.acceleratorFont"/>
+                  <font name="SansSerif" size="10"/>
                   <minimumSize width="495" height="14"/>
                   <opaque value="false"/>
                   <preferredSize width="495" height="14"/>
