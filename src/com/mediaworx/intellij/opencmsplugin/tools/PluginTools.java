@@ -59,4 +59,8 @@ public class PluginTools {
 	public static String ensureUnixPath(String path) {
 		return path.replaceAll("\\\\", "/");
 	}
+	
+	public static String ensureUnixNewline(String in) {
+		return in.replaceAll("\\r\\n|\\r", "\n");
+	}
 }

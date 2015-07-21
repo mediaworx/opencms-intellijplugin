@@ -38,6 +38,7 @@ import com.mediaworx.intellij.opencmsplugin.exceptions.OpenCmsConnectorException
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleExportPoint;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleResource;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -428,7 +429,8 @@ public class SyncJob implements Runnable {
 				}
 			}
 			try {
-				FileUtils.writeStringToFile(metaInfoFile, metaInfos.get(entity.getVfsPath()), "UTF-8");
+				String metaInfoStr = PluginTools.ensureUnixNewline(metaInfos.get(entity.getVfsPath())) + "\n";
+				FileUtils.writeStringToFile(metaInfoFile, metaInfoStr, "UTF-8");
 			}
 			catch (IOException e) {
 				String message = "ERROR: cant create meta info file " + metaInfoFilePath;
@@ -513,6 +515,7 @@ public class SyncJob implements Runnable {
 						if (ocmsModule.isSetSpecificModuleVersionEnabled() && StringUtils.isNotEmpty(ocmsModule.getModuleVersion())) {
 							manifest = manifest.replaceFirst("<version>[^<]*</version>", "<version>" + Matcher.quoteReplacement(ocmsModule.getModuleVersion()) + " </version>");
 						}
+						manifest = PluginTools.ensureUnixNewline(manifest) + "\n";
 						FileUtils.writeStringToFile(new File(manifestPath), manifest, Charset.forName("UTF-8"));
 						console.info("PULL: " + manifestPath + " pulled from OpenCms");
 					}

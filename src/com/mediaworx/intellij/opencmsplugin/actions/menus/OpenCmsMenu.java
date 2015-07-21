@@ -26,6 +26,7 @@ package com.mediaworx.intellij.opencmsplugin.actions.menus;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -105,6 +106,11 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	@Override
 	public boolean disableIfNoVisibleChildren() {
 		return true;
+	}
+
+	@Override
+	public boolean canBePerformed(DataContext context) {
+		return !plugin.isRefreshing() && super.canBePerformed(context);
 	}
 
 }

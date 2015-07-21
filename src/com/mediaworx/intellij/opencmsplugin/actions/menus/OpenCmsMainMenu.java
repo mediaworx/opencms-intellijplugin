@@ -196,30 +196,31 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
-
-		Presentation presentation = event.getPresentation();
-
-		if (presentation.isEnabled() != isPluginEnabled()) {
-			presentation.setEnabled(isPluginEnabled());
-		}
-
-		Project eventProject = event.getProject();
-
-		if (eventProject == null) {
-			return;
-		}
-
-		if (eventProject != currentProject) {
-
-			if (isPluginEnabled()) {
-				LOG.info("project switched, reinitializing module actions");
-				currentProject = eventProject;
-				registerModuleActions();
+		if (!plugin.isRefreshing()) {
+			Presentation presentation = event.getPresentation();
+	
+			if (presentation.isEnabled() != isPluginEnabled()) {
+				presentation.setEnabled(isPluginEnabled());
 			}
-			else {
-				unregisterModuleActions();
+	
+			Project eventProject = event.getProject();
+	
+			if (eventProject == null) {
+				return;
 			}
-			plugin.setToolWindowAvailable(isPluginEnabled());
+	
+			if (eventProject != currentProject) {
+	
+				if (isPluginEnabled()) {
+					LOG.info("project switched, reinitializing module actions");
+					currentProject = eventProject;
+					registerModuleActions();
+				}
+				else {
+					unregisterModuleActions();
+				}
+				plugin.setToolWindowAvailable(isPluginEnabled());
+			}
 		}
 	}
 

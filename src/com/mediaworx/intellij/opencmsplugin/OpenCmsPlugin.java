@@ -24,13 +24,20 @@
 
 package com.mediaworx.intellij.opencmsplugin;
 
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.Anchor;
+import com.intellij.openapi.actionSystem.Constraints;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.IdeActions;
+import com.intellij.openapi.actionSystem.Separator;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.VirtualFileManagerListener;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -51,6 +58,7 @@ import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFa
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
 import com.mediaworx.opencms.ideconnector.client.IDEConnectorClientConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -97,6 +105,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	/** The IntelliJ project */
 	private Project project;
+	
+	private VirtualFileManagerListener virtualFileManagerListener;
+	
+	private boolean refreshing = true;
 
 	/** Helper object to retrieve configuration data from the OpenCms configuration */
 	private OpenCmsConfiguration openCmsConfiguration;
@@ -183,8 +195,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 					pluginConnector = new OpenCmsPluginConnector(config.getConnectorUrl(), config.getUsername(), config.getPassword(), config.isUseMetaVariablesEnabled());
 				}
 			}
-			registerMenus();
 			registerListeners();
+			registerMenus();
 			wasInitialized = true;
 
 			checkWebappRootConfiguration(true);
@@ -224,6 +236,24 @@ public class OpenCmsPlugin implements ProjectComponent {
 		MessageBusConnection connection = bus.connect();
 		OpenCmsModuleFileChangeListener fileChangeListener = new OpenCmsModuleFileChangeListener(this);
 		connection.subscribe(VirtualFileManager.VFS_CHANGES, fileChangeListener);
+		VirtualFileManager.getInstance().addVirtualFileManagerListener(getVirtualFileManagerListener());
+	}
+
+	@NotNull
+	private VirtualFileManagerListener getVirtualFileManagerListener() {
+		return new VirtualFileManagerListener() {
+			@Override
+			public void beforeRefreshStart(boolean asynchronous) {
+				LOG.warn("start refreshing");
+				refreshing = true;
+			}
+
+			@Override
+			public void afterRefreshFinish(boolean asynchronous) {
+				LOG.warn("refreshing done");
+				refreshing = false;
+			}
+		};
 	}
 
 	/**
@@ -277,7 +307,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 * Creates and registers the OpenCms menu for the main menu as an action group
 	 */
 	private void registerMainMenu() {
-		OpenCmsMainMenu openCmsMainMenu = (OpenCmsMainMenu)actionManager.getAction(OPENCMS_MENU_ID);
+		OpenCmsMainMenu openCmsMainMenu = (OpenCmsMainMenu) actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMainMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
 			openCmsMainMenu = OpenCmsMainMenu.getInstance(this);
@@ -478,9 +508,11 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 */
 	private void initConnectorClient() {
 		OpenCmsPluginConfigurationData config = getPluginConfiguration();
-		IDEConnectorClientConfiguration clientConfiguration = new IDEConnectorClientConfiguration();
-		clientConfiguration.setConnectorServiceBaseUrl(config.getConnectorServiceUrl());
-		connectorClient = new IDEConnectorClient(clientConfiguration);
+		if (config.isPluginConnectorServiceEnabled() && StringUtils.isNotBlank(config.getConnectorServiceUrl())) {
+			IDEConnectorClientConfiguration clientConfiguration = new IDEConnectorClientConfiguration();
+			clientConfiguration.setConnectorServiceBaseUrl(config.getConnectorServiceUrl());
+			connectorClient = new IDEConnectorClient(clientConfiguration);
+		}
 	}
 	
 	
@@ -565,5 +597,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public void setConsole(OpenCmsToolWindowConsole console) {
 		this.console = console;
 	}
-
+	
+	public boolean isRefreshing() {
+		return refreshing;
+	}
 }
