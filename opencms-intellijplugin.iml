@@ -20,7 +20,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="opencms-manifestgenerator-1.5" level="project" />
+    <orderEntry type="library" name="opencms-manifestgenerator-1.6" level="project" />
     <orderEntry type="library" name="opencms-modulepackager-1.1" level="project" />
     <orderEntry type="module-library">
       <library>
