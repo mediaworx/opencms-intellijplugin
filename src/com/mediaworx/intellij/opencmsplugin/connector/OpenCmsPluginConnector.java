@@ -76,21 +76,27 @@ public class OpenCmsPluginConnector {
 	private String connectorUrl;
 	private String user;
 	private String password;
-	private boolean useMetaVariables;
+	private boolean useMetaDateVariables;
+	private boolean useMetaIdVariables;
 	private CloseableHttpClient httpClient;
 	private JSONParser jsonParser;
 
 	/**
 	 * Creates a new Plugin Connector
-	 * @param connectorUrl  the Url under which the connector JSP cam be called
-	 * @param user          OpenCms user to be used for communication with the connector
-	 * @param password      The OpenCms user's password
+	 * @param connectorUrl          the Url under which the connector JSP cam be called
+	 * @param user                  OpenCms user to be used for communication with the connector
+	 * @param password              The OpenCms user's password
+	 * @param useMetaDateVariables  <code>true</code> if date variables should be used in meta data, <code>false</code>
+	 *                              otherwise
+	 * @param useMetaIdVariables    <code>true</code> if UUID variables should be used in meta data, <code>false</code>
+	 *                              otherwise
 	 */
-	public OpenCmsPluginConnector(String connectorUrl, String user, String password, boolean useMetaVariables) {
+	public OpenCmsPluginConnector(String connectorUrl, String user, String password, boolean useMetaDateVariables, boolean useMetaIdVariables) {
 		this.connectorUrl = connectorUrl;
 		this.user = user;
 		this.password = password;
-		this.useMetaVariables = useMetaVariables;
+		this.useMetaDateVariables = useMetaDateVariables;
+		this.useMetaIdVariables = useMetaIdVariables;
 		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
 		clientBuilder.setUserAgent("IntelliJ OpenCms plugin connector");
 		httpClient = clientBuilder.build();
@@ -134,11 +140,21 @@ public class OpenCmsPluginConnector {
 	}
 
 	/**
-	 * Sets the flag denoting if using placeholders instead of UUIDs and dates in resource meta data is enabled
-	 * @param useMetaVariables  <code>true</code> if using placeholders should be enabled, <code>false</code> otherwise
+	 * Sets the flag denoting if using placeholders instead of dates in resource meta data is enabled
+	 * @param useMetaDateVariables  <code>true</code> if using date placeholders should be enabled, <code>false</code>
+	 *                              otherwise
 	 */
-	public void setUseMetaVariables(boolean useMetaVariables) {
-		this.useMetaVariables = useMetaVariables;
+	public void setUseMetaDateVariables(boolean useMetaDateVariables) {
+		this.useMetaDateVariables = useMetaDateVariables;
+	}
+
+	/**
+	 * Sets the flag denoting if using placeholders instead of UUIDs in resource meta data is enabled
+	 * @param useMetaIdVariables  <code>true</code> if using UUID placeholders should be enabled, <code>false</code>
+	 *                            otherwise
+	 */
+	public void setUseMetaIdVariables(boolean useMetaIdVariables) {
+		this.useMetaIdVariables = useMetaIdVariables;
 	}
 
 	/**
@@ -150,7 +166,7 @@ public class OpenCmsPluginConnector {
 	 *                                   an invalid http status
 	 */
 	public HashMap<String, String> getModuleResourceInfos(List<OpenCmsModuleResource> moduleResources) throws IOException, OpenCmsConnectorException {
-		List<String> resourcePaths = new ArrayList<String>(moduleResources.size());
+		List<String> resourcePaths = new ArrayList<>(moduleResources.size());
 		for (OpenCmsModuleResource moduleResource : moduleResources) {
 			resourcePaths.add(moduleResource.getResourcePath());
 		}
@@ -277,9 +293,14 @@ public class OpenCmsPluginConnector {
 
 		Map<String, String> additionalParams = null;
 
-		if ((action.equals(ACTION_RESOURCEINFOS) || action.equals(ACTION_MODULEMANIFESTS)) && useMetaVariables) {
-			additionalParams = new HashMap<String, String>();
-			additionalParams.put("useMetaVariables", "true");
+		if ((action.equals(ACTION_RESOURCEINFOS) || action.equals(ACTION_MODULEMANIFESTS)) && (useMetaDateVariables || useMetaIdVariables)) {
+			additionalParams = new HashMap<>();
+			if (useMetaDateVariables) {
+				additionalParams.put("useDateVariables", "true");
+			}
+			if (useMetaIdVariables) {
+				additionalParams.put("useIdVariables", "true");
+			}
 		}
 
 		HashMap<String, String> resourceInfos = new HashMap<String, String>();

@@ -63,7 +63,8 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 		final List<File> filesToBeRefreshed = new ArrayList<File>(moduleFiles.size());
 
 		OpenCmsModuleManifestGenerator manifestGenerator = new OpenCmsModuleManifestGenerator();
-		manifestGenerator.setReplaceMetaVariables(config.isUseMetaVariablesEnabled());
+		manifestGenerator.setReplaceDateVariables(config.isUseMetaDateVariablesEnabled());
+		manifestGenerator.setReplaceIdVariables(config.isUseMetaIdVariablesEnabled());
 		plugin.showConsole();
 		clearConsole();
 

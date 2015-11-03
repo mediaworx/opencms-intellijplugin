@@ -66,7 +66,8 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 	private JComboBox autoPublishMode;
 	private JLabel pluginVersionLabel;
 	private JPanel pullMetaDataOptionsPanel;
-	private JCheckBox useMetaVariablesCheckbox;
+	private JCheckBox useMetaDateVariablesCheckbox;
+	private JCheckBox useMetaIdVariablesCheckbox;
 	private JTextField moduleZipTargetFolderPath;
 	private JTextArea consultThePluginWikiTextArea;
 
@@ -154,7 +155,8 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		pullMetaDataCheckbox.setSelected(data.isPullMetadataEnabled());
 		pullMetaDataOptionsPanel.setVisible(data.isPullMetadataEnabled());
 		FormTools.setConfiguredOrKeepDefault(manifestRoot, data.getManifestRoot());
-		useMetaVariablesCheckbox.setSelected(data.isUseMetaVariablesEnabled());
+		useMetaDateVariablesCheckbox.setSelected(data.isUseMetaDateVariablesEnabled());
+		useMetaIdVariablesCheckbox.setSelected(data.isUseMetaIdVariablesEnabled());
 	}
 
 
@@ -181,7 +183,9 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		data.setAutoPublishMode(FormTools.getAutoPublishModeFromCombobox(autoPublishMode));
 		data.setPullMetadataEnabled(pullMetaDataCheckbox.isSelected());
 		data.setManifestRoot(manifestRoot.getText());
-		data.setUseMetaVariablesEnabled(useMetaVariablesCheckbox.isSelected());
+		// data.setUseMetaVariablesEnabled(useMetaDateVariablesCheckbox.isSelected() && useMetaIdVariablesCheckbox.isSelected());
+		data.setUseMetaDateVariablesEnabled(useMetaDateVariablesCheckbox.isSelected());
+		data.setUseMetaIdVariablesEnabled(useMetaIdVariablesCheckbox.isSelected());
 	}
 
 
@@ -210,7 +214,8 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 			!FormTools.getAutoPublishModeFromCombobox(autoPublishMode).equals(data.getAutoPublishMode()) ||
 			pullMetaDataCheckbox.isSelected() != data.isPullMetadataEnabled() ||
 			FormTools.isTextFieldModified(manifestRoot, data.getManifestRoot()) ||
-			useMetaVariablesCheckbox.isSelected() != data.isUseMetaVariablesEnabled()
+			useMetaDateVariablesCheckbox.isSelected() != data.isUseMetaDateVariablesEnabled() ||
+			useMetaIdVariablesCheckbox.isSelected() != data.isUseMetaIdVariablesEnabled()
 		;
 	}
 

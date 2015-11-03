@@ -3,11 +3,11 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="5"/>
     <constraints>
-      <xy x="20" y="20" width="981" height="769"/>
+      <xy x="20" y="20" width="981" height="831"/>
     </constraints>
     <properties>
       <minimumSize width="715" height="300"/>
-      <preferredSize width="755" height="755"/>
+      <preferredSize width="755" height="770"/>
     </properties>
     <border type="none" title=""/>
     <children>
@@ -23,7 +23,7 @@
           <grid id="f9d49" layout-manager="FormLayout">
             <rowspec value="top:35px:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="top:d:noGrow"/>
+            <rowspec value="top:755px:grow"/>
             <colspec value="left:max(d;232px):noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
             <colspec value="left:max(d;480px):grow(0.7999999999999999)"/>
@@ -37,7 +37,7 @@
               <alignmentY value="0.0"/>
               <autoscrolls value="false"/>
               <minimumSize width="525" height="300"/>
-              <preferredSize width="555" height="400"/>
+              <preferredSize width="555" height="450"/>
               <verifyInputWhenFocusTarget value="false"/>
             </properties>
             <border type="empty"/>
@@ -77,7 +77,7 @@
                 <rowspec value="top:3dlu:noGrow"/>
                 <rowspec value="center:max(d;4px):noGrow"/>
                 <rowspec value="top:3dlu:noGrow"/>
-                <rowspec value="center:211px:noGrow"/>
+                <rowspec value="center:240px:noGrow"/>
                 <colspec value="fill:15px:noGrow"/>
                 <colspec value="left:4dlu:noGrow"/>
                 <colspec value="fill:150px:noGrow"/>
@@ -89,7 +89,7 @@
                 </constraints>
                 <properties>
                   <minimumSize width="500" height="265"/>
-                  <preferredSize width="500" height="720"/>
+                  <preferredSize width="500" height="750"/>
                 </properties>
                 <border type="none">
                   <color color="-64768"/>
@@ -246,7 +246,7 @@
                     <rowspec value="top:3dlu:noGrow"/>
                     <rowspec value="center:d:noGrow"/>
                     <rowspec value="top:3dlu:noGrow"/>
-                    <rowspec value="center:67px:noGrow"/>
+                    <rowspec value="top:max(m;95px):grow"/>
                     <colspec value="fill:150px:noGrow"/>
                     <colspec value="left:4dlu:noGrow"/>
                     <colspec value="fill:max(d;200px):grow"/>
@@ -257,7 +257,7 @@
                     <properties>
                       <enabled value="true"/>
                       <minimumSize width="300" height="80"/>
-                      <preferredSize width="400" height="150"/>
+                      <preferredSize width="400" height="175"/>
                     </properties>
                     <border type="none"/>
                     <children>
@@ -334,6 +334,8 @@
                         <rowspec value="center:d:noGrow"/>
                         <rowspec value="top:4dlu:noGrow"/>
                         <rowspec value="center:max(d;4px):noGrow"/>
+                        <rowspec value="top:3dlu:noGrow"/>
+                        <rowspec value="center:max(d;4px):noGrow"/>
                         <colspec value="fill:150px:noGrow"/>
                         <colspec value="left:4dlu:noGrow"/>
                         <colspec value="fill:d:grow"/>
@@ -375,7 +377,7 @@
                               <text value="Use Meta &amp;Variables"/>
                             </properties>
                           </component>
-                          <component id="a3af2" class="javax.swing.JCheckBox" binding="useMetaVariablesCheckbox">
+                          <component id="a3af2" class="javax.swing.JCheckBox" binding="useMetaDateVariablesCheckbox">
                             <constraints>
                               <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                               <forms/>
@@ -384,7 +386,19 @@
                               <font size="12"/>
                               <minimumSize width="300" height="24"/>
                               <preferredSize width="300" height="24"/>
-                              <text value="Replace UUIDs (structure, resource) and dates (created, modified) with placeholders when pulling meta data"/>
+                              <text value="Replace dates (created, modified) with placeholders when pulling meta data"/>
+                            </properties>
+                          </component>
+                          <component id="ada67" class="javax.swing.JCheckBox" binding="useMetaIdVariablesCheckbox">
+                            <constraints>
+                              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                              <forms/>
+                            </constraints>
+                            <properties>
+                              <font size="12"/>
+                              <minimumSize width="300" height="24"/>
+                              <preferredSize width="300" height="24"/>
+                              <text value="Replace UUIDs (structure, resource) with placeholders when pulling meta data (deprecated, not recommended)"/>
                             </properties>
                           </component>
                         </children>

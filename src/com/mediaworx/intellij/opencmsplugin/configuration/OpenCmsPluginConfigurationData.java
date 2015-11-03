@@ -53,6 +53,8 @@ public class OpenCmsPluginConfigurationData {
 	private AutoPublishMode autoPublishMode;
 	private boolean pullMetadataEnabled;
 	private String manifestRoot;
+	private boolean useMetaDateVariablesEnabled;
+	private boolean useMetaIdVariablesEnabled;
 	private boolean useMetaVariablesEnabled;
 
 	/**
@@ -402,19 +404,70 @@ public class OpenCmsPluginConfigurationData {
 	}
 
 	/**
-	 * Gets the flag denoting if using placeholders instead of UUIDs and dates in resource meta data is enabled
+	 * Gets the flag denoting if using placeholders instead of dates in resource meta data is enabled
 	 * @return <code>true</code> if using placeholders is enabled, <code>false</code> otherwise
 	 */
+	public boolean isUseMetaDateVariablesEnabled() {
+		return useMetaVariablesEnabled || useMetaDateVariablesEnabled;
+	}
+
+	/**
+	 * Sets the flag denoting if using placeholders instead of dates in resource meta data is enabled
+	 * @param useMetaDateVariablesEnabled  <code>true</code> if using placeholders should be enabled,
+	 *                                     <code>false</code> otherwise
+	 */
+	public void setUseMetaDateVariablesEnabled(boolean useMetaDateVariablesEnabled) {
+		this.useMetaDateVariablesEnabled = useMetaDateVariablesEnabled;
+		if (!useMetaDateVariablesEnabled) {
+			this.useMetaVariablesEnabled = false;
+		}
+	}
+
+	/**
+	 * Gets the flag denoting if using placeholders instead of UUIDs in resource meta data is enabled
+	 *
+	 * @return <code>true</code> if using placeholders is enabled, <code>false</code> otherwise
+	 */
+	public boolean isUseMetaIdVariablesEnabled() {
+		return useMetaVariablesEnabled || useMetaIdVariablesEnabled;
+	}
+
+	/**
+	 * Sets the flag denoting if using placeholders instead of UUIDs in resource meta data is enabled
+	 *
+	 * @param useMetaIdVariablesEnabled <code>true</code> if using placeholders should be enabled, <code>false</code>
+	 *                                  otherwise
+	 */
+	public void setUseMetaIdVariablesEnabled(boolean useMetaIdVariablesEnabled) {
+		this.useMetaIdVariablesEnabled = useMetaIdVariablesEnabled;
+		if (!useMetaIdVariablesEnabled) {
+			this.useMetaVariablesEnabled = false;
+		}
+	}
+
+	/**
+	 * Gets the flag denoting if using placeholders instead of UUIDs and dates in resource meta data is enabled
+	 *
+	 * @return <code>true</code> if using placeholders is enabled, <code>false</code> otherwise
+	 * @deprecated no longer used, but needed for downward compatibility
+	 */
 	public boolean isUseMetaVariablesEnabled() {
-		return useMetaVariablesEnabled;
+		return useMetaVariablesEnabled || (this.useMetaDateVariablesEnabled && this.useMetaIdVariablesEnabled);
 	}
 
 	/**
 	 * Sets the flag denoting if using placeholders instead of UUIDs and dates in resource meta data is enabled
-	 * @param useMetaVariablesEnabled  <code>true</code> if using placeholders should be enabled, <code>false</code> otherwise
+	 *
+	 * @param useMetaVariablesEnabled <code>true</code> if using placeholders should be enabled, <code>false</code>
+	 *                                otherwise
+	 * @deprecated no longer used, but needed for downward compatibility
 	 */
 	public void setUseMetaVariablesEnabled(boolean useMetaVariablesEnabled) {
 		this.useMetaVariablesEnabled = useMetaVariablesEnabled;
+		if (useMetaVariablesEnabled) {
+			this.useMetaDateVariablesEnabled = true;
+			this.useMetaIdVariablesEnabled = true;
+		}
 	}
 
 	/**
