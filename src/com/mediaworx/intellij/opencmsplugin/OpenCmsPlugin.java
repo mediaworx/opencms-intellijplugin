@@ -514,7 +514,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 */
 	private void initConnectorClient() {
 		OpenCmsPluginConfigurationData config = getPluginConfiguration();
-		if (config.isPluginConnectorServiceEnabled() && StringUtils.isNotBlank(config.getConnectorServiceUrl())) {
+		if (config != null && config.isOpenCmsPluginEnabled() && config.isPluginConnectorServiceEnabled() && StringUtils.isNotBlank(config.getConnectorServiceUrl())) {
 			IDEConnectorClientConfiguration clientConfiguration = new IDEConnectorClientConfiguration();
 			clientConfiguration.setConnectorServiceBaseUrl(config.getConnectorServiceUrl());
 			connectorClient = new IDEConnectorClient(clientConfiguration);
