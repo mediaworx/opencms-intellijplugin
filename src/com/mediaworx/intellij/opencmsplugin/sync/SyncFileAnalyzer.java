@@ -147,12 +147,6 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			return;
 		}
 
-		// RTASK: handle intellij file system refresh somehow, if still required!
-		// check if the file/folder is contained in classes, refresh the IntelliJ VFS if necessary
-		if (PluginTools.ensureUnixPath(file.getPath()).contains(CLASSES_FOLDER)) {
-			// file.refresh(false, false);
-		}
-
 		String vfsPath = ocmsModule.getVfsPathForFile(file);
 
 		LOG.info("VFS path is " + vfsPath);
@@ -195,8 +189,8 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 				handleExistingFolder(ocmsModule, file, (Folder)vfsObject, vfsPath);
 			}
 		}
-		// It's a file  // RTASK: Check what this isSpecialFile did (originally this was an IntelliJ VirtualFile) and if that's still needed after the switch to Java Files
-		else /* if (!file.isSpecialFile()) */ {
+		// It's a file
+		else {
 			// The file is not there, so push it
 			if (!vfsObjectExists) {
 				if (!pullAllMetaInformation) {
