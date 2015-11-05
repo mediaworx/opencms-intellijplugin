@@ -27,6 +27,7 @@ package com.mediaworx.intellij.opencmsplugin.sync;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VFileProperty;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.entities.SyncFile;
@@ -193,7 +194,7 @@ class SyncFileAnalyzer extends VfsFileAnalyzer implements Runnable {
 			}
 		}
 		// It's a file
-		else if (!ideaVFile.isSpecialFile()) {
+		else if (!ideaVFile.is(VFileProperty.SPECIAL)) {
 			// The file is not there, so push it
 			if (!vfsObjectExists) {
 				if (!pullAllMetaInformation) {
