@@ -3,27 +3,36 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="5"/>
     <constraints>
-      <xy x="20" y="20" width="981" height="831"/>
+      <xy x="20" y="20" width="981" height="1034"/>
     </constraints>
     <properties>
-      <minimumSize width="715" height="300"/>
-      <preferredSize width="755" height="770"/>
+      <minimumSize width="715" height="825"/>
+      <preferredSize width="755" height="825"/>
     </properties>
-    <border type="none" title=""/>
+    <border type="none" title="">
+      <color color="-15138561"/>
+    </border>
     <children>
       <scrollpane id="8796a">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="7" anchor="0" fill="3" indent="4" use-parent-layout="false">
+            <minimum-size width="-1" height="825"/>
+            <preferred-size width="-1" height="825"/>
+          </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <inheritsPopupMenu value="false"/>
+          <verifyInputWhenFocusTarget value="true"/>
+          <verticalScrollBarPolicy value="20"/>
+        </properties>
         <border type="none">
-          <color color="-16764673"/>
+          <color color="-27648"/>
         </border>
         <children>
           <grid id="f9d49" layout-manager="FormLayout">
             <rowspec value="top:35px:noGrow"/>
             <rowspec value="top:4dlu:noGrow"/>
-            <rowspec value="top:755px:grow"/>
+            <rowspec value="top:800px:grow"/>
             <colspec value="left:max(d;232px):noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
             <colspec value="left:max(d;480px):grow(0.7999999999999999)"/>
@@ -36,11 +45,13 @@
               <alignmentX value="0.0"/>
               <alignmentY value="0.0"/>
               <autoscrolls value="false"/>
-              <minimumSize width="525" height="300"/>
-              <preferredSize width="555" height="450"/>
-              <verifyInputWhenFocusTarget value="false"/>
+              <minimumSize width="525" height="540"/>
+              <preferredSize width="555" height="540"/>
+              <verifyInputWhenFocusTarget value="true"/>
             </properties>
-            <border type="empty"/>
+            <border type="none">
+              <color color="-62208"/>
+            </border>
             <children>
               <component id="2fdbf" class="javax.swing.JCheckBox" binding="enabledCheckBox" default-binding="true">
                 <constraints>
@@ -77,7 +88,7 @@
                 <rowspec value="top:3dlu:noGrow"/>
                 <rowspec value="center:max(d;4px):noGrow"/>
                 <rowspec value="top:3dlu:noGrow"/>
-                <rowspec value="center:240px:noGrow"/>
+                <rowspec value="top:360px:noGrow"/>
                 <colspec value="fill:15px:noGrow"/>
                 <colspec value="left:4dlu:noGrow"/>
                 <colspec value="fill:150px:noGrow"/>
@@ -88,8 +99,9 @@
                   <forms defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties>
-                  <minimumSize width="500" height="265"/>
-                  <preferredSize width="500" height="750"/>
+                  <minimumSize width="500" height="780"/>
+                  <opaque value="false"/>
+                  <preferredSize width="500" height="780"/>
                 </properties>
                 <border type="none">
                   <color color="-64768"/>
@@ -246,7 +258,7 @@
                     <rowspec value="top:3dlu:noGrow"/>
                     <rowspec value="center:d:noGrow"/>
                     <rowspec value="top:3dlu:noGrow"/>
-                    <rowspec value="top:max(m;95px):grow"/>
+                    <rowspec value="top:175px:grow"/>
                     <colspec value="fill:150px:noGrow"/>
                     <colspec value="left:4dlu:noGrow"/>
                     <colspec value="fill:max(d;200px):grow"/>
@@ -256,10 +268,12 @@
                     </constraints>
                     <properties>
                       <enabled value="true"/>
-                      <minimumSize width="300" height="80"/>
-                      <preferredSize width="400" height="175"/>
+                      <minimumSize width="300" height="220"/>
+                      <preferredSize width="400" height="260"/>
                     </properties>
-                    <border type="none"/>
+                    <border type="none">
+                      <color color="-64256"/>
+                    </border>
                     <children>
                       <component id="681fa" class="javax.swing.JLabel">
                         <constraints>
@@ -343,8 +357,13 @@
                           <grid row="10" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                           <forms/>
                         </constraints>
-                        <properties/>
-                        <border type="none"/>
+                        <properties>
+                          <minimumSize width="458" height="120"/>
+                          <preferredSize width="458" height="120"/>
+                        </properties>
+                        <border type="none">
+                          <color color="-62208"/>
+                        </border>
                         <children>
                           <component id="45698" class="javax.swing.JLabel">
                             <constraints>
