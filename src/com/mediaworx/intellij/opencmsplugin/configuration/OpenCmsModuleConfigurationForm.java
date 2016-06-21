@@ -50,6 +50,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 	private JRadioButton useProjectDefaultVfsRootRadioButton;
 	private JRadioButton useModuleSpecificVfsRootRadioButton;
 	private JTextField localVfsRoot;
+	private JTextField exportImportSiteRoot;
 	private JRadioButton useProjectDefaultSyncModeRadioButton;
 	private JRadioButton useModuleSpecificSyncModeRadioButton;
 	private JComboBox syncMode;
@@ -88,6 +89,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		useProjectDefaultSyncModeRadioButton.addActionListener(this);
 		useModuleSpecificSyncModeRadioButton.addActionListener(this);
 		localVfsRoot.addFocusListener(this);
+		exportImportSiteRoot.addFocusListener(this);
 		if (config != null) {
 			moduleVersionPanel.setVisible(config.isPluginConnectorEnabled() && config.isPullMetadataEnabled());
 		}
@@ -134,6 +136,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 				localVfsRoot.setEnabled(true);
 			}
 			FormTools.setConfiguredOrKeepDefault(localVfsRoot, data.getLocalVfsRoot());
+			FormTools.setConfiguredOrKeepDefault(exportImportSiteRoot, data.getExportImportSiteRoot());
 
 			if (data.isUseProjectDefaultSyncModeEnabled()) {
 				useProjectDefaultSyncModeRadioButton.setSelected(true);
@@ -186,6 +189,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 			data.setUseProjectDefaultVfsRootEnabled(false);
 		}
 		data.setLocalVfsRoot(localVfsRoot.getText());
+		data.setExportImportSiteRoot(exportImportSiteRoot.getText());
 		if (useProjectDefaultSyncModeRadioButton.isSelected()) {
 			data.setUseProjectDefaultSyncModeEnabled(true);
 		}
@@ -210,6 +214,7 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 				FormTools.isTextFieldModified(moduleName, data.getModuleName()) ||
 				useProjectDefaultVfsRootRadioButton.isSelected() != data.isUseProjectDefaultVfsRootEnabled() ||
 				FormTools.isTextFieldModified(localVfsRoot, data.getLocalVfsRoot()) ||
+				FormTools.isTextFieldModified(exportImportSiteRoot, data.getExportImportSiteRoot()) ||
 				useProjectDefaultSyncModeRadioButton.isSelected() != data.isUseProjectDefaultSyncModeEnabled() ||
 				!FormTools.getSyncModeFromComboBox(syncMode).equals(data.getSyncMode()) ||
 				setSpecificModuleVersionCheckbox.isSelected() != data.isSetSpecificModuleVersionEnabled() ||
@@ -270,6 +275,9 @@ public class OpenCmsModuleConfigurationForm implements ActionListener, FocusList
 		JTextField textField = (JTextField)e.getSource();
 		if (textField == localVfsRoot) {
 			FormTools.cleanupPathField(localVfsRoot, true);
+		}
+		else if (textField == exportImportSiteRoot) {
+			FormTools.cleanupPathField(exportImportSiteRoot, false);
 		}
 	}
 }

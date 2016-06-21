@@ -31,6 +31,7 @@ import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.ConsolePrinter;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
+import com.mediaworx.opencms.ideconnector.data.ModuleImportInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,7 +65,7 @@ public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
 
 			final OpenCmsToolWindowConsole console = plugin.getConsole();
 
-			final List<String> moduleZipPaths = new ArrayList<>();
+			final List<ModuleImportInfo> moduleImportInfos = new ArrayList<>();
 			for (File moduleFile : moduleFiles) {
 				OpenCmsModule ocmsModule = plugin.getOpenCmsModules().getModuleForFile(moduleFile);
 				if (ocmsModule == null || !ocmsModule.isFileModuleRoot(moduleFile)) {
@@ -72,13 +73,16 @@ public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
 				}
 				String moduleZipPath = ocmsModule.findNewestModuleZipPath();
 				if (StringUtils.isNotBlank(moduleZipPath)) {
-					moduleZipPaths.add(moduleZipPath);
+					ModuleImportInfo importInfo = new ModuleImportInfo();
+					importInfo.setModuleZipPath(moduleZipPath);
+					importInfo.setImportSiteRoot(ocmsModule.getExportImportSiteRoot());
+					moduleImportInfos.add(importInfo);
 				}
 				else {
 					console.error("No module zip for module " + ocmsModule.getModuleName() + " found in target folder " + config.getModuleZipTargetFolderPath());
 				}
 			}
-			if (moduleZipPaths.size() > 0) {
+			if (moduleImportInfos.size() > 0) {
 
 				plugin.showConsole();
 				clearConsole();
@@ -88,7 +92,7 @@ public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
 					public void run() {
 						try {
 							connectorClient.login(config.getUsername(), config.getPassword());
-							connectorClient.importModules(moduleZipPaths, new ConsolePrinter(console));
+							connectorClient.importModules(moduleImportInfos, new ConsolePrinter(console));
 							connectorClient.logout();
 						}
 						catch (Exception e) {
@@ -96,7 +100,7 @@ public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
 								new Runnable() {
 									@Override
 									public void run() {
-										Messages.showDialog("This function is only available if the IDE Connector module 1.5 is installed and configured in OpenCms. Consult the Plugin Wiki for mor information.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+										Messages.showDialog("This function is only available if the IDE Connector module 1.5 is installed and configured in OpenCms and if OpenCms is running. Consult the Plugin Wiki for mor information.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 									}
 								}
 							);

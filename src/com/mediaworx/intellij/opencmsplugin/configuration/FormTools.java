@@ -85,6 +85,9 @@ public class FormTools {
 	public static void cleanupPathField(JTextComponent field, boolean removeLeadingSlash) {
 		String fieldValue = field.getText();
 		fieldValue = fieldValue.replace("\\", "/");
+		if ("/".equals(fieldValue)) {
+			return;
+		}
 		int startIndex = 0;
 		int endIndex = fieldValue.length();
 		if (removeLeadingSlash && fieldValue.startsWith("/")) {

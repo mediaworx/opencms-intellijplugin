@@ -117,6 +117,14 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		return localVfsRoot;
 	}
 
+	public String getExportImportSiteRoot() {
+		String exportImportSiteRoot = moduleConfig.getExportImportSiteRoot();
+		if (StringUtils.isBlank(exportImportSiteRoot)) {
+			exportImportSiteRoot = "/";
+		}
+		return exportImportSiteRoot;
+	}
+
 	public String getManifestRoot() {
 		return moduleBasePath + "/" + plugin.getPluginConfiguration().getManifestRoot();
 	}
@@ -201,11 +209,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 
 	public String getVfsPathForFile(final File file) {
 		String filepath = PluginTools.ensureUnixPath(file.getPath());
-		String relativeName = filepath.substring(localVfsRoot.length());
-		if (relativeName.length() == 0) {
-			relativeName = "/";
-		}
-		return relativeName;
+		return getVfsPathForRealPath(filepath);
 	}
 
 	public String getVfsPathForRealPath(final String path) {
@@ -213,7 +217,7 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		if (relativeName.length() == 0) {
 			relativeName = "/";
 		}
-		return relativeName;
+		return PluginTools.addVfsSiteRootToLocalPath(this, relativeName);
 	}
 
 	public String findNewestModuleZipPath() {

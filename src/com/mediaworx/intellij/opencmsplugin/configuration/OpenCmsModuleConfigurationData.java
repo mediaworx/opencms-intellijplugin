@@ -36,6 +36,7 @@ public class OpenCmsModuleConfigurationData {
     private String moduleName;
 	private boolean useProjectDefaultVfsRootEnabled = true;
     private String localVfsRoot;
+    private String exportImportSiteRoot;
 	private boolean useProjectDefaultSyncModeEnabled = true;
 	private SyncMode syncMode;
 	private boolean setSpecificModuleVersionEnabled = false;
@@ -133,6 +134,24 @@ public class OpenCmsModuleConfigurationData {
     public void setLocalVfsRoot(String localVfsRoot) {
         this.localVfsRoot = localVfsRoot;
     }
+
+	/**
+	 * Returns the VFS site root to be used when importing the module. Each module can configure its own import root.
+	 * That might be useful if you want to have a site's content in a module (then the module root would be something
+	 * like /sites/mysite).
+	 */
+	public String getExportImportSiteRoot() {
+		return exportImportSiteRoot;
+	}
+
+	/**
+	 * Sets VFS site root to be used when importing the module. Each module can configure its own import root. That
+	 * might be useful if you want to have a site's content in a module (then the module root would be something like
+	 * /sites/mysite).
+	 */
+	public void setExportImportSiteRoot(String exportImportSiteRoot) {
+		this.exportImportSiteRoot = exportImportSiteRoot;
+	}
 
 	/**
 	 * Flag denoting if the module uses the project's default Sync Mode.

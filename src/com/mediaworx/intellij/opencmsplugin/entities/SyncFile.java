@@ -26,6 +26,7 @@ package com.mediaworx.intellij.opencmsplugin.entities;
 
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncAction;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import com.mediaworx.opencms.moduleutils.manifestgenerator.OpenCmsModuleManifestGenerator;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 
@@ -59,7 +60,8 @@ public class SyncFile extends SyncEntity {
 	 * @return the path to the meta data file for this file
 	 */
 	public String getMetaInfoFilePath() {
-		return OpenCmsModuleManifestGenerator.getMetaInfoPath(getOcmsModule().getManifestRoot(), getVfsPath(), false);
+		String localPath = PluginTools.stripVfsSiteRootFromVfsPath(getOcmsModule(), getVfsPath());
+		return OpenCmsModuleManifestGenerator.getMetaInfoPath(getOcmsModule().getManifestRoot(), localPath, false);
 	}
 
 }

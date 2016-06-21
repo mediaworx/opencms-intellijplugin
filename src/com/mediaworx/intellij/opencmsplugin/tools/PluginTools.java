@@ -27,6 +27,7 @@ package com.mediaworx.intellij.opencmsplugin.tools;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -62,5 +63,25 @@ public class PluginTools {
 	
 	public static String ensureUnixNewline(String in) {
 		return in.replaceAll("\\r\\n|\\r", "\n");
+	}
+
+	public static String stripVfsSiteRootFromVfsPath(OpenCmsModule module, String vfsPath) {
+		String localPath;
+		if ("/".equals(module.getExportImportSiteRoot())) {
+			localPath = vfsPath;
+		}
+		else {
+			localPath = vfsPath.replaceFirst("^" + module.getExportImportSiteRoot(), "");
+		}
+		return localPath;
+	}
+
+	public static String addVfsSiteRootToLocalPath(OpenCmsModule module, String localPath) {
+		String vfsRootPath = localPath;
+		if (!"/".equals(module.getExportImportSiteRoot())) {
+			vfsRootPath = module.getExportImportSiteRoot() + vfsRootPath;
+		}
+		return vfsRootPath;
+
 	}
 }

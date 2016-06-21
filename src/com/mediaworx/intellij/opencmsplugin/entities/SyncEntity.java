@@ -110,7 +110,8 @@ public abstract class SyncEntity {
 	 * @return the entity's RFS path
 	 */
 	public String getRfsPath() {
-		return ocmsModule.getLocalVfsRoot() + vfsPath;
+		String localPath = PluginTools.stripVfsSiteRootFromVfsPath(ocmsModule, vfsPath);
+		return ocmsModule.getLocalVfsRoot() + localPath;
 	}
 
 	/**

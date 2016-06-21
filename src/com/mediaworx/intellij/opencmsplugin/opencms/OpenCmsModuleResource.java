@@ -41,7 +41,8 @@ public class OpenCmsModuleResource {
 	}
 
 	public String getResourcePath() {
-		return resourcePath.replaceFirst("/$", ""); // strip trailing slash
+		String resourcePath = this.resourcePath.replaceFirst("/$", ""); // strip trailing slash
+		return PluginTools.addVfsSiteRootToLocalPath(openCmsModule, resourcePath);
 	}
 
 }
