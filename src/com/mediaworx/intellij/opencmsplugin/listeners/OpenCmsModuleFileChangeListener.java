@@ -281,8 +281,10 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				String oldVfsPath = oldParentVfsPath + "/" + ideaVFile.getName();
 				if (getVfsAdapter().exists(oldVfsPath)) {
 					String newParentVfsPath = newOcmsModule.getVfsPathForRealPath(newParentPath);
-					LOG.debug("A file was moved from " + oldParentVfsPath + " to " + newParentVfsPath);
-					vfsFilesToBeMoved.add(new VfsFileMoveInfo(oldOcmsModule, newOcmsModule, ideaVFile, ideaVFile.getName(), oldParentVfsPath, newParentVfsPath));
+					if (!oldParentVfsPath.equals(newParentVfsPath)) {
+						LOG.debug("A file was moved from " + oldParentVfsPath + " to " + newParentVfsPath);
+						vfsFilesToBeMoved.add(new VfsFileMoveInfo(oldOcmsModule, newOcmsModule, ideaVFile, ideaVFile.getName(), oldParentVfsPath, newParentVfsPath));
+					}
 				}
 			}
 
@@ -319,7 +321,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				String newVfsPath = ocmsModule.getVfsPathForRealPath(renameFilePath);
 				String oldVfsPath = newVfsPath.replaceFirst(newName, oldName);
 
-				if (ocmsModule.isPathModuleResource(ocmsModule.getLocalVfsRoot() + oldVfsPath) && getVfsAdapter().exists(oldVfsPath)) {
+				if (!oldVfsPath.equals(newVfsPath) && ocmsModule.isPathModuleResource(ocmsModule.getLocalVfsRoot() + oldVfsPath) && getVfsAdapter().exists(oldVfsPath)) {
 					vfsFilesToBeRenamed.add(new VfsFileRenameInfo(ocmsModule, ideaVFile, oldVfsPath, newVfsPath, newName));
 				}
 			}
