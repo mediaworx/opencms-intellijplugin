@@ -1,19 +1,19 @@
 <component name="libraryTable">
-  <library name="opencms-manifestgenerator-1.6">
+  <library name="opencms-manifestgenerator-1.7">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/commons-io-2.4.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.6.6.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/commons-lang3-3.4.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/opencms-manifestgenerator-1.6.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/opencms-xmlutils-1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/opencms-manifestgenerator-1.7.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/lib/opencms-manifestgenerator-1.6-javadoc.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/opencms-xmlutils-1.3-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/opencms-manifestgenerator-1.7-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/lib/opencms-manifestgenerator-1.6-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/opencms-xmlutils-1.3-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/opencms-manifestgenerator-1.7-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

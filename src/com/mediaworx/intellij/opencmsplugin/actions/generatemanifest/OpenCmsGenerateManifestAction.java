@@ -36,7 +36,6 @@ import com.mediaworx.opencms.moduleutils.manifestgenerator.exceptions.OpenCmsMet
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,7 +59,6 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 		super.actionPerformed(event);
 
 		List<File> moduleFiles = getModuleFileList(event);
-		final List<File> filesToBeRefreshed = new ArrayList<File>(moduleFiles.size());
 
 		OpenCmsModuleManifestGenerator manifestGenerator = new OpenCmsModuleManifestGenerator();
 		manifestGenerator.setReplaceDateVariables(config.isUseMetaDateVariablesEnabled());
@@ -80,7 +78,7 @@ public abstract class OpenCmsGenerateManifestAction extends OpenCmsPluginAction 
 				else {
 					manifestGenerator.setModuleVersion(null);
 				}
-				manifestGenerator.generateManifest(new File(ocmsModule.getManifestRoot()));
+				manifestGenerator.generateManifest(new File(ocmsModule.getManifestRoot()), ocmsModule.getLocalVfsRoot());
 				plugin.getConsole().info("manifest.xml created at " + ocmsModule.getManifestRoot());
 				VirtualFile manifestRoot = LocalFileSystem.getInstance().findFileByPath(ocmsModule.getManifestRoot());
 				if (manifestRoot != null) {
