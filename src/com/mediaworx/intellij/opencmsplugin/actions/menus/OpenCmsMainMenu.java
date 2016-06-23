@@ -28,6 +28,7 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapManager;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
@@ -196,7 +197,7 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
-		if (!plugin.isRefreshing()) {
+		if (!plugin.isRefreshing() && !DumbService.isDumb(currentProject)) {
 			Presentation presentation = event.getPresentation();
 	
 			if (presentation.isEnabled() != isPluginEnabled()) {
