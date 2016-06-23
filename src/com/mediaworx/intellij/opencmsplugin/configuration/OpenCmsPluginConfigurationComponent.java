@@ -24,17 +24,15 @@
 
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.StorageScheme;
+import com.intellij.openapi.components.*;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
+import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
+import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +53,7 @@ import javax.swing.*;
  */
 public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Configurable, PersistentStateComponent<OpenCmsPluginConfigurationData> {
 
-   	private OpenCmsPluginConfigurationForm form;
+	private OpenCmsPluginConfigurationForm form;
 	private OpenCmsPluginConfigurationData configurationData;
 
 	Project project;
@@ -156,7 +154,7 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 			// Get data from editor to component
 			form.getData(configurationData);
 
-			OpenCmsPlugin plugin = project.getComponent(OpenCmsPlugin.class);
+			final OpenCmsPlugin plugin = project.getComponent(OpenCmsPlugin.class);
 
 			if (!plugin.checkWebappRootConfiguration(false)) {
 				throw new ConfigurationException("The Webapp Root or OpenCms configuration folder was not found. Please check the OpenCms Webapp Root in the OpenCms Plugin settings.", "Configuration error!");
@@ -166,8 +164,12 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 				plugin.refreshOpenCmsModules();
 			}
 
-			plugin.getVfsAdapter().setUser(configurationData.getUsername());
-			plugin.getVfsAdapter().setPassword(configurationData.getPassword());
+			VfsAdapter vfsAdapter = plugin.getVfsAdapter();
+
+			if (vfsAdapter != null) {
+				vfsAdapter.setUser(configurationData.getUsername());
+				vfsAdapter.setPassword(configurationData.getPassword());
+			}
 
 			if (configurationData.isPluginConnectorEnabled()) {
 				if (plugin.getPluginConnector() != null) {
@@ -194,7 +196,10 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 			}
 
 			if (configurationData.isPluginConnectorServiceEnabled() && StringUtils.isNotBlank(configurationData.getConnectorServiceUrl())) {
-				plugin.getConnectorClient().getConfiguration().setConnectorServiceBaseUrl(configurationData.getConnectorServiceUrl());
+				IDEConnectorClient connectorClient = plugin.getConnectorClient();
+				if (connectorClient != null) {
+					connectorClient.getConfiguration().setConnectorServiceBaseUrl(configurationData.getConnectorServiceUrl());
+				}
 			}
 			else {
 				plugin.setConnectorClient(null);
