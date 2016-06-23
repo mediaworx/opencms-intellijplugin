@@ -52,7 +52,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="jackson-2.4.2" level="project" />
-    <orderEntry type="library" name="ideconnector-client-1.8" level="project" />
+    <orderEntry type="library" name="ideconnector-client-1.9" level="project" />
   </component>
   <component name="OpenCmsModuleConfigurationData">
     <option name="localVfsRoot" value="" />
