@@ -27,6 +27,7 @@ package com.mediaworx.intellij.opencmsplugin.actions.importmodule;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.util.ui.UIUtil;
 import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.ConsolePrinter;
@@ -35,7 +36,6 @@ import com.mediaworx.opencms.ideconnector.data.ModuleImportInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,13 +96,13 @@ public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
 							connectorClient.logout();
 						}
 						catch (Exception e) {
-							SwingUtilities.invokeLater(
-								new Runnable() {
-									@Override
-									public void run() {
-										Messages.showDialog("This function is only available if the IDE Connector module 1.5 is installed and configured in OpenCms and if OpenCms is running. Consult the Plugin Wiki for mor information.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+							UIUtil.invokeLaterIfNeeded(
+									new Runnable() {
+										@Override
+										public void run() {
+											Messages.showDialog("This function is only available if the IDE Connector module 1.5 is installed and configured in OpenCms and if OpenCms is running. Consult the Plugin Wiki for mor information.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+										}
 									}
-								}
 							);
 						}
 					}

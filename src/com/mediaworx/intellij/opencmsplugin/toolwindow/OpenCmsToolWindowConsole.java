@@ -25,6 +25,7 @@
 package com.mediaworx.intellij.opencmsplugin.toolwindow;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -82,7 +83,7 @@ public class OpenCmsToolWindowConsole extends JTextPane {
 	}
 
 	private void append(String str, AttributeSet attributeSet) {
-		SwingUtilities.invokeLater(new ConsoleAppender(str, attributeSet));
+		UIUtil.invokeLaterIfNeeded(new ConsoleAppender(str, attributeSet));
 	}
 
 	public StyledDocument getConsoleDocument() {
