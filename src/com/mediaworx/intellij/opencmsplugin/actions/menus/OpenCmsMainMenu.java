@@ -197,7 +197,7 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
-		if (!plugin.isRefreshing() && !DumbService.isDumb(currentProject)) {
+		if (currentProject != null && !DumbService.isDumb(currentProject)) {
 			Presentation presentation = event.getPresentation();
 	
 			if (presentation.isEnabled() != isPluginEnabled()) {

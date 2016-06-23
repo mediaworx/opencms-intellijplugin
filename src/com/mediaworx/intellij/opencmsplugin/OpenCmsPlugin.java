@@ -24,13 +24,7 @@
 
 package com.mediaworx.intellij.opencmsplugin;
 
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.Anchor;
-import com.intellij.openapi.actionSystem.Constraints;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.IdeActions;
-import com.intellij.openapi.actionSystem.Separator;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -108,8 +102,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 	
 	private VirtualFileManagerListener virtualFileManagerListener;
 	
-	private boolean refreshing = true;
-
 	/** Helper object to retrieve configuration data from the OpenCms configuration */
 	private OpenCmsConfiguration openCmsConfiguration;
 
@@ -242,24 +234,6 @@ public class OpenCmsPlugin implements ProjectComponent {
 		MessageBusConnection connection = bus.connect();
 		OpenCmsModuleFileChangeListener fileChangeListener = new OpenCmsModuleFileChangeListener(this);
 		connection.subscribe(VirtualFileManager.VFS_CHANGES, fileChangeListener);
-		VirtualFileManager.getInstance().addVirtualFileManagerListener(getVirtualFileManagerListener());
-	}
-
-	@NotNull
-	private VirtualFileManagerListener getVirtualFileManagerListener() {
-		return new VirtualFileManagerListener() {
-			@Override
-			public void beforeRefreshStart(boolean asynchronous) {
-				LOG.warn("start refreshing");
-				refreshing = true;
-			}
-
-			@Override
-			public void afterRefreshFinish(boolean asynchronous) {
-				LOG.warn("refreshing done");
-				refreshing = false;
-			}
-		};
 	}
 
 	/**
@@ -604,7 +578,4 @@ public class OpenCmsPlugin implements ProjectComponent {
 		this.console = console;
 	}
 	
-	public boolean isRefreshing() {
-		return refreshing;
-	}
 }
