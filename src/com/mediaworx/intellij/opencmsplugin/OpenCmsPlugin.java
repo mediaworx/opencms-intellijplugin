@@ -316,8 +316,8 @@ public class OpenCmsPlugin implements ProjectComponent {
 		if (openCmsEditorPopupMenu == null) {
 			DefaultActionGroup editorPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_POPUP);
 			openCmsEditorPopupMenu = new OpenCmsEditorPopupMenu(this);
-			addAction(editorPopup, EDITOR_POPUP_MENU_ID, openCmsEditorPopupMenu, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "IDEtalk.SendCodePointer"));
-			editorPopup.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, EDITOR_POPUP_MENU_ID));
+			addAction(editorPopup, EDITOR_POPUP_MENU_ID, openCmsEditorPopupMenu, "_OpenCms", MENU_ICON, new Constraints(Anchor.AFTER, "ChangeFileEncodingAction"));
+			editorPopup.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, EDITOR_POPUP_MENU_ID));
 		}
 	}
 
@@ -327,10 +327,14 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private void registerEditorTabPopupMenu() {
 		OpenCmsEditorTabPopupMenu openCmsEditorTabPopupMenu = (OpenCmsEditorTabPopupMenu)actionManager.getAction(TAB_POPUP_MENU_ID);
 		if (openCmsEditorTabPopupMenu == null) {
-			DefaultActionGroup editorTabPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_TAB_POPUP);
+			// DefaultActionGroup editorTabPopup = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_EDITOR_TAB_POPUP);
+			DefaultActionGroup editorTabPopup = (DefaultActionGroup)actionManager.getAction("EditorTabPopupMenuEx");
 			openCmsEditorTabPopupMenu = new OpenCmsEditorTabPopupMenu(this);
 			editorTabPopup.addAction(Separator.getInstance());
-			addAction(editorTabPopup, TAB_POPUP_MENU_ID, openCmsEditorTabPopupMenu, "_OpenCms", MENU_ICON);
+			// addAction(editorTabPopup, TAB_POPUP_MENU_ID, openCmsEditorTabPopupMenu, "_OpenCms", MENU_ICON, new Constraints(Anchor.AFTER, "UnsplitAll"));
+			addAction(editorTabPopup, TAB_POPUP_MENU_ID, openCmsEditorTabPopupMenu, "_OpenCms", MENU_ICON, new Constraints(Anchor.BEFORE, "RunContextPopupGroup"));
+			// editorTabPopup.addAction(Separator.getInstance(), new Constraints(Anchor.BEFORE, TAB_POPUP_MENU_ID));
+			editorTabPopup.addAction(Separator.getInstance(), new Constraints(Anchor.AFTER, TAB_POPUP_MENU_ID));
 		}
 	}
 
