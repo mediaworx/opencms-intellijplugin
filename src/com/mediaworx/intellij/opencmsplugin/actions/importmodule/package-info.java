@@ -23,9 +23,6 @@
  */
 
 /**
- * This package contains classes used to connect the IntelliJ plugin to OpenCms to execute actions like pulling meta
- * data or publishing resources.
- * The connection is done "the old way" using a JSP in OpenCms. There's a new Service provided by a servlet that right
- * now augments the old JSP connector, but sooner or later will fully replace it.
+ * IntelliJ menu actions used to import packaged module zips into the local OpenCms instance.
  */
-package com.mediaworx.intellij.opencmsplugin.connector;
+package com.mediaworx.intellij.opencmsplugin.actions.importmodule;

@@ -63,7 +63,9 @@ import java.util.Map;
  * </ul>
  *
  * Communication between the plugin and the connector JSP is done via http by sending JSON requests. Responses from
- * the connector module are in JSON format as well.
+ * the connector module are in JSON format as well.<br />
+ * <br />
+ * With version 1.7 a new connector service was introduced that is supposed to slowly replace the old JSP connector.
  */
 public class OpenCmsPluginConnector {
 

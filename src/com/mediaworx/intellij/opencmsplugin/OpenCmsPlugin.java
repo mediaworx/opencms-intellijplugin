@@ -60,8 +60,8 @@ import java.io.File;
 
 /**
  * OpenCms plugin for IntelliJ providing IntelliJ menu actions to sync resources to and from the OpenCms VFS, to publish
- * resources right from your IDE (using an additional OpenCms module), to create module manifest files and to package
- * OpenCms modules into zips.
+ * resources right from your IDE (using an additional OpenCms module), to create module manifest files, to package
+ * OpenCms modules into module zips and to import those module zips to your local OpenCms instance.
  * OpenCms menu actions are provided in four different locations:
  * <ul>
  *     <li>At the main menu</li>
@@ -80,7 +80,11 @@ import java.io.File;
  * <strong>Module level</strong>
  * <br />
  * Module specific settings are configured for each separate module under File > Project Structure > Modules > [name of
- * the module] > Tab "OpenCms Module".
+ * the module] > Tab "OpenCms Module". Some module settings can be configured globally on the project level and changed
+ * for individual modules on the module level.
+ *
+ * <p>See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki">Wiki</a> on GitHub for more
+ * information.</p>
  *
  * @author Kai Widmann, 2007-2014 mediaworx berlin AG
  */
@@ -118,7 +122,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 	private OpenCmsPluginConnector pluginConnector;
 
 	/**
-	 * Client used to execute actions in OpenCms (
+	 * Client used to execute actions in OpenCms (new with version 1.7). Right now it runs side by side with the old
+	 * {@link #pluginConnector} and adds some additional functionality (importing modules). In a future release the
+	 * connectorClient is planned to replace the old pluginConnector.
 	 */
 	private IDEConnectorClient connectorClient;
 
@@ -477,7 +483,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 
 	/**
 	 * Returns the IDE connector client that may be used to execute actions on the local OpenCms instance (must be
-	 * running)
+	 * running) (new with version 1.7). Right now the connector client runs side by side with the old
+	 * {@link #pluginConnector} and adds some additional functionality (importing modules). In a future release the
+	 * connectorClient is planned to replace the old pluginConnector.
 	 * @return the IDE connector client
 	 */
 	public IDEConnectorClient getConnectorClient() {

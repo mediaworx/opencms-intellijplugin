@@ -32,6 +32,9 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 
 import java.io.File;
 
+/**
+ * File entity that's used for syncing
+ */
 public class SyncFile extends SyncEntity {
 
 	/**

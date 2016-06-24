@@ -40,6 +40,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * Represents an OpenCms module with all its configured properties like resource paths and export points.
+ */
 public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(OpenCmsModule.class);
