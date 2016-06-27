@@ -49,6 +49,9 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.regex.Matcher;
 
+/**
+ * Syncs OpenCms and the local file system, is run as a separate thread
+ */
 public class SyncJob implements Runnable {
 
 	private static final Logger LOG = Logger.getInstance(SyncJob.class);
@@ -79,6 +82,11 @@ public class SyncJob implements Runnable {
 	private List<String> publishList;
 	private boolean publish;
 
+	/**
+	 * Creates a new SyncJob for the given SyncList
+	 * @param plugin   the current plugin instance
+	 * @param syncList list of SyncEntities to be synced by this SyncJob
+	 */
 	public SyncJob(OpenCmsPlugin plugin, SyncList syncList) {
 		this.plugin = plugin;
 		config = plugin.getPluginConfiguration();
@@ -90,6 +98,9 @@ public class SyncJob implements Runnable {
 		setSyncList(syncList);
 	}
 
+	/**
+	 * Starts the SyncJob (done as a separate thread)
+	 */
 	public void run() {
 		console = plugin.getConsole();
 
@@ -200,7 +211,7 @@ public class SyncJob implements Runnable {
 		console.info("#### SYNC FINISHED ####");
 	}
 
-	public void setSyncList(SyncList syncList) {
+	private void setSyncList(SyncList syncList) {
 		this.syncList = syncList;
 		this.pullMetadataOnly = syncList.isPullMetaDataOnly();
 
@@ -214,7 +225,10 @@ public class SyncJob implements Runnable {
 		}
 	}
 
-	public List<SyncEntity> getSyncList() {
+	/**
+	 * @return the List of SyncEntities handled by this SyncJob
+	 */
+	public SyncList getSyncList() {
 		return syncList;
 	}
 
@@ -257,15 +271,15 @@ public class SyncJob implements Runnable {
 		return refreshEntityList;
 	}
 
-	public int getNumRefreshEntities() {
+	private int getNumRefreshEntities() {
 		return refreshEntityList.size();
 	}
 
-	public boolean hasRefreshEntities() {
+	private boolean hasRefreshEntities() {
 		return getNumRefreshEntities() > 0;
 	}
 
-	public int numExportEntities() {
+	private int numExportEntities() {
 		return exportList.size();
 	}
 
@@ -402,7 +416,7 @@ public class SyncJob implements Runnable {
 		}
 	}
 
-	public void doMetaInfoHandling(OpenCmsToolWindowConsole console, Map<String,String> metaInfos, SyncEntity entity) {
+	private void doMetaInfoHandling(OpenCmsToolWindowConsole console, Map<String,String> metaInfos, SyncEntity entity) {
 		String metaInfoFilePath = entity.getMetaInfoFilePath();
 		File metaInfoFile = new File(metaInfoFilePath);
 
@@ -535,7 +549,7 @@ public class SyncJob implements Runnable {
 		}
 	}
 
-	public static boolean isParentOfIdeConnectorPath(String path) {
+	private static boolean isParentOfIdeConnectorPath(String path) {
 		for (String ideConnectorParentPath : IDE_CONNECTOR_PARENT_PATHS) {
 			if (path.endsWith(ideConnectorParentPath)) {
 				return true;
@@ -592,6 +606,15 @@ public class SyncJob implements Runnable {
 		}
 	}
 
+	/**
+	 * Deletes a resource file that was exported via export point handling
+	 * @param vfsPath       the resource's VFS path
+	 * @param targetPath    the export point's target path within the WebApp
+	 * @param confirmation  StringBuilder the log is added to
+	 * @param notice        String builder for an additional notice that may be displayed under the log. This is used
+	 *                      for a warning message if the deletion was skipper because a path containing the IDE
+	 *                      connector would be deleted.
+	 */
 	public static void deleteExportedResource(String vfsPath, String targetPath, StringBuilder confirmation, StringBuilder notice) {
 		confirmation.append("Resource ").append(vfsPath).append(" removed, deletion of exported file ")
 				.append(targetPath).append(" - ");
@@ -617,7 +640,7 @@ public class SyncJob implements Runnable {
 		}
 	}
 
-	public void cleanupModuleMetaFolder(OpenCmsModule ocmsModule) {
+	private void cleanupModuleMetaFolder(OpenCmsModule ocmsModule) {
 		if (ocmsModule != null) {
 			File metaFolder = new File(ocmsModule.getManifestRoot());
 			if (!metaFolder.isDirectory()) {

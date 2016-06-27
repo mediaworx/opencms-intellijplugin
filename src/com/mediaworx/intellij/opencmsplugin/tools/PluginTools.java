@@ -35,6 +35,12 @@ import java.util.List;
 
 public class PluginTools {
 
+	/**
+	 * @param module an IntelliJ module
+	 * @return the content root for the module. It is assumed that IntelliJ modules representing OpenCms modules
+	 *         have only one content root. If multiple content roots exist for the IntelliJ module, only the first is
+	 *         returned.
+	 */
 	public static String getModuleContentRoot(Module module) {
 		String moduleContentRoot = null;
 		if (module != null) {
@@ -49,6 +55,11 @@ public class PluginTools {
 	}
 
 
+	/**
+	 * Converts an array of IntelliJ's VirtualFiles to a list of standard Java File handles.
+	 * @param virtualFiles the IntelliJ VirtualFile array
+	 * @return a list of corresponding standard Java File handles
+	 */
 	public static List<File> getRealFilesFromVirtualFiles(VirtualFile[] virtualFiles) {
 		List<File> realFiles = new ArrayList<>(virtualFiles.length);
 		for (VirtualFile virtualFile : virtualFiles) {
@@ -56,15 +67,32 @@ public class PluginTools {
 		}
 		return realFiles;
 	}
-	
+
+	/**
+	 * Converts the windows File separator "\" to the Unix/Linux/Mac separator "/"
+	 * @param path the path to convert
+	 * @return a path woth all backward slashes replaced by forward ones
+	 */
 	public static String ensureUnixPath(String path) {
 		return path.replaceAll("\\\\", "/");
 	}
-	
+
+	/**
+	 * converts any newline format (\r\n or \r) to Unix/Linux/Mac newline format (\n)
+	 * @param in the String to convert
+	 * @return the original String with all newlines converted to \n
+	 */
 	public static String ensureUnixNewline(String in) {
 		return in.replaceAll("\\r\\n|\\r", "\n");
 	}
 
+	/**
+	 * If the module has a site root other than "/" configured, then the site root is removed from the beginning of
+	 * the given vfsPath
+	 * @param module  the module the path belongs to
+	 * @param vfsPath the VFS path to be stripped of the site root
+	 * @return the given vfsPath with the site root removed
+	 */
 	public static String stripVfsSiteRootFromVfsPath(OpenCmsModule module, String vfsPath) {
 		String localPath;
 		if ("/".equals(module.getExportImportSiteRoot())) {
@@ -76,6 +104,15 @@ public class PluginTools {
 		return localPath;
 	}
 
+
+	/**
+	 * If the module has a site root other than "/" configured, then the site root is added to the beginning of
+	 * the given local path
+	 *
+	 * @param module    the module the path belongs to
+	 * @param localPath the local path that the site root should be added to
+	 * @return the given local path with the site root added as prefix
+	 */
 	public static String addVfsSiteRootToLocalPath(OpenCmsModule module, String localPath) {
 		String vfsRootPath = localPath;
 		if (!"/".equals(module.getExportImportSiteRoot())) {

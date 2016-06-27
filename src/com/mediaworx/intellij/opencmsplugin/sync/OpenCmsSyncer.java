@@ -36,6 +36,9 @@ import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
 import java.io.File;
 import java.util.List;
 
+/**
+ * Syncs a list of SyncFiles with OpenCms, uses the {@link SyncFileAnalyzer} to analyze which files to sync
+ */
 public class OpenCmsSyncer {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsSyncer.class);
@@ -55,6 +58,11 @@ public class OpenCmsSyncer {
 	}
 
 
+	/**
+	 * Analyzes the given file list using the {@link SyncFileAnalyzer} and triggers the sync to/from OpenCms using
+	 * the {@link SyncJob}
+	 * @param syncFiles list of local files (and folders) that are used as starting point for the sync
+	 */
 	public void syncFiles(List<File> syncFiles) {
 
 		SyncFileAnalyzer analyzer;
@@ -100,7 +108,7 @@ public class OpenCmsSyncer {
 		}
 	}
 
-	private void assembleConfirmMessage(StringBuilder message, List<SyncEntity> syncEntities) {
+	private void assembleConfirmMessage(StringBuilder message, SyncList syncEntities) {
 		int numSyncEntities = syncEntities.size();
 		if (message.length() > 0) {
 			message.append("\n");
@@ -113,10 +121,17 @@ public class OpenCmsSyncer {
 		message.append("\nProceed?");
 	}
 
+	/**
+	 * @param showConfirmDialog if set to <code>true</code>, a confirm dialog will be presented if more then two
+	 *                          resources are about to be synced, if set to <code>false</code>, no dialog will be shown.
+	 */
 	public void setShowConfirmDialog(boolean showConfirmDialog) {
 		this.showConfirmDialog = showConfirmDialog;
 	}
 
+	/**
+	 * @param pullMetaDataOnly if set to <code>true</code>, no files are synced, only meta ddata is pulled from OpenCms
+	 */
 	public void setPullMetaDataOnly(boolean pullMetaDataOnly) {
 		this.pullMetaDataOnly = pullMetaDataOnly;
 	}

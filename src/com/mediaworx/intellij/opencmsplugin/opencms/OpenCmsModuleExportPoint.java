@@ -24,11 +24,19 @@
 
 package com.mediaworx.intellij.opencmsplugin.opencms;
 
+/**
+ * Bean representing a module's export point configured in OpenCms
+ */
 public class OpenCmsModuleExportPoint {
 
 	private String vfsSource;
 	private String rfsTarget;
 
+	/**
+	 * Creates a new module export point
+	 * @param vfsSource the VFS resource path for this export point
+	 * @param rfsTarget the target path in the real file system, relative to the webapp
+	 */
 	public OpenCmsModuleExportPoint(String vfsSource, String rfsTarget) {
 		this.vfsSource = vfsSource;
 		this.rfsTarget = rfsTarget;
@@ -44,7 +52,7 @@ public class OpenCmsModuleExportPoint {
 
 	/**
 	 * Returns the path in the real file system, relative to the webapp
-	 * @return  the path in the real file system, relative to the webapp
+	 * @return  the target path in the real file system, relative to the webapp
 	 */
 	public String getRfsTarget() {
 		return rfsTarget;

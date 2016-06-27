@@ -26,20 +26,33 @@ package com.mediaworx.intellij.opencmsplugin.opencms;
 
 import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 
+/**
+ * Bean linking a resource path to its corresponding OpenCms module
+ */
 public class OpenCmsModuleResource {
 
 	private OpenCmsModule openCmsModule;
 	private String resourcePath;
 
+	/**
+	 * @param openCmsModule the OpenCms module this resource belongs to
+	 * @param resourcePath  the resource path (VFS relative path)
+	 */
 	public OpenCmsModuleResource(OpenCmsModule openCmsModule, String resourcePath) {
 		this.openCmsModule = openCmsModule;
 		this.resourcePath = PluginTools.ensureUnixPath(resourcePath);
 	}
 
+	/**
+	 * @return the OpenCms module this resource belongs to
+	 */
 	public OpenCmsModule getOpenCmsModule() {
 		return openCmsModule;
 	}
 
+	/**
+	 * @return the resource path (VFS relative path)
+	 */
 	public String getResourcePath() {
 		String resourcePath = this.resourcePath.replaceFirst("/$", ""); // strip trailing slash
 		return PluginTools.addVfsSiteRootToLocalPath(openCmsModule, resourcePath);

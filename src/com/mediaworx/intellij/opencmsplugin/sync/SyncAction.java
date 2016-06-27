@@ -25,12 +25,14 @@
 package com.mediaworx.intellij.opencmsplugin.sync;
 
 /**
-* Created with IntelliJ IDEA.
-* User: widmann
-* Date: 06.11.13
-* Time: 15:21
-* To change this template use File | Settings | File Templates.
-*/
+ * Action to take during sync
+ * <ul>
+ *     <li>PUSH - local file will be copied to OpenCms VFS</li>
+ *     <li>PULL - OpenCms VFS file will be copied to the local file system</li>
+ *     <li>DELETE_RFS - the file is to be deleted from the real file system</li>
+ *     <li>DELETE_VFS - the file is to be deleted from the OpenCms VFS</li>
+ * </ul>
+ */
 public enum SyncAction {
 	PUSH("PUSH"),
 	PULL("PULL"),
@@ -47,6 +49,9 @@ public enum SyncAction {
 		return description;
 	}
 
+	/**
+	 * @return <code>true</code> if the SyncAction is either DELETE_RFS or DELETE_VFS, <code>false</code> otherwise
+	 */
 	public boolean isDeleteAction() {
 		return this == DELETE_RFS || this == DELETE_VFS;
 	}

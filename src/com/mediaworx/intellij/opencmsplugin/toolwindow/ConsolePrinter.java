@@ -27,9 +27,7 @@ package com.mediaworx.intellij.opencmsplugin.toolwindow;
 import com.mediaworx.opencms.ideconnector.consumer.IDEConnectorResponsePrinter;
 
 /**
- * Created by kai on 15.07.15.
- * TODO: this will be used to stream module the import log to the console (yet to be integrated)
- * TODO: JavaDoc
+ * Used to stream the module import log to the OpenCms console in IntelliJ
  */
 public class ConsolePrinter implements IDEConnectorResponsePrinter {
 

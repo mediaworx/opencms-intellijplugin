@@ -58,6 +58,11 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 	private List<String> moduleResources;
 	private String localVfsRoot;
 
+	/**
+	 * Creates a new OpenCms module
+	 * @param plugin            the current plugin instance
+	 * @param moduleBasePath    absolute base path of the module on the local file system
+	 */
 	public OpenCmsModule(OpenCmsPlugin plugin, String moduleBasePath) {
 		this.plugin = plugin;
 		this.moduleBasePath = moduleBasePath;
@@ -67,6 +72,10 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		openCmsConfig.registerConfigurationChangeListener(this);
 	}
 
+	/**
+	 * Initializes the module with the given configuration data (from the module's configuration dialog)
+	 * @param moduleConfig the module's configuration data
+	 */
 	public void init(OpenCmsModuleConfigurationData moduleConfig) {
 		this.moduleConfig = moduleConfig;
 
@@ -98,24 +107,40 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		localVfsRoot = this.moduleBasePath + "/" + relativeVfsRoot;
 	}
 
+	/**
+	 * refreshes the module after module configuration changes
+	 * @param moduleConfig  the updated configuration data
+	 */
 	public void refresh(OpenCmsModuleConfigurationData moduleConfig) {
 		// for now a refresh just does the same as init
 		init(moduleConfig);
 	}
 
+	/**
+	 * refreshes the module with unchanged configuration data
+	 */
 	public void refresh() {
 		// for now a refresh just does the same as init
 		init(moduleConfig);
 	}
 
+	/**
+	 * @return the module's package name name, e.g. com.mycompany.opencms.contenttypes
+	 */
 	public String getModuleName() {
 		return moduleName;
 	}
 
+	/**
+	 * @return  absolute base path of the module on the local file system
+	 */
 	public String getModuleBasePath() {
 		return moduleBasePath;
 	}
 
+	/**
+	 * @return absolute local path to the module's vfs folder
+	 */
 	public String getLocalVfsRoot() {
 		return localVfsRoot;
 	}
@@ -128,10 +153,17 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		return exportImportSiteRoot;
 	}
 
+	/**
+	 * @return absolute local path to the folder containing the module's meta data
+	 */
 	public String getManifestRoot() {
 		return moduleBasePath + "/" + plugin.getPluginConfiguration().getManifestRoot();
 	}
 
+	/**
+	 * @return the module's sync mode as configured in either the global plugin configuration or the module's
+	 *         configuration
+	 */
 	public SyncMode getSyncMode() {
 		if (moduleConfig.isUseProjectDefaultSyncModeEnabled()) {
 			return pluginConfig.getDefaultSyncMode();
@@ -141,26 +173,52 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		}
 	}
 
+	/**
+	 * @return <code>true</code> if the module configuration defines a specific module version to use,
+	 *         <code>false</code> otherwise
+	 */
 	public boolean isSetSpecificModuleVersionEnabled() {
 		return moduleConfig.isSetSpecificModuleVersionEnabled();
 	}
 
+	/**
+	 * @return the module version configured for this module (if any)
+	 */
 	public String getModuleVersion() {
 		return moduleConfig.getModuleVersion();
 	}
 
+	/**
+	 * @return a list of export points configured for this module
+	 */
 	public List<OpenCmsModuleExportPoint> getExportPoints() {
 		return exportPoints;
 	}
 
+	/**
+	 * @return list of the module resource paths configured for this module (relative to VFS root)
+	 */
 	public List<String> getModuleResources() {
 		return moduleResources;
 	}
 
+	/**
+	 * Checks if the given file is placed inside a module resource path
+	 * @param file  the file to check
+	 * @return  <code>true</code> if the file is contained in one of the module's resource paths,
+	 *          <code>false</code> otherwise
+	 */
 	public boolean isFileModuleResource(File file) {
 		return isPathModuleResource(file.getPath());
 	}
 
+	/**
+	 * Checks if the given path is inside a module resource path
+	 *
+	 * @param resourcePath the path to check
+	 * @return <code>true</code> if the path is contained in one of the module's resource paths,
+	 * <code>false</code> otherwise
+	 */
 	public boolean isPathModuleResource(String resourcePath) {
 		resourcePath = PluginTools.ensureUnixPath(resourcePath);
 		for (String moduleResourcePath : getModuleResources()) {
@@ -177,6 +235,11 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		return false;
 	}
 
+	/**
+	 * checks if the given file represents the module's root folder
+	 * @param file  the file to check
+	 * @return <code>true</code> if the file represents the module's root folder, <code>false</code> otherwise
+	 */
 	public boolean isFileModuleRoot(File file) {
 		if (!file.isDirectory()) {
 			return false;
@@ -185,6 +248,12 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		return filePath.equals(moduleBasePath);
 	}
 
+	/**
+	 * checks if the given path is the module's root folder
+	 *
+	 * @param path the path to check
+	 * @return <code>true</code> if the path is the module's root folder, <code>false</code> otherwise
+	 */
 	public boolean isPathModuleRoot(String path) {
 		if (StringUtils.isBlank(path)) {
 			return false;
@@ -193,6 +262,11 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		return path.equals(moduleBasePath);
 	}
 
+	/**
+	 * checks if the given file is placed under the local VFS root
+	 * @param file  the file to check
+	 * @return <code>true</code> if the file is contained in the local VFS root, <code>false</code> otherwise
+	 */
 	public boolean isFileInVFSPath(File file) {
 		if (VfsFileAnalyzer.fileOrPathIsIgnored(plugin.getPluginConfiguration(), file)) {
 			return false;
@@ -201,6 +275,12 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		return filePath.startsWith(localVfsRoot);
 	}
 
+	/**
+	 * checks if the given path is under the local VFS root
+	 *
+	 * @param path the path to check
+	 * @return <code>true</code> if the path is contained in the local VFS root, <code>false</code> otherwise
+	 */
 	public boolean isPathInVFSPath(String path) {
 		String filename = StringUtils.substringAfterLast(path, "/");
 		if (VfsFileAnalyzer.fileOrPathIsIgnored(plugin.getPluginConfiguration(), path, filename)) {
@@ -210,11 +290,19 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 	}
 
 
+	/**
+	 * @param file the file for which the VFS is to be retrieved
+	 * @return the VFS relative path for the given file
+	 */
 	public String getVfsPathForFile(final File file) {
 		String filepath = PluginTools.ensureUnixPath(file.getPath());
 		return getVfsPathForRealPath(filepath);
 	}
 
+	/**
+	 * @param path a local root path
+	 * @return the VFS relative path for the given local path
+	 */
 	public String getVfsPathForRealPath(final String path) {
 		String relativeName = path.substring(localVfsRoot.length());
 		if (relativeName.length() == 0) {
@@ -223,6 +311,9 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 		return PluginTools.addVfsSiteRootToLocalPath(this, relativeName);
 	}
 
+	/**
+	 * @return the path of the newest module zip in the target folder, null if no module zip exists
+	 */
 	public String findNewestModuleZipPath() {
 		String zipParentPath = getModuleBasePath() + "/" + plugin.getPluginConfiguration().getModuleZipTargetFolderPath();
 		Collection<File> moduleZips = FileUtils.listFiles(new File(zipParentPath), new String[]{"zip"}, false);
@@ -241,6 +332,10 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 	}
 
 
+	/**
+	 * handles changes to the module configuration, refreshes export points and module resources
+	 * @param changeType    the type of the changed OpenCms configuration (right now only MODULECONFIGURATION)
+	 */
 	@Override
 	public void handleOpenCmsConfigurationChange(OpenCmsConfiguration.ConfigurationChangeType changeType) {
 		if (changeType == OpenCmsConfiguration.ConfigurationChangeType.MODULECONFIGURATION) {

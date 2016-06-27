@@ -85,6 +85,9 @@ public abstract class VfsFileAnalyzer {
 		handledPaths = new HashSet<>();
 	}
 
+	/**
+	 * executes the file analysis
+	 */
 	public void analyzeFiles() {
 
 		if (files != null && files.size() > 0) {

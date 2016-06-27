@@ -438,6 +438,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 		return openCmsModules;
 	}
 
+	/**
+	 * refreshes all OpenCms modules (e.g. after configuration changes)
+	 */
 	public void refreshOpenCmsModules() {
 		openCmsModules.refreshAllModules();
 	}

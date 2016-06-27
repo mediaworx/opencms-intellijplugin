@@ -35,6 +35,9 @@ import java.io.File;
 import java.util.*;
 
 // RTASK: decouple intellij module and OpenCms module. Save OpenCms modules by their base path, replace "findModuleForFile" with custom implementation
+/**
+ * Module repository for the currently open project. All OpenCms modules are registered here.
+ */
 public class OpenCmsModules {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsModules.class);
@@ -44,10 +47,19 @@ public class OpenCmsModules {
 
 	private Map<String, OpenCmsModule> openCmsModuleMap = new LinkedHashMap<String, OpenCmsModule>();
 
+	/**
+	 * Creates a new OpenCmsModules repository
+	 * @param plugin  the current plugin instance
+	 */
 	public OpenCmsModules(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
 	}
 
+	/**
+	 * registers the module with the given base path
+	 * @param moduleBasePath the module's base path
+	 * @param moduleConfig   the configuration data from the module's configuration dialog
+	 */
 	public void registerModule(String moduleBasePath, OpenCmsModuleConfigurationData moduleConfig) {
 		LOG.info("registering module: " + moduleConfig.getModuleName());
 		moduleBasePath = PluginTools.ensureUnixPath(moduleBasePath);
@@ -69,6 +81,10 @@ public class OpenCmsModules {
 		OpenCmsMainMenu.getInstance(plugin).registerModuleActions();
 	}
 
+	/**
+	 * removes the OpenCms module linked to the given IntelliJ module from the repository
+	 * @param ideaModule the IntelliJ module the OpenCms module is linked to
+	 */
 	public void unregisterModule(Module ideaModule) {
 		LOG.info("unregistering module: " + ideaModule.getName());
 		allExportPoints = null;
@@ -77,6 +93,9 @@ public class OpenCmsModules {
 		OpenCmsMainMenu.getInstance(plugin).registerModuleActions();
 	}
 
+	/**
+	 * @return a Collection of all modules in the repository
+	 */
 	public Collection<OpenCmsModule> getAllModules() {
 		return openCmsModuleMap.values();
 	}
@@ -94,6 +113,10 @@ public class OpenCmsModules {
 		return null;
 	}
 
+	/**
+	 * @param path any path inside the module (local root path)
+	 * @return the module containing the path
+	 */
 	public OpenCmsModule getModuleForPath(String path) {
 		if (path == null) {
 			return null;
@@ -106,6 +129,10 @@ public class OpenCmsModules {
 		return null;
 	}
 
+	/**
+	 * @param moduleBasePath the modules base path
+	 * @return the module linked to the base path
+	 */
 	public OpenCmsModule getModuleForBasePath(String moduleBasePath) {
 		if (moduleBasePath == null) {
 			return null;
@@ -113,6 +140,10 @@ public class OpenCmsModules {
 		return openCmsModuleMap.get(moduleBasePath);
 	}
 
+	/**
+	 * @param file  the file to check
+	 * @return <code>true</code> if the file is contained in an OpenCms module, <code>false</code> otherwise
+	 */
 	public boolean isFileOpenCmsModuleResource(final File file) {
 		OpenCmsModule ocmsModule = getModuleForFile(file);
 		if (ocmsModule == null) {
@@ -122,6 +153,11 @@ public class OpenCmsModules {
 		return ocmsModule.isFileModuleResource(file);
 	}
 
+	/**
+	 * @param resourcePath path pf the resource to check
+	 * @return the export point for the given resource path, <code>null</code> if no export point is configured for
+	 *         the resource
+	 */
 	public OpenCmsModuleExportPoint getExportPointForVfsResource(String resourcePath) {
 		for (OpenCmsModuleExportPoint exportPoint : getAllExportPoints()) {
 			if (resourcePath.startsWith(exportPoint.getVfsSource())) {
@@ -131,6 +167,9 @@ public class OpenCmsModules {
 		return null;
 	}
 
+	/**
+	 * @return List of all export points defined by all the modules in the repository
+	 */
 	public List<OpenCmsModuleExportPoint> getAllExportPoints() {
 		if (allExportPoints == null) {
 			allExportPoints = new ArrayList<OpenCmsModuleExportPoint>();
@@ -146,6 +185,9 @@ public class OpenCmsModules {
 		return allExportPoints;
 	}
 
+	/**
+	 * refreshes all modules (e.g. after configuration changes)
+	 */
 	public void refreshAllModules() {
 		for (OpenCmsModule ocmsModule : getAllModules()) {
 			ocmsModule.refresh();

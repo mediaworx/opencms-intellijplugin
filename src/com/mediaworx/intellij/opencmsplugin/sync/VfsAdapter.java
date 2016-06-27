@@ -396,6 +396,11 @@ public class VfsAdapter {
 	}
 
 
+	/**
+	 * creates a local file (or folder) for this sync entitiy, if none exists
+	 * @param syncEntity the SyncEntity for which the real file/folder is to be created
+	 * @return the file handle for the newly created file/folder (or the file/folder that already existed)
+	 */
 	public File createRealFile(SyncEntity syncEntity) {
 		File realFile = new File(syncEntity.getRfsPath());
 		if (!realFile.exists()) {
