@@ -5,7 +5,7 @@
  * see the project website at GitHub:
  * https://github.com/mediaworx/opencms-intellijplugin
  *
- * Copyright (C) 2007-2014 mediaworx berlin AG (http://www.mediaworx.com)
+ * Copyright (C) 2007-2016 mediaworx berlin AG (http://www.mediaworx.com)
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -86,7 +86,7 @@ import java.io.File;
  * <p>See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki">Wiki</a> on GitHub for more
  * information.</p>
  *
- * @author Kai Widmann, 2007-2014 mediaworx berlin AG
+ * @author Kai Widmann, 2007-2016 mediaworx berlin AG
  */
 public class OpenCmsPlugin implements ProjectComponent {
 
