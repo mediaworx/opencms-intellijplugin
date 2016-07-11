@@ -74,6 +74,9 @@ public class PluginTools {
 	 * @return a path woth all backward slashes replaced by forward ones
 	 */
 	public static String ensureUnixPath(String path) {
+		if (path == null || path.length() == 0) {
+			return path;
+		}
 		return path.replaceAll("\\\\", "/");
 	}
 
