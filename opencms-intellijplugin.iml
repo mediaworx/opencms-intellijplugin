@@ -55,6 +55,7 @@
     <orderEntry type="library" name="ideconnector-client-1.9" level="project" />
   </component>
   <component name="OpenCmsModuleConfigurationData">
+    <option name="exportImportSiteRoot" value="/" />
     <option name="localVfsRoot" value="" />
     <option name="moduleName" value="" />
     <option name="moduleVersion" value="" />

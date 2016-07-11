@@ -24,84 +24,40 @@
 
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
-import com.intellij.openapi.components.*;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-@State(
-	name = "OpenCmsPluginConfigurationData",
-	storages = {
-		@Storage( file = "$WORKSPACE_FILE$"),
-		@Storage( file = "$PROJECT_CONFIG_DIR$/opencms.xml", scheme = StorageScheme.DIRECTORY_BASED)
-	}
-)
 /**
- * Component for the project level configuration of the OpenCms plugin. The configuration data is stored in the file
- * <code>opencms.xml</code> in the IntelliJ configuration folder (<code>.idea</code>).
+ * Configurable for the project level configuration of the OpenCms plugin. The configuration data is stored in the file
+ * <code>opencms.xml</code> in the IntelliJ configuration folder (<code>.idea</code>). Persistence is handled via
+ * {@link OpenCmsPlugin}.
  */
-public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Configurable, PersistentStateComponent<OpenCmsPluginConfigurationData> {
+public class OpenCmsPluginConfigurable implements Configurable {
 
 	private OpenCmsPluginConfigurationForm form;
+
+	private Project project;
+	private OpenCmsPlugin plugin;
 	private OpenCmsPluginConfigurationData configurationData;
 
-	Project project;
 
 	/**
 	 * Creates a new project level configuration component.
 	 * @param project the IntelliJ project
 	 */
-	public OpenCmsPluginConfigurationComponent(Project project) {
+	public OpenCmsPluginConfigurable(Project project) {
 		this.project = project;
-	}
-
-	/**
-	 * Method called by IntelliJ whenever a project is opened, does nothing.
-	 */
-	public void projectOpened() {
-		// Do nothing
-	}
-
-	/**
-	 * Method called by IntelliJ whenever a project is closed, does nothing.
-	 */
-	public void projectClosed() {
-		// Do nothing
-	}
-
-	/**
-	 * Method called by IntelliJ whenever the project level configuration component is initialized, does nothing.
-	 */
-	public void initComponent() {
-		// Do nothing
-	}
-
-	/**
-	 * Method called by IntelliJ whenever the project level configuration component is disposed, does some cleanup.
-	 */
-	public void disposeComponent() {
-		form = null;
-		configurationData = null;
-	}
-
-	/**
-	 * Returns the component's name.
-	 * @return the component's name "OpenCmsPlugin.ConfigurationComponent"
-	 */
-	@NotNull
-	public String getComponentName() {
-		return "OpenCmsPlugin.ConfigurationComponent";
+		plugin = project.getComponent(OpenCmsPlugin.class);
+		configurationData = plugin.getPluginConfiguration();
 	}
 
 	/**
@@ -126,9 +82,6 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 	 * @return the project level configuration component
 	 */
 	public JComponent createComponent() {
-		if (configurationData == null) {
-			configurationData = new OpenCmsPluginConfigurationData();
-		}
 		if (form == null) {
 			form = new OpenCmsPluginConfigurationForm();
 		}
@@ -231,26 +184,6 @@ public class OpenCmsPluginConfigurationComponent implements ProjectComponent, Co
 	 */
 	public void disposeUIResources() {
 		form = null;
-	}
-
-	/**
-	 * Returns the current project level configuration state.
-	 * @return the OpenCmsPluginConfigurationData object
-	 */
-	@Nullable
-	public OpenCmsPluginConfigurationData getState() {
-		return configurationData;
-	}
-
-	/**
-	 * Loads the project level configuration state contained in the given configuration data.
-	 * @param configurationData the project level configuration data to load
-	 */
-	public void loadState(OpenCmsPluginConfigurationData configurationData) {
-		if (this.configurationData == null) {
-			this.configurationData = new OpenCmsPluginConfigurationData();
-		}
-		XmlSerializerUtil.copyBean(configurationData, this.configurationData);
 	}
 
 }

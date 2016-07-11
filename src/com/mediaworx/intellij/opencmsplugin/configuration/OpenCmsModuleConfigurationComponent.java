@@ -27,6 +27,7 @@ package com.mediaworx.intellij.opencmsplugin.configuration;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.options.Configurable;
@@ -35,6 +36,7 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +55,7 @@ import javax.swing.*;
  */
 public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Configurable, PersistentStateComponent<OpenCmsModuleConfigurationData> {
 
+	private static final Logger LOG = Logger.getInstance(OpenCmsModuleConfigurationComponent.class);
 	private OpenCmsPlugin plugin;
 	private Module module;
 	private OpenCmsModuleConfigurationForm form;
@@ -182,12 +185,18 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	 * @see com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules
 	 */
 	private void handleOcmsModuleRegistration() {
-		module.getModuleFilePath();
+		boolean validModule = false;
 		if (configurationData.isOpenCmsModuleEnabled()) {
 			String moduleBasePath = PluginTools.getModuleContentRoot(module);
-			plugin.getOpenCmsModules().registerModule(moduleBasePath, configurationData);
+			if (StringUtils.isNotBlank(moduleBasePath)) {
+				validModule = true;
+				plugin.getOpenCmsModules().registerModule(moduleBasePath, configurationData);
+			}
+			else {
+				LOG.warn(String.format("Module %s doesn't have a valid content root", module.getModuleFilePath()));
+			}
 		}
-		else {
+		if (!validModule) {
 			plugin.getOpenCmsModules().unregisterModule(module);
 		}
 	}

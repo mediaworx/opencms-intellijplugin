@@ -61,7 +61,7 @@
         <p>See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki">GitHub Wiki</a> for details</p>
         ]]>
     </description>
-    <version>1.9</version>
+    <version>1.9.1</version>
     <change-notes>
         <![CDATA[
             See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki/Version-History">Version History</a> on GitHub.
@@ -78,10 +78,6 @@
 
 	<project-components>
 		<component>
-			<implementation-class>com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationComponent
-			</implementation-class>
-		</component>
-		<component>
 			<implementation-class>com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin</implementation-class>
 		</component>
 	</project-components>
@@ -97,5 +93,9 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
+		<projectConfigurable id="OpenCmsPlugin"
+							 displayName="OpenCms Plugin"
+							 groupId="tools"
+							 instance="com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurable" />
 	</extensions>
 </idea-plugin>

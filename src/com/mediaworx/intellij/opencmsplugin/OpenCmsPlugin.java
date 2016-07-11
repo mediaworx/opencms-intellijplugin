@@ -26,7 +26,7 @@ package com.mediaworx.intellij.opencmsplugin;
 
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -37,11 +37,11 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
+import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsEditorPopupMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsEditorTabPopupMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsProjectPopupMenu;
-import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationComponent;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.listeners.OpenCmsModuleFileChangeListener;
@@ -54,6 +54,7 @@ import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
 import com.mediaworx.opencms.ideconnector.client.IDEConnectorClientConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
@@ -75,7 +76,8 @@ import java.io.File;
  * <strong>Project level</strong>
  * <br />
  * Some general options like the path to your local OpenCms webapp, your OpenCms user credentials or generic settings
- * are done on the project level. These options can be found under File > Settings > OpenCms Plugin.
+ * are done on the project level. These options can be found under File > Settings > Tools > OpenCms Plugin.
+ * are done on the project level. These options can be found under File > Settings > Tools > OpenCms Plugin.
  * <br /><br />
  * <strong>Module level</strong>
  * <br />
@@ -88,7 +90,14 @@ import java.io.File;
  *
  * @author Kai Widmann, 2007-2016 mediaworx berlin AG
  */
-public class OpenCmsPlugin implements ProjectComponent {
+@State(
+	name = "OpenCmsPluginConfigurationData",
+	storages = {
+		@Storage( file = "$WORKSPACE_FILE$"),
+		@Storage( file = "$PROJECT_CONFIG_DIR$/opencms.xml", scheme = StorageScheme.DIRECTORY_BASED)
+	}
+)
+public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent<OpenCmsPluginConfigurationData> {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
 
@@ -108,6 +117,9 @@ public class OpenCmsPlugin implements ProjectComponent {
 	
 	/** Helper object to retrieve configuration data from the OpenCms configuration */
 	private OpenCmsConfiguration openCmsConfiguration;
+
+	/** Configuration data from the configuration form, is stored and loaded via PersistentStateComponent methods */
+	private OpenCmsPluginConfigurationData configurationData;
 
 	/** Container for all OpenCms modules configured in the project */
 	private OpenCmsModules openCmsModules;
@@ -375,6 +387,7 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 */
 	public void disposeComponent() {
 		project = null;
+		configurationData = null;
 		if (openCmsConfiguration != null) {
 			openCmsConfiguration.stopMonitoringConfigurationChanges();
 			openCmsConfiguration = null;
@@ -422,12 +435,10 @@ public class OpenCmsPlugin implements ProjectComponent {
 	 * @return  the project level configuration data
 	 */
 	public OpenCmsPluginConfigurationData getPluginConfiguration() {
-		if (project != null && project.getComponent(OpenCmsPluginConfigurationComponent.class) != null) {
-			return project.getComponent(OpenCmsPluginConfigurationComponent.class).getState();
+		if (configurationData == null) {
+			configurationData = new OpenCmsPluginConfigurationData();
 		}
-		else {
-			return null;
-		}
+		return configurationData;
 	}
 
 	/**
@@ -592,5 +603,26 @@ public class OpenCmsPlugin implements ProjectComponent {
 	public void setConsole(OpenCmsToolWindowConsole console) {
 		this.console = console;
 	}
-	
+
+	/**
+	 * Returns the current project level configuration state.
+	 *
+	 * @return the OpenCmsPluginConfigurationData object
+	 */
+	@Nullable
+	@Override
+	public OpenCmsPluginConfigurationData getState() {
+		return configurationData;
+	}
+
+	/**
+	 * Loads the project level configuration state contained in the given configuration data.
+	 *
+	 * @param configurationData the project level configuration data to load
+	 */
+	@Override
+	public void loadState(OpenCmsPluginConfigurationData configurationData) {
+		XmlSerializerUtil.copyBean(configurationData, getPluginConfiguration());
+	}
+
 }
