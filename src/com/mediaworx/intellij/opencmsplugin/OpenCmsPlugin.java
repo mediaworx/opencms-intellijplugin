@@ -141,6 +141,11 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	private IDEConnectorClient connectorClient;
 
 	/**
+	 * The main menu
+	 */
+	private OpenCmsMainMenu openCmsMainMenu;
+
+	/**
 	 * ToolWindow for the OpenCms plugin
 	 */
 	private ToolWindow toolWindow;
@@ -188,10 +193,18 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	}
 
 	/**
-	 * Does nothing, called by IntelliJ whenever a project is closed.
+	 * Disables the plugin, unregisters module actions and stops monitoring configuration changes, called by IntelliJ
+	 * whenever a project is closed.
 	 */
 	public void projectClosed() {
+		if (wasInitialized) {
+			openCmsMainMenu.unregisterModuleActions();
+			openCmsConfiguration.stopMonitoringConfigurationChanges();
+			disable();
+		}
 	}
+
+
 
 	/**
 	 * Enables the plugin for the current project. Initializes the plugin and its actions if initialization was not
@@ -292,7 +305,15 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		if (icon != null) {
 			action.getTemplatePresentation().setIcon(icon);
 		}
-		actionManager.registerAction(id, action);
+		if (actionManager.getAction(id) != null) {
+			actionManager.unregisterAction(id);
+		}
+		try {
+			actionManager.registerAction(id, action);
+		}
+		catch(Throwable t) {
+			LOG.warn("Error adding action " + id, t);
+		}
 		if (constraints == null) {
 			group.add(action);
 		}
@@ -305,7 +326,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 * Creates and registers the OpenCms menu for the main menu as an action group
 	 */
 	private void registerMainMenu() {
-		OpenCmsMainMenu openCmsMainMenu = (OpenCmsMainMenu) actionManager.getAction(OPENCMS_MENU_ID);
+		openCmsMainMenu = (OpenCmsMainMenu) actionManager.getAction(OPENCMS_MENU_ID);
 		if (openCmsMainMenu == null) {
 			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
 			openCmsMainMenu = OpenCmsMainMenu.getInstance(this);

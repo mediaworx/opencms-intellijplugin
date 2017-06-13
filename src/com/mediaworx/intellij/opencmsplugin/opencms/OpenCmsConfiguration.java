@@ -121,7 +121,7 @@ public class OpenCmsConfiguration {
 			configurationChangeMonitor.start();
 		}
 		catch (Exception e) {
-			LOG.error("There was an error starting the OpenCms configuration change monitor", e);
+			LOG.warn("There was an error starting the OpenCms configuration change monitor", e);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class OpenCmsConfiguration {
 			configurationChangeMonitor.stop();
 		}
 		catch (Exception e) {
-			LOG.error("There was an error stopping the OpenCms configuration change monitor");
+			LOG.info("There was an error stopping the OpenCms configuration change monitor");
 		}
 	}
 
