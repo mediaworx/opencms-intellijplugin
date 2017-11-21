@@ -35,8 +35,6 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
-import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -171,7 +169,6 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	 * @throws ConfigurationException required by the interface but never thrown
 	 */
 	public void apply() throws ConfigurationException {
-
 		if (form != null) {
 			// Get data from editor to component
 			form.getData(configurationData);
@@ -185,20 +182,8 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	 * @see com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules
 	 */
 	private void handleOcmsModuleRegistration() {
-		boolean validModule = false;
-		if (configurationData.isOpenCmsModuleEnabled()) {
-			String moduleBasePath = PluginTools.getModuleContentRoot(module);
-			if (StringUtils.isNotBlank(moduleBasePath)) {
-				validModule = true;
-				plugin.getOpenCmsModules().registerModule(moduleBasePath, configurationData);
-			}
-			else {
-				LOG.warn(String.format("Module %s doesn't have a valid content root", module.getModuleFilePath()));
-			}
-		}
-		if (!validModule) {
-			plugin.getOpenCmsModules().unregisterModule(module);
-		}
+		OpenCmsIdeaModuleMapping moduleMapping = new OpenCmsIdeaModuleMapping(module, configurationData);
+		plugin.addModuleMapping(moduleMapping);
 	}
 
 	/**
@@ -232,6 +217,7 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	 * @param configurationData the module level configuration data to load
 	 */
 	public void loadState(OpenCmsModuleConfigurationData configurationData) {
+		LOG.info("OpenCmsPlugin: OpenCmsModuleConfigurationComponent.loadState called. Module: " + module.getName());
 		if (this.configurationData == null) {
 			this.configurationData = new OpenCmsModuleConfigurationData();
 		}

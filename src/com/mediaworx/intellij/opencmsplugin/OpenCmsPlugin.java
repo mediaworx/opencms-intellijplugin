@@ -28,6 +28,7 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -42,12 +43,15 @@ import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsEditorPopupMenu
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsEditorTabPopupMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsProjectPopupMenu;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsIdeaModuleMapping;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.listeners.OpenCmsModuleFileChangeListener;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsConfiguration;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
+import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
@@ -58,6 +62,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * OpenCms plugin for IntelliJ providing IntelliJ menu actions to sync resources to and from the OpenCms VFS, to publish
@@ -164,28 +171,50 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	private boolean wasInitialized = false;
 
 	/**
+	 * List used to store module information during project load, later used to initialize OpenCms modules
+	 */
+	private List<OpenCmsIdeaModuleMapping> moduleMappings;
+
+	/**
 	 * Creates a new plugin instance, called by IntelliJ
 	 * @param project   the IntelliJ project
 	 */
 	public OpenCmsPlugin(Project project) {
+		LOG.info("OpenCmsPlugin: Initializing OpenCmsPlugin with project " + project.getName());
 		this.project = project;
 		openCmsModules = new OpenCmsModules(this);
+		moduleMappings = Collections.synchronizedList(new ArrayList<OpenCmsIdeaModuleMapping>());
 	}
 
 	/**
 	 * Initializes the plugin, called by IntelliJ
 	 */
 	public void initComponent() {
-		LOG.warn("initComponent called, project: " + project.getName());
+		LOG.info("OpenCmsPlugin: initComponent called, project: " + project.getName());
 		actionManager = ActionManager.getInstance();
-		
 	}
-	
+
+	private void initOpenCmsConfiguration() {
+		clearOpenCmsConfiguration();
+		OpenCmsPluginConfigurationData config = getPluginConfiguration();
+		openCmsConfiguration = new OpenCmsConfiguration(config);
+		openCmsConfiguration.startMonitoringConfigurationChanges();
+	}
+
+	private void clearOpenCmsConfiguration() {
+		if (openCmsConfiguration != null) {
+			openCmsConfiguration.stopMonitoringConfigurationChanges();
+			openCmsConfiguration = null;
+		}
+	}
+
+
 	/**
 	 * Enables the plugin (if it is enabled in the project level configuration), called by IntelliJ whenever a project
 	 * is opened.
 	 */
 	public void projectOpened() {
+		LOG.info("OpenCmsPlugin: projectOpened called, project: " + project.getName());
 		OpenCmsPluginConfigurationData config = getPluginConfiguration();
 		if (config != null && config.isOpenCmsPluginEnabled()) {
 			enable();
@@ -204,6 +233,9 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		}
 	}
 
+	public void addModuleMapping(OpenCmsIdeaModuleMapping moduleMapping) {
+		moduleMappings.add(moduleMapping);
+	}
 
 
 	/**
@@ -211,9 +243,13 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 * done before. If the plugin connector is activated in the project level configuration it gets initialized as well.
 	 */
 	public void enable() {
+		initOpenCmsConfiguration();
+		handleModuleMappings();
+
 		if (!wasInitialized) {
 			OpenCmsPluginConfigurationData config = getPluginConfiguration();
 			if (config != null && config.isOpenCmsPluginEnabled()) {
+
 				if (config.isPluginConnectorEnabled()) {
 					pluginConnector =   new OpenCmsPluginConnector(
 												config.getConnectorUrl(),
@@ -240,8 +276,43 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 * automatically because all actions are hidden if the plugin is deactivated
 	 */
 	public void disable() {
+		clearOpenCmsConfiguration();
+
 		if (wasInitialized) {
 			setToolWindowAvailable(false);
+		}
+	}
+
+	public void handleModuleMappings() {
+		Collections.sort(moduleMappings);
+		for (OpenCmsIdeaModuleMapping moduleMapping : moduleMappings) {
+			handleModuleMapping(moduleMapping);
+		}
+	}
+
+	/**
+	 * Handles a module mapping, adds or removes an OpenCms module for the Idea module contained in the mapping, using
+	 * the configuration contained in the mapping
+	 *
+	 * @param moduleMapping the module mapping to handle
+	 */
+	private void handleModuleMapping(OpenCmsIdeaModuleMapping moduleMapping) {
+		Module module = moduleMapping.getIdeaModule();
+		OpenCmsModuleConfigurationData moduleConfig = moduleMapping.getModuleConfiguration();
+
+		boolean validModule = false;
+		if (moduleConfig.isOpenCmsModuleEnabled()) {
+			String moduleBasePath = PluginTools.getModuleContentRoot(module);
+			if (StringUtils.isNotBlank(moduleBasePath)) {
+				validModule = true;
+				getOpenCmsModules().registerModule(moduleBasePath, moduleConfig);
+			}
+			else {
+				LOG.warn(String.format("Module %s doesn't have a valid content root", module.getModuleFilePath()));
+			}
+		}
+		if (!validModule) {
+			getOpenCmsModules().unregisterModule(module);
 		}
 	}
 
@@ -332,6 +403,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 			openCmsMainMenu = OpenCmsMainMenu.getInstance(this);
 			addAction(mainMenu, OPENCMS_MENU_ID, openCmsMainMenu, "_OpenCms", null, new Constraints(Anchor.BEFORE, "HelpMenu"));
 		}
+		openCmsMainMenu.registerModuleActions();
 	}
 
 	/**
@@ -409,10 +481,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	public void disposeComponent() {
 		project = null;
 		configurationData = null;
-		if (openCmsConfiguration != null) {
-			openCmsConfiguration.stopMonitoringConfigurationChanges();
-			openCmsConfiguration = null;
-		}
+		clearOpenCmsConfiguration();
 		openCmsModules = null;
 		vfsAdapter = null;
 		pluginConnector = null;
@@ -444,9 +513,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 */
 	public OpenCmsConfiguration getOpenCmsConfiguration() {
 		if (openCmsConfiguration == null) {
-			OpenCmsPluginConfigurationData config = getPluginConfiguration();
-			openCmsConfiguration = new OpenCmsConfiguration(config);
-			openCmsConfiguration.startMonitoringConfigurationChanges();
+			initOpenCmsConfiguration();
 		}
 		return openCmsConfiguration;
 	}

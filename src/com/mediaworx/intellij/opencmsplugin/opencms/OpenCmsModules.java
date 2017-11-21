@@ -27,7 +27,6 @@ package com.mediaworx.intellij.opencmsplugin.opencms;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
-import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 
@@ -77,8 +76,6 @@ public class OpenCmsModules {
 			ocmsModule.init(moduleConfig);
 			openCmsModuleMap.put(moduleBasePath, ocmsModule);
 		}
-		// TODO: think about using an event instead
-		OpenCmsMainMenu.getInstance(plugin).registerModuleActions();
 	}
 
 	/**
@@ -89,8 +86,6 @@ public class OpenCmsModules {
 		LOG.info("unregistering module: " + ideaModule.getName());
 		allExportPoints = null;
 		openCmsModuleMap.remove(ideaModule);
-		// TODO: think about using an event instead
-		OpenCmsMainMenu.getInstance(plugin).registerModuleActions();
 	}
 
 	/**

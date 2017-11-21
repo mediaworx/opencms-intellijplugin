@@ -95,10 +95,12 @@ public class OpenCmsConfiguration {
 		catch (Exception e) {
 			LOG.warn("Exception during initialization of the module configuration: " + e);
 		}
+
+		parseConfiguration();
 	}
 
 
-	/** Internal method used to parse the OpenCms configuration (right now only the odule configuration is parsed) */
+	/** Internal method used to parse the OpenCms configuration (right now only the module configuration is parsed) */
 	private void parseConfiguration() {
 		if (config.getWebappRoot() != null) {
 			try {
@@ -143,7 +145,9 @@ public class OpenCmsConfiguration {
 	 * @return the parsed module configuration XML file as a Document
 	 */
 	private Document getParsedModuleConfigurationFile() {
-		parseConfiguration();
+		if (parsedModuleConfigurationFile == null) {
+			parseConfiguration();
+		}
 		return parsedModuleConfigurationFile;
 	}
 
@@ -157,7 +161,8 @@ public class OpenCmsConfiguration {
 		Document configDocument = getParsedModuleConfigurationFile();
 		if (configDocument != null) {
 			try {
-				NodeList nl = xmlHelper.getNodeListForXPath(configDocument, String.format(EXPORTPOINT_XPATH, moduleName));
+				String exportPointXPath = String.format(EXPORTPOINT_XPATH, moduleName);
+				NodeList nl = xmlHelper.getNodeListForXPath(configDocument, exportPointXPath);
 				int numExportPoints = nl.getLength();
 
 				for (int i = 0; i < numExportPoints; i++) {

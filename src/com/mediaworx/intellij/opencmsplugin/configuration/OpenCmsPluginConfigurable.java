@@ -24,6 +24,7 @@
 
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
@@ -42,6 +43,8 @@ import javax.swing.*;
  * {@link OpenCmsPlugin}.
  */
 public class OpenCmsPluginConfigurable implements Configurable {
+
+	private static final Logger LOG = Logger.getInstance(OpenCmsPluginConfigurable.class);
 
 	private OpenCmsPluginConfigurationForm form;
 
@@ -82,6 +85,7 @@ public class OpenCmsPluginConfigurable implements Configurable {
 	 * @return the project level configuration component
 	 */
 	public JComponent createComponent() {
+		LOG.info("OpenCmsPlugin: OpenCmsPluginConfigurable.createComponent called. Project: " + project.getName());
 		if (form == null) {
 			form = new OpenCmsPluginConfigurationForm();
 		}
