@@ -169,6 +169,7 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	 * @throws ConfigurationException required by the interface but never thrown
 	 */
 	public void apply() throws ConfigurationException {
+		LOG.info("OpenCmsPlugin: OpenCmsModuleConfigurationComponent.apply called. Module: " + module.getName());
 		if (form != null) {
 			// Get data from editor to component
 			form.getData(configurationData);
@@ -182,8 +183,7 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	 * @see com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules
 	 */
 	private void handleOcmsModuleRegistration() {
-		OpenCmsIdeaModuleMapping moduleMapping = new OpenCmsIdeaModuleMapping(module, configurationData);
-		plugin.addModuleMapping(moduleMapping);
+		// TODO: remove this method, it's no longer used. But a solution to reinitialize models after apply has to be found
 	}
 
 	/**

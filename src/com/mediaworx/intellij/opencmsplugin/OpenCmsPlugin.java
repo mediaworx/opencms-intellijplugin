@@ -29,6 +29,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -43,7 +44,7 @@ import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsEditorPopupMenu
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsEditorTabPopupMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsProjectPopupMenu;
-import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsIdeaModuleMapping;
+import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationComponent;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
@@ -62,9 +63,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * OpenCms plugin for IntelliJ providing IntelliJ menu actions to sync resources to and from the OpenCms VFS, to publish
@@ -171,11 +170,6 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	private boolean wasInitialized = false;
 
 	/**
-	 * List used to store module information during project load, later used to initialize OpenCms modules
-	 */
-	private List<OpenCmsIdeaModuleMapping> moduleMappings;
-
-	/**
 	 * Creates a new plugin instance, called by IntelliJ
 	 * @param project   the IntelliJ project
 	 */
@@ -183,7 +177,6 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		LOG.info("OpenCmsPlugin: Initializing OpenCmsPlugin with project " + project.getName());
 		this.project = project;
 		openCmsModules = new OpenCmsModules(this);
-		moduleMappings = Collections.synchronizedList(new ArrayList<OpenCmsIdeaModuleMapping>());
 	}
 
 	/**
@@ -233,18 +226,13 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		}
 	}
 
-	public void addModuleMapping(OpenCmsIdeaModuleMapping moduleMapping) {
-		moduleMappings.add(moduleMapping);
-	}
-
-
 	/**
 	 * Enables the plugin for the current project. Initializes the plugin and its actions if initialization was not
 	 * done before. If the plugin connector is activated in the project level configuration it gets initialized as well.
 	 */
 	public void enable() {
 		initOpenCmsConfiguration();
-		handleModuleMappings();
+		initializeOpenCmsModules();
 
 		if (!wasInitialized) {
 			OpenCmsPluginConfigurationData config = getPluginConfiguration();
@@ -283,38 +271,49 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		}
 	}
 
-	public void handleModuleMappings() {
-		Collections.sort(moduleMappings);
-		for (OpenCmsIdeaModuleMapping moduleMapping : moduleMappings) {
-			handleModuleMapping(moduleMapping);
+	public void initializeOpenCmsModules() {
+		ModuleManager moduleManager = ModuleManager.getInstance(project);
+		Module[] modules = moduleManager.getModules();
+
+		// put all modules in a tree map with their name as key and the module as value to be able to get an alphabetically sorted module list
+		Map<String, Module> moduleMap = new TreeMap<>();
+		for (Module module : modules) {
+			moduleMap.put(module.getName(), module);
+		}
+
+		for (Module module : moduleMap.values()) {
+			OpenCmsModuleConfigurationComponent configurationComponent = module.getComponent(OpenCmsModuleConfigurationComponent.class);
+			OpenCmsModuleConfigurationData moduleConfig = configurationComponent.getState();
+
+			boolean validModule = false;
+			if (moduleConfig != null && moduleConfig.isOpenCmsModuleEnabled()) {
+				validModule = initializeOpenCmsModule(module, moduleConfig);
+			}
+			if (!validModule) {
+				getOpenCmsModules().unregisterModule(module);
+			}
 		}
 	}
+
 
 	/**
 	 * Handles a module mapping, adds or removes an OpenCms module for the Idea module contained in the mapping, using
 	 * the configuration contained in the mapping
 	 *
-	 * @param moduleMapping the module mapping to handle
+	 * @param module the IntelliJ module for which the OpenCms module should be initialized
 	 */
-	private void handleModuleMapping(OpenCmsIdeaModuleMapping moduleMapping) {
-		Module module = moduleMapping.getIdeaModule();
-		OpenCmsModuleConfigurationData moduleConfig = moduleMapping.getModuleConfiguration();
-
-		boolean validModule = false;
-		if (moduleConfig.isOpenCmsModuleEnabled()) {
-			String moduleBasePath = PluginTools.getModuleContentRoot(module);
-			if (StringUtils.isNotBlank(moduleBasePath)) {
-				validModule = true;
-				getOpenCmsModules().registerModule(moduleBasePath, moduleConfig);
-			}
-			else {
-				LOG.warn(String.format("Module %s doesn't have a valid content root", module.getModuleFilePath()));
-			}
+	private boolean initializeOpenCmsModule(Module module, OpenCmsModuleConfigurationData moduleConfig) {
+		String moduleBasePath = PluginTools.getModuleContentRoot(module);
+		if (StringUtils.isNotBlank(moduleBasePath)) {
+			getOpenCmsModules().registerModule(moduleBasePath, moduleConfig);
+			return true;
 		}
-		if (!validModule) {
-			getOpenCmsModules().unregisterModule(module);
+		else {
+			LOG.warn(String.format("Module %s doesn't have a valid content root", module.getModuleFilePath()));
+			return false;
 		}
 	}
+
 
 	/**
 	 * Registers the OpenCms menus for MainMenu, ProjectPopup, EditorPopup and EditorTabPopup
