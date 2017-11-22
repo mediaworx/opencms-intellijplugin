@@ -25,7 +25,6 @@
 package com.mediaworx.intellij.opencmsplugin.opencms;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.Module;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
@@ -33,7 +32,7 @@ import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import java.io.File;
 import java.util.*;
 
-// RTASK: decouple intellij module and OpenCms module. Save OpenCms modules by their base path, replace "findModuleForFile" with custom implementation
+// RTASK: decouple intellij module and OpenCms module. Save OpenCms modules by their base path (DONE), replace "findModuleForFile" with custom implementation
 /**
  * Module repository for the currently open project. All OpenCms modules are registered here.
  */
@@ -60,7 +59,7 @@ public class OpenCmsModules {
 	 * @param moduleConfig   the configuration data from the module's configuration dialog
 	 */
 	public void registerModule(String moduleBasePath, OpenCmsModuleConfigurationData moduleConfig) {
-		LOG.info("registering module: " + moduleConfig.getModuleName());
+		LOG.info("registering module: " + moduleBasePath);
 		moduleBasePath = PluginTools.ensureUnixPath(moduleBasePath);
 		allExportPoints = null;
 		if (!moduleConfig.isOpenCmsModuleEnabled()) {
@@ -79,13 +78,13 @@ public class OpenCmsModules {
 	}
 
 	/**
-	 * removes the OpenCms module linked to the given IntelliJ module from the repository
-	 * @param ideaModule the IntelliJ module the OpenCms module is linked to
+	 * removes the OpenCms module linked to the IntelliJ module with the given base path from the repository
+	 * @param moduleBasePath the IntelliJ module's basePath
 	 */
-	public void unregisterModule(Module ideaModule) {
-		LOG.info("unregistering module: " + ideaModule.getName());
+	public void unregisterModule(String moduleBasePath) {
+		LOG.info("unregistering module: " + moduleBasePath);
 		allExportPoints = null;
-		openCmsModuleMap.remove(ideaModule);
+		openCmsModuleMap.remove(moduleBasePath);
 	}
 
 	/**

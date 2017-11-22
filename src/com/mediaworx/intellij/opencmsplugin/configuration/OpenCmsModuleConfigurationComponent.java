@@ -173,17 +173,8 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 		if (form != null) {
 			// Get data from editor to component
 			form.getData(configurationData);
-			handleOcmsModuleRegistration();
+			plugin.queueOpenCmsModuleUpdate();
 		}
-	}
-
-	/**
-	 * Registers and unregisters OpenCms modules depending on the setting "Is OpenCms Module". The OpenCms module 
-	 * registry (class <code>OpenCmsModules</code>) is a singleton kept by the plugin instance.
-	 * @see com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules
-	 */
-	private void handleOcmsModuleRegistration() {
-		// TODO: remove this method, it's no longer used. But a solution to reinitialize models after apply has to be found
 	}
 
 	/**
@@ -222,6 +213,5 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 			this.configurationData = new OpenCmsModuleConfigurationData();
 		}
         XmlSerializerUtil.copyBean(configurationData, this.configurationData);
-		handleOcmsModuleRegistration();
 	}
 }

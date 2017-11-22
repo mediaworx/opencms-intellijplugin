@@ -63,7 +63,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.*;
+import java.util.Map;
+import java.util.TimerTask;
+import java.util.TreeMap;
 
 /**
  * OpenCms plugin for IntelliJ providing IntelliJ menu actions to sync resources to and from the OpenCms VFS, to publish
@@ -116,6 +118,9 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 
 	private static final Icon MENU_ICON = new ImageIcon(OpenCmsPlugin.class.getResource("/icons/opencms_menu.png"));
 
+	/** After IntelliJ module changes we'll wait a while before OpenCms modules get updated */
+	private static final int MODULE_CHANGE_UPDATE_DELAY = 1000;
+
 	/** The IntelliJ project */
 	private Project project;
 	
@@ -165,6 +170,16 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	private ActionManager actionManager;
 
 	/**
+	 * timer used to execute delayed refreshes of OpenCms modules after IntelliJ modules have been changed
+	 */
+	private final java.util.Timer moduleUpdateTimer = new java.util.Timer();
+
+	/**
+	 * task used to execute delayed OpenCms module updates after IntelliJ modules have been changed
+	 */
+	private TimerTask currentModuleUpdateTimerTask;
+
+	/**
 	 * Set to <code>true</code> the first time the OpenCms plugin is enabled
 	 */
 	private boolean wasInitialized = false;
@@ -182,6 +197,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	/**
 	 * Initializes the plugin, called by IntelliJ
 	 */
+	@Override
 	public void initComponent() {
 		LOG.info("OpenCmsPlugin: initComponent called, project: " + project.getName());
 		actionManager = ActionManager.getInstance();
@@ -206,6 +222,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 * Enables the plugin (if it is enabled in the project level configuration), called by IntelliJ whenever a project
 	 * is opened.
 	 */
+	@Override
 	public void projectOpened() {
 		LOG.info("OpenCmsPlugin: projectOpened called, project: " + project.getName());
 		OpenCmsPluginConfigurationData config = getPluginConfiguration();
@@ -218,7 +235,9 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 * Disables the plugin, unregisters module actions and stops monitoring configuration changes, called by IntelliJ
 	 * whenever a project is closed.
 	 */
+	@Override
 	public void projectClosed() {
+		LOG.info("OpenCmsPlugin: projectClosed called, project: " + project.getName());
 		if (wasInitialized) {
 			openCmsMainMenu.unregisterModuleActions();
 			openCmsConfiguration.stopMonitoringConfigurationChanges();
@@ -271,7 +290,13 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		}
 	}
 
-	public void initializeOpenCmsModules() {
+	/**
+	 * initializes all OpenCms modules that are configured in the IntelliJ modules (option "Is OpenCms module" checked)
+	 * and removes modules that aren't configured as OpenCms modules
+	 */
+	private synchronized void initializeOpenCmsModules() {
+		LOG.info("OpenCmsPlugin: initializeOpenCmsModules called, project: " + project.getName());
+
 		ModuleManager moduleManager = ModuleManager.getInstance(project);
 		Module[] modules = moduleManager.getModules();
 
@@ -282,36 +307,45 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		}
 
 		for (Module module : moduleMap.values()) {
-			OpenCmsModuleConfigurationComponent configurationComponent = module.getComponent(OpenCmsModuleConfigurationComponent.class);
-			OpenCmsModuleConfigurationData moduleConfig = configurationComponent.getState();
+			String moduleBasePath = PluginTools.getModuleContentRoot(module);
+			if (StringUtils.isNotBlank(moduleBasePath)) {
+				OpenCmsModuleConfigurationComponent configurationComponent = module.getComponent(OpenCmsModuleConfigurationComponent.class);
+				OpenCmsModuleConfigurationData moduleConfig = configurationComponent.getState();
 
-			boolean validModule = false;
-			if (moduleConfig != null && moduleConfig.isOpenCmsModuleEnabled()) {
-				validModule = initializeOpenCmsModule(module, moduleConfig);
+				boolean validModule = false;
+				if (moduleConfig != null && moduleConfig.isOpenCmsModuleEnabled()) {
+					getOpenCmsModules().registerModule(moduleBasePath, moduleConfig);
+					validModule = true;
+				}
+				if (!validModule) {
+					getOpenCmsModules().unregisterModule(moduleBasePath);
+				}
 			}
-			if (!validModule) {
-				getOpenCmsModules().unregisterModule(module);
+			else {
+				LOG.warn(String.format("Module %s doesn't have a valid content root", module.getModuleFilePath()));
 			}
 		}
 	}
 
-
 	/**
-	 * Handles a module mapping, adds or removes an OpenCms module for the Idea module contained in the mapping, using
-	 * the configuration contained in the mapping
-	 *
-	 * @param module the IntelliJ module for which the OpenCms module should be initialized
+	 * Handles delayed refresh of the OpenCms modules after IntelliJ module configuration changes. If multiple IntelliJ
+	 * modules have been changed, the delayed execution is stopped and a new scheduled task is queued, so the refresh is
+	 * done only once.
 	 */
-	private boolean initializeOpenCmsModule(Module module, OpenCmsModuleConfigurationData moduleConfig) {
-		String moduleBasePath = PluginTools.getModuleContentRoot(module);
-		if (StringUtils.isNotBlank(moduleBasePath)) {
-			getOpenCmsModules().registerModule(moduleBasePath, moduleConfig);
-			return true;
+	public void queueOpenCmsModuleUpdate() {
+		if (currentModuleUpdateTimerTask != null) {
+			currentModuleUpdateTimerTask.cancel();
 		}
-		else {
-			LOG.warn(String.format("Module %s doesn't have a valid content root", module.getModuleFilePath()));
-			return false;
-		}
+		currentModuleUpdateTimerTask = new TimerTask() {
+			@Override
+			public void run() {
+				LOG.info("OpenCmsPlugin: running timed OpenCms module refresh now: " + project.getName());
+				currentModuleUpdateTimerTask = null;
+				initializeOpenCmsModules();
+				openCmsMainMenu.registerModuleActions();
+			}
+		};
+		moduleUpdateTimer.schedule(currentModuleUpdateTimerTask, MODULE_CHANGE_UPDATE_DELAY);
 	}
 
 
@@ -477,7 +511,9 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	/**
 	 * Does some cleanup, called by IntelliJ.
 	 */
+	@Override
 	public void disposeComponent() {
+		LOG.info("OpenCmsPlugin: disposeComponent called, project: " + project.getName());
 		project = null;
 		configurationData = null;
 		clearOpenCmsConfiguration();
@@ -494,7 +530,9 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 * @return  "OpenCmsPlugin.MainComponent"
 	 */
 	@NotNull
+	@Override
 	public String getComponentName() {
+		LOG.info("OpenCmsPlugin: getComponentName called, project: " + project.getName());
 		return "OpenCmsPlugin.MainComponent";
 	}
 
@@ -699,6 +737,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	@Nullable
 	@Override
 	public OpenCmsPluginConfigurationData getState() {
+		LOG.info("OpenCmsPlugin: getState called, project: " + project.getName());
 		return configurationData;
 	}
 
@@ -709,6 +748,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 */
 	@Override
 	public void loadState(OpenCmsPluginConfigurationData configurationData) {
+		LOG.info("OpenCmsPlugin: loadState called, project: " + project.getName());
 		XmlSerializerUtil.copyBean(configurationData, getPluginConfiguration());
 	}
 

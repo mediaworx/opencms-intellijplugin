@@ -68,6 +68,7 @@ public class OpenCmsPluginConfigurable implements Configurable {
 	 * @return  the component's display name "OpenCms Plugin"
 	 */
 	@Nls
+	@Override
 	public String getDisplayName() {
 		return "OpenCms Plugin";
 	}
@@ -76,6 +77,7 @@ public class OpenCmsPluginConfigurable implements Configurable {
 	 * There's no help topic for the OpenCms plugin, so <code>null</code> is returned.
 	 * @return  always returns <code>null</code>
 	 */
+	@Override
 	public String getHelpTopic() {
 		return null;  // Do nothing
 	}
@@ -84,6 +86,7 @@ public class OpenCmsPluginConfigurable implements Configurable {
 	 * Creates the project level configuration component and initializes the corresponding configuration data object.
 	 * @return the project level configuration component
 	 */
+	@Override
 	public JComponent createComponent() {
 		LOG.info("OpenCmsPlugin: OpenCmsPluginConfigurable.createComponent called. Project: " + project.getName());
 		if (form == null) {
@@ -96,6 +99,7 @@ public class OpenCmsPluginConfigurable implements Configurable {
 	 * Checks if the project level configuration was modified
 	 * @return  <code>true</code> if the project level configuration was modified, <code>false</code> otherwise
 	 */
+	@Override
 	public boolean isModified() {
 		return form != null && form.isModified(configurationData);
 	}
@@ -104,7 +108,9 @@ public class OpenCmsPluginConfigurable implements Configurable {
 	 * Applies the modifications made to the project level configuration.
 	 * @throws ConfigurationException required by the interface but never thrown
 	 */
+	@Override
 	public void apply() throws ConfigurationException {
+		LOG.info("OpenCmsPlugin: OpenCmsPluginConfigurable.apply called. Project: " + project.getName());
 		if (form != null) {
 			boolean pluginActivationWasModified = form.isPluginActivationModified(configurationData.isOpenCmsPluginEnabled());
 
@@ -176,7 +182,9 @@ public class OpenCmsPluginConfigurable implements Configurable {
 	/**
 	 * Resets the configuration form to the last saved state after modifications were made.
 	 */
+	@Override
 	public void reset() {
+		LOG.info("OpenCmsPlugin: OpenCmsPluginConfigurable.reset called. Project: " + project.getName());
 		if (form != null) {
 			// Reset form data from component
 			form.setData(configurationData);
@@ -186,6 +194,7 @@ public class OpenCmsPluginConfigurable implements Configurable {
 	/**
 	 * Clears UI resources used by the project level configuration component.
 	 */
+	@Override
 	public void disposeUIResources() {
 		form = null;
 	}
