@@ -28,7 +28,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.util.ui.UIUtil;
-import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
+import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsConnectionAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.ConsolePrinter;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
@@ -44,7 +44,7 @@ import java.util.List;
  * Parent action for all actions used to import module zips into the local OpenCms instance
  */
 @SuppressWarnings("ComponentNotRegistered")
-public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
+public abstract class OpenCmsImportAction extends OpenCmsConnectionAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsImportAction.class);
 
@@ -56,9 +56,8 @@ public abstract class OpenCmsImportAction extends OpenCmsPluginAction {
 	 * @param event the action event, provided by IntelliJ
 	 */
 	@Override
-	public void actionPerformed(AnActionEvent event) {
-		LOG.info("actionPerformed - event: " + event);
-		super.actionPerformed(event);
+	public void executeAction(AnActionEvent event) {
+		LOG.info("executeAction - event: " + event);
 
 		if (config.isPluginConnectorServiceEnabled() && StringUtils.isNotBlank(config.getConnectorServiceUrl())) {
 			final List<File> moduleFiles = getModuleFileList(event);

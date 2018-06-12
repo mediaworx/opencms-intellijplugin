@@ -26,7 +26,7 @@ package com.mediaworx.intellij.opencmsplugin.actions.publish;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
-import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
+import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsConnectionAction;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.connector.PublishFileAnalyzer;
@@ -42,7 +42,7 @@ import java.util.List;
  * Parent action for all actions used to publish OpenCms resources
  */
 @SuppressWarnings("ComponentNotRegistered")
-public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
+public abstract class OpenCmsPublishAction extends OpenCmsConnectionAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPublishAction.class);
 
@@ -52,9 +52,8 @@ public abstract class OpenCmsPublishAction extends OpenCmsPluginAction {
 	 * {@link #getPublishFileArray(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
 	 */
 	@Override
-	public void actionPerformed(AnActionEvent event) {
-		LOG.info("actionPerformed - event: " + event);
-		super.actionPerformed(event);
+	public void executeAction(AnActionEvent event) {
+		LOG.info("executeAction - event: " + event);
 
 		try {
 			OpenCmsToolWindowConsole console = plugin.getConsole();

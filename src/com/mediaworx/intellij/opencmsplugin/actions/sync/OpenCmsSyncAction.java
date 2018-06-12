@@ -26,7 +26,7 @@ package com.mediaworx.intellij.opencmsplugin.actions.sync;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
-import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction;
+import com.mediaworx.intellij.opencmsplugin.actions.OpenCmsConnectionAction;
 import com.mediaworx.intellij.opencmsplugin.sync.OpenCmsSyncer;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +37,7 @@ import java.util.List;
  * Parent action for all actions used to sync module resources to/from the OpenCms VFS
  */
 @SuppressWarnings("ComponentNotRegistered")
-public abstract class OpenCmsSyncAction extends OpenCmsPluginAction {
+public abstract class OpenCmsSyncAction extends OpenCmsConnectionAction {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsSyncAction.class);
 
@@ -47,10 +47,8 @@ public abstract class OpenCmsSyncAction extends OpenCmsPluginAction {
 	 * {@link #getSyncFiles(com.intellij.openapi.actionSystem.AnActionEvent)} that's implemented by subclasses.
 	 */
 	@Override
-	public void actionPerformed(AnActionEvent event) {
-		LOG.info("actionPerformed - event: " + event);
-		super.actionPerformed(event);
-
+	public void executeAction(AnActionEvent event) {
+		LOG.info("executeAction - event: " + event);
 		try {
 			List<File> syncFiles = getSyncFiles(event);
 			if (syncFiles.size() > 0) {
