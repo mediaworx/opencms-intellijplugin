@@ -90,7 +90,7 @@
 	</module-components>
 
 	<actions>
-		<group id="OpenCmsPlugin.ActionMenu" class="com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu" text="_OpenCms" description="All OpenCms actions" popup="true" icon="/icons/opencms_menu.png">
+		<group id="OpenCmsPlugin.ActionMenu" class="com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu" text="O_penCms" description="All OpenCms actions" popup="true" icon="/icons/opencms_menu.png">
 			<add-to-group group-id="ToolsMenu" anchor="last" />
 		</group>
 	</actions>

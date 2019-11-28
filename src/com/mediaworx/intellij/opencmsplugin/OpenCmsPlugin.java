@@ -439,7 +439,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		if (openCmsMainMenu == null) {
 			DefaultActionGroup toolsMenu = (DefaultActionGroup)actionManager.getAction("ToolsMenu");
 			openCmsMainMenu = OpenCmsMainMenu.getInstance(this);
-			addAction(toolsMenu, OPENCMS_MENU_ID, openCmsMainMenu, "_OpenCms", null, null);
+			addAction(toolsMenu, OPENCMS_MENU_ID, openCmsMainMenu, "O_penCms", null, null);
 		}
 		openCmsMainMenu.registerModuleActions();
 	}
