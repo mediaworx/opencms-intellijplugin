@@ -91,6 +91,8 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	private static final String PUBLSH_ALL_MODULES_ID = "OpenCmsPlugin.PublishAllModules";
 	public static final String PUBLISH_MODULE_ID_PREFIX = "OpenCmsPlugin.PublishModule.";
 
+	private static final String DESCRIPTION = "All OpenCms actions";
+
 	private static final Shortcut SYNC_SHORTCUT = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK), null);
 
 	private Keymap keymap;
@@ -102,13 +104,17 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 	Project currentProject;
 
+	public OpenCmsMainMenu() {
+		super(true, DESCRIPTION);
+	}
+
 	/**
 	 * Creates the OpenCms menu for the main menu and registers the sync and publish actions for all OpenCms modules in
 	 * the project
 	 * @param plugin the OpenCms plugin instance
 	 */
 	private OpenCmsMainMenu(OpenCmsPlugin plugin) {
-		super(plugin, "All OpenCms actions", false);
+		super(plugin, DESCRIPTION, true);
 		currentProject = plugin.getProject();
 		registerModuleActions();
 	}

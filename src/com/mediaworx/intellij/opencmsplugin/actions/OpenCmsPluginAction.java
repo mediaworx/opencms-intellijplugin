@@ -26,7 +26,7 @@ package com.mediaworx.intellij.opencmsplugin.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
@@ -85,7 +85,7 @@ public abstract class OpenCmsPluginAction extends AnAction {
 	 * @param event the action event, provided by IntelliJ
 	 */
 	private void init(AnActionEvent event) {
-		project = DataKeys.PROJECT.getData(event.getDataContext());
+		project = CommonDataKeys.PROJECT.getData(event.getDataContext());
 		if (project == null) {
 			return;
 		}

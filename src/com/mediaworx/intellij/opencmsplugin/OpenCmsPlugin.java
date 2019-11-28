@@ -342,7 +342,9 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 				LOG.info("OpenCmsPlugin: running timed OpenCms module refresh now: " + project.getName());
 				currentModuleUpdateTimerTask = null;
 				initializeOpenCmsModules();
-				openCmsMainMenu.registerModuleActions();
+				if (openCmsMainMenu != null) {
+					openCmsMainMenu.registerModuleActions();
+				}
 			}
 		};
 		moduleUpdateTimer.schedule(currentModuleUpdateTimerTask, MODULE_CHANGE_UPDATE_DELAY);
@@ -353,7 +355,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 * Registers the OpenCms menus for MainMenu, ProjectPopup, EditorPopup and EditorTabPopup
 	 */
 	private void registerMenus() {
-		registerMainMenu();
+		registerToolsMenu();
 		registerProjectPopupMenu();
 		registerEditorPopupMenu();
 		registerEditorTabPopupMenu();
@@ -427,14 +429,17 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	}
 
 	/**
-	 * Creates and registers the OpenCms menu for the main menu as an action group
+	 * Creates and registers the OpenCms menu for the tools menu as an action group
 	 */
-	private void registerMainMenu() {
-		openCmsMainMenu = (OpenCmsMainMenu) actionManager.getAction(OPENCMS_MENU_ID);
+	private void registerToolsMenu() {
+		openCmsMainMenu = (OpenCmsMainMenu)actionManager.getAction(OPENCMS_MENU_ID);
+		if (openCmsMainMenu != null) {
+			openCmsMainMenu.setPlugin(this);
+		}
 		if (openCmsMainMenu == null) {
-			DefaultActionGroup mainMenu = (DefaultActionGroup)actionManager.getAction(IdeActions.GROUP_MAIN_MENU);
+			DefaultActionGroup toolsMenu = (DefaultActionGroup)actionManager.getAction("ToolsMenu");
 			openCmsMainMenu = OpenCmsMainMenu.getInstance(this);
-			addAction(mainMenu, OPENCMS_MENU_ID, openCmsMainMenu, "_OpenCms", null, new Constraints(Anchor.BEFORE, "HelpMenu"));
+			addAction(toolsMenu, OPENCMS_MENU_ID, openCmsMainMenu, "_OpenCms", null, null);
 		}
 		openCmsMainMenu.registerModuleActions();
 	}
