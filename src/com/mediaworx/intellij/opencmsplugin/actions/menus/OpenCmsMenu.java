@@ -53,7 +53,6 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	public OpenCmsMenu(boolean popup, String description) {
 		super("_OpenCms", popup);
 		getTemplatePresentation().setDescription(description);
-		actionManager = ActionManager.getInstance();
 	}
 
 	/**
@@ -115,6 +114,7 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 
 	public void setPlugin(OpenCmsPlugin plugin) {
 		this.plugin = plugin;
+		actionManager = ActionManager.getInstance();
 		registerActions();
 	}
 }
