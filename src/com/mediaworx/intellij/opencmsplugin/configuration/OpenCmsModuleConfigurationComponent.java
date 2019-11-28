@@ -27,6 +27,7 @@ package com.mediaworx.intellij.opencmsplugin.configuration;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
@@ -44,7 +45,7 @@ import javax.swing.*;
 @State(
     name = "OpenCmsModuleConfigurationData",
     storages = {
-        @Storage(id = "OpenCmsPluginModuleConfiguration", file = "$MODULE_FILE$")
+        @Storage(StoragePathMacros.MODULE_FILE)
     }
 )
 /**

@@ -101,8 +101,8 @@ import java.util.TreeMap;
 @State(
 	name = "OpenCmsPluginConfigurationData",
 	storages = {
-		@Storage( file = "$WORKSPACE_FILE$"),
-		@Storage( file = "$PROJECT_CONFIG_DIR$/opencms.xml", scheme = StorageScheme.DIRECTORY_BASED)
+		@Storage( StoragePathMacros.WORKSPACE_FILE),
+		@Storage( "opencms.xml")
 	}
 )
 public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent<OpenCmsPluginConfigurationData> {

@@ -94,16 +94,43 @@ public class OpenCmsModules {
 		return openCmsModuleMap.values();
 	}
 
+	/*
+		Compare paths ending with a / to avoid matching on another
+		module that begins with the same prefix.
+		For example, consider this ModuleMap:
+		- a.b.c.a
+		- a.b.c
+		- a.b.c.d
+		Without the / appending, a request for a.b.c.d/src/main/vfs/example.txt
+		would yield the module a.b.c responsible.
+		 */
+
+	/**
+	 * get the module owning a specific File
+	 * @param file
+	 * @return
+	 */
 	public OpenCmsModule getModuleForFile(File file) {
 		if (file == null) {
 			return null;
 		}
+		String filePath = PluginTools.ensureUnixPath(file.getPath());
+		if(file.isDirectory() && filePath.substring(filePath.length() - 1) != "/") {
+			filePath = filePath + "/";
+		}
+		LOG.info("getModuleForFile(file="+filePath+")");
 		for (String basePath : openCmsModuleMap.keySet()) {
-			String filePath = PluginTools.ensureUnixPath(file.getPath());
-			if (filePath.startsWith(basePath)) {
-				return openCmsModuleMap.get(basePath);
+			String compareBasePath = basePath;
+			if(compareBasePath.substring(compareBasePath.length() - 1) != "/") {
+				compareBasePath = compareBasePath + "/";
+			}
+			LOG.info("Comparing " + filePath + " against "+compareBasePath);
+			if (filePath.startsWith(compareBasePath)) {
+				LOG.info("Match");
+				return openCmsModuleMap.get(basePath); //use basePath here as the module registration may or may not have been with a trailing /
 			}
 		}
+		LOG.warn("No matching module could be found for " + filePath);
 		return null;
 	}
 
@@ -113,13 +140,30 @@ public class OpenCmsModules {
 	 */
 	public OpenCmsModule getModuleForPath(String path) {
 		if (path == null) {
+			LOG.error("getModuleForPath called with path = null");
 			return null;
 		}
+		File fsFile = new File(path);
+		if(!fsFile.exists()) {
+			LOG.error("getModuleForPath(" + path + ") called on a non-existent file");
+			return null;
+		}
+		if(fsFile.isDirectory() && path.substring(path.length() - 1) != "/") {
+			path = path + "/";
+		}
+		LOG.info("getModuleForPath(path=" + path + ")");
 		for (String basePath : openCmsModuleMap.keySet()) {
-			if (path.startsWith(basePath)) {
-				return openCmsModuleMap.get(basePath);
+			String compareBasePath = basePath;
+			if(compareBasePath.substring(compareBasePath.length() - 1) != "/") {
+				compareBasePath = compareBasePath + "/";
+			}
+			LOG.info("Comparing " + path + " against "+compareBasePath);
+			if (path.startsWith(compareBasePath)) {
+				LOG.info("Match");
+				return openCmsModuleMap.get(basePath); //use basePath here as the module registration may or may not have been with a trailing /
 			}
 		}
+		LOG.warn("No matching module could be found for " + path);
 		return null;
 	}
 
