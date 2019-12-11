@@ -113,8 +113,10 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	}
 
 	public void setPlugin(OpenCmsPlugin plugin) {
-		this.plugin = plugin;
-		actionManager = ActionManager.getInstance();
-		registerActions();
+		if (this.plugin == null) {
+			this.plugin = plugin;
+			actionManager = ActionManager.getInstance();
+			registerActions();
+		}
 	}
 }
