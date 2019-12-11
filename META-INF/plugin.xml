@@ -34,7 +34,7 @@
         <ul>
             <li>Integration of OpenCms menus in:
                 <ul>
-                    <li>the main menu</li>
+                    <li>the IntelliJ Tools menu</li>
                     <li>the project popup menu</li>
                     <li>the editor popup menu</li>
                     <li>the editor tab popup menu</li>
