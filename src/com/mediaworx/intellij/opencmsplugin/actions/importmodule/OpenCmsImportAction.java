@@ -99,7 +99,7 @@ public abstract class OpenCmsImportAction extends OpenCmsConnectionAction {
 									new Runnable() {
 										@Override
 										public void run() {
-											Messages.showDialog("This function is only available if the IDE Connector module 1.5 is installed and configured in OpenCms and if OpenCms is running. Consult the Plugin Wiki for mor information.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
+											Messages.showDialog("This function is only available if the IDE Connector module 1.5 is installed and configured in OpenCms and if OpenCms is running. Consult the Plugin Wiki for more information.", "Error", new String[]{"Ok"}, 0, Messages.getErrorIcon());
 										}
 									}
 							);
