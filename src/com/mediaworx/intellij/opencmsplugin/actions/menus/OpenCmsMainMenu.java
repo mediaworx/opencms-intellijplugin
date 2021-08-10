@@ -333,15 +333,17 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	}
 
 	private void unregisterChildActions(DefaultActionGroup parentGroup) {
-		AnAction[] allActions = parentGroup.getChildActionsOrStubs();
-		for (AnAction action : allActions) {
-			String actionId = actionManager.getId(action);
-			if (actionId != null) {
-				keymap.removeAllActionShortcuts(actionId);
-				actionManager.unregisterAction(actionId);
+		if (parentGroup != null) {
+			AnAction[] allActions = parentGroup.getChildActionsOrStubs();
+			for (AnAction action : allActions) {
+				String actionId = actionManager.getId(action);
+				if (actionId != null) {
+					keymap.removeAllActionShortcuts(actionId);
+					actionManager.unregisterAction(actionId);
+				}
 			}
+			parentGroup.removeAll();
 		}
-		parentGroup.removeAll();
 	}
 
 }
