@@ -22,7 +22,7 @@
   ~ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
   -->
 
-<idea-plugin version="2" url="https://github.com/mediaworx/opencms-intellijplugin">
+<idea-plugin url="https://github.com/mediaworx/opencms-intellijplugin">
 	<name>OpenCms</name>
 	<description>
         <![CDATA[
@@ -61,7 +61,7 @@
         <p>See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki">GitHub Wiki</a> for details</p>
         ]]>
     </description>
-    <version>1.11</version>
+    <version>1.12</version>
     <change-notes>
         <![CDATA[
             See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki/Version-History">Version History</a> on GitHub.
@@ -73,6 +73,7 @@
 	<idea-version since-build="107.105"/>
 
 	<depends>com.intellij.modules.platform</depends>
+	<depends>com.intellij.modules.java</depends>
 
 	<application-components>
 		<!-- Add your application components here -->
@@ -86,8 +87,7 @@
 
 	<module-components>
 		<component>
-			<implementation-class>com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationComponent
-			</implementation-class>
+			<implementation-class>com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationComponent</implementation-class>
 		</component>
 	</module-components>
 

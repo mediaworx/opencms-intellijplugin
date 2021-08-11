@@ -8,9 +8,9 @@
       <root url="jar://$PROJECT_DIR$/lib/jackson-mapper-asl-1.9.13.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jackson-module-jaxb-annotations-2.4.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jackson-module-mrbean-2.4.2.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/jackson-databind-2.9.10.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jackson-core-2.9.10.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jackson-annotations-2.9.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-databind-2.9.10.7.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
