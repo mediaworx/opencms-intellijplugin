@@ -322,7 +322,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 				}
 			}
 			else {
-				LOG.warn(String.format("Module %s doesn't have a valid content root", module.getModuleFilePath()));
+				LOG.warn(String.format("Module %s doesn't have a valid content root", module.getName()));
 			}
 		}
 	}
