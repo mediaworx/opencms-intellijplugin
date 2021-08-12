@@ -45,7 +45,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 
@@ -530,7 +530,7 @@ public class SyncJob implements Runnable {
 							manifest = manifest.replaceFirst("<version>[^<]*</version>", "<version>" + Matcher.quoteReplacement(ocmsModule.getModuleVersion()) + " </version>");
 						}
 						manifest = PluginTools.ensureUnixNewline(manifest) + "\n";
-						FileUtils.writeStringToFile(new File(manifestPath), manifest, Charset.forName("UTF-8"));
+						FileUtils.writeStringToFile(new File(manifestPath), manifest, StandardCharsets.UTF_8);
 						console.info("PULL: " + manifestPath + " pulled from OpenCms");
 					}
 					else {

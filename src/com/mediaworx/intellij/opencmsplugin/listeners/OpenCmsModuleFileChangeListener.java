@@ -30,10 +30,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
-import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
+import com.intellij.openapi.vfs.newvfs.events.*;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.exceptions.CmsConnectionException;
@@ -180,6 +177,12 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 				handleFileRenameEvent(event);
 			}
 		}
+
+		// No matter what change, if a module configuration file was somehow modified/moved/renamed/deleted the
+		// OpenCms module configuration has to be refreshed
+		if (event.getFile() != null && event.getFile().getName().equals(OpenCmsPlugin.OPENCMS_MODULE_CONFIG_FILE)) {
+			changeHandler.setRefreshOpenCmsModuleConfiguration(true);
+		}
 	}
 
 	/**
@@ -188,7 +191,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 	 * @param event IntelliJ's file change event
 	 * @throws CmsConnectionException if the connection to OpenCms fails
 	 */
-	private void handleFileDeleteEvent(VFileEvent event) throws CmsConnectionException {
+	void handleFileDeleteEvent(VFileEvent event) throws CmsConnectionException {
 		VirtualFile ideaVFile = event.getFile();
 		if (ideaVFile != null) {
 			String moduleBasePath = PluginTools.getModuleContentRoot(deletedFileModuleLookup.get(ideaVFile));
@@ -216,7 +219,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 	 * @param event IntelliJ's file change event
 	 * @throws CmsConnectionException if the connection to OpenCms fails
 	 */
-	private void handleFileMoveEvent(VFileEvent event) throws CmsConnectionException {
+	void handleFileMoveEvent(VFileEvent event) throws CmsConnectionException {
 		VirtualFile ideaVFile = event.getFile();
 
 		if (ideaVFile != null) {
@@ -266,7 +269,7 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 	 * @param event IntelliJ's file change event
 	 * @throws CmsConnectionException if the connection to OpenCms fails
 	 */
-	private void handleFileRenameEvent(VFileEvent event) throws CmsConnectionException {
+	void handleFileRenameEvent(VFileEvent event) throws CmsConnectionException {
 		VirtualFile ideaVFile = event.getFile();
 		if (ideaVFile != null) {
 			String renameFilePath = ideaVFile.getPath();
@@ -280,6 +283,9 @@ public class OpenCmsModuleFileChangeListener implements BulkFileListener {
 
 				if (!oldVfsPath.equals(newVfsPath) && ocmsModule.isPathModuleResource(ocmsModule.getLocalVfsRoot() + oldVfsPath) && getVfsAdapter().exists(oldVfsPath)) {
 					changeHandler.addFileToBeRenamed(ocmsModule, ideaVFile, oldVfsPath, newVfsPath, newName);
+				}
+				else if (oldName.equals(OpenCmsPlugin.OPENCMS_MODULE_CONFIG_FILE)) {
+					changeHandler.setRefreshOpenCmsModuleConfiguration(true);
 				}
 			}
 		}

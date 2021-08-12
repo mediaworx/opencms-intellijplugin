@@ -304,7 +304,14 @@ public class OpenCmsModule implements OpenCmsConfiguration.ConfigurationChangeLi
 	 * @return the VFS relative path for the given local path
 	 */
 	public String getVfsPathForRealPath(final String path) {
-		String relativeName = path.substring(localVfsRoot.length());
+		String relativeName;
+		try {
+			relativeName = path.substring(localVfsRoot.length());
+		}
+		catch (StringIndexOutOfBoundsException e) {
+			LOG.warn("There was a problem loading the VFS path for the path " + path + " - localVfsRoot: " + localVfsRoot);
+			relativeName = "/";
+		}
 		if (relativeName.length() == 0) {
 			relativeName = "/";
 		}

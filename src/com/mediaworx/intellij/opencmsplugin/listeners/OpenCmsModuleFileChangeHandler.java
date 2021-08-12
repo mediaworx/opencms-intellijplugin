@@ -78,6 +78,8 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 	private List<VfsFileRenameInfo> vfsFilesToBeRenamed;
 	private List<File> refreshFiles;
 
+	private boolean refreshOpenCmsModuleConfiguration = false;
+
 	/**
 	 * Handler used to reflect file changes like deletes, moves and renames made in the RFS in the OpenCms VFS (after
 	 * asking the user)
@@ -104,15 +106,18 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 	 * Handles all the changes collected previously and is also used  to present a dialog asking the user if the file
 	 * change should be reflected in the OpenCms VFS as well.
 	 */
-	private void handleChanges() {
+	void handleChanges() {
 		try {
 			if (getNumAffected() > 0) {
-				boolean wasExecuted = handleAffectedFiles();
+				boolean isPublishRequired = handleAffectedFiles();
 
 				// Publish the affected VFS resources (if publish is enabled)
-				if (wasExecuted && config.isPluginConnectorEnabled() && config.getAutoPublishMode() != AutoPublishMode.OFF) {
+				if (isPublishRequired && config.isPluginConnectorEnabled() && config.getAutoPublishMode() != AutoPublishMode.OFF) {
 					publishAffectedVfsResources();
 				}
+			}
+			if (refreshOpenCmsModuleConfiguration) {
+				plugin.queueOpenCmsModuleUpdate();
 			}
 		}
 		catch (CmsConnectionException e) {
@@ -123,6 +128,7 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 			vfsFilesToBeMoved.clear();
 			vfsFilesToBeRenamed.clear();
 			refreshFiles.clear();
+			refreshOpenCmsModuleConfiguration = false;
 		}
 	}
 
@@ -137,7 +143,7 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 	}
 
 	public boolean hasAffectedFiles() {
-		return getNumAffected() > 0;
+		return getNumAffected() > 0 || refreshOpenCmsModuleConfiguration;
 	}
 
 	/**
@@ -168,25 +174,25 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 	 * {@link OpenCmsModuleFileChangeListener#handleFileMoveEvent(com.intellij.openapi.vfs.newvfs.events.VFileEvent)} and
 	 * {@link OpenCmsModuleFileChangeListener#handleFileRenameEvent(com.intellij.openapi.vfs.newvfs.events.VFileEvent)}
 	 *
-	 * @return <code>true</code> if any action was executed
+	 * @return <code>true</code> if any action was executed that requires a publish (if auto publish is enabled)
 	 *
 	 * @throws CmsConnectionException
 	 */
 	private boolean handleAffectedFiles() throws CmsConnectionException {
 
-		boolean wasExecuted = false;
+		boolean isPublishRequired = false;
 
 		// Delete files
 		if (vfsFilesToBeDeleted.size() > 0) {
-			wasExecuted = deleteFiles();
+			isPublishRequired = deleteFiles();
 		}
 		// Move files
 		if (vfsFilesToBeMoved.size() > 0) {
-			wasExecuted = moveFiles();
+			isPublishRequired = moveFiles();
 		}
 		// Rename files
 		if (vfsFilesToBeRenamed.size() > 0) {
-			wasExecuted = renameFiles();
+			isPublishRequired = renameFiles();
 		}
 
 		// Refresh the affected files in the IDEA VFS after a short delay (to avoid event collision)
@@ -200,7 +206,7 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 			}, 2000);
 		}
 
-		return wasExecuted;
+		return isPublishRequired;
 	}
 
 	/**
@@ -519,6 +525,9 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 		vfsFilesToBeRenamed.add(new VfsFileRenameInfo(ocmsModule, ideaVFile, oldVfsPath, newVfsPath, newName));
 	}
 
+	public void setRefreshOpenCmsModuleConfiguration(boolean refreshOpenCmsModuleConfiguration) {
+		this.refreshOpenCmsModuleConfiguration = refreshOpenCmsModuleConfiguration;
+	}
 
 	/** Internal bean to store infos for deleted resources */
 	private static class VfsFileDeleteInfo {

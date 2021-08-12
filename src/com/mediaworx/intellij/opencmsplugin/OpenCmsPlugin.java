@@ -51,18 +51,25 @@ import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
 import com.mediaworx.intellij.opencmsplugin.listeners.OpenCmsModuleFileChangeListener;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsConfiguration;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModules;
+import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
 import com.mediaworx.intellij.opencmsplugin.sync.VfsAdapter;
 import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import com.mediaworx.opencms.ideconnector.client.IDEConnectorClient;
 import com.mediaworx.opencms.ideconnector.client.IDEConnectorClientConfiguration;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.TreeMap;
@@ -110,6 +117,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
 
 	public static final String TOOLWINDOW_ID = "OpenCms";
+	public static final String OPENCMS_MODULE_CONFIG_FILE = "opencms-module-config.json";
 
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
 	private static final String PROJECT_POPUP_MENU_ID = "OpenCmsPlugin.ProjectPopupMenu";
@@ -168,6 +176,10 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 
 	/** IntelliJ's action manager */
 	private ActionManager actionManager;
+
+	/** json parser used to parse the OpenCms module configuration file content */
+	private final JSONParser jsonParser = new JSONParser();
+
 
 	/**
 	 * timer used to execute delayed refreshes of OpenCms modules after IntelliJ modules have been changed
@@ -301,16 +313,45 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		Module[] modules = moduleManager.getModules();
 
 		// put all modules in a tree map with their name as key and the module as value to be able to get an alphabetically sorted module list
-		Map<String, Module> moduleMap = new TreeMap<>();
+		Map<String, Module> ideaModuleMap = new TreeMap<>();
 		for (Module module : modules) {
-			moduleMap.put(module.getName(), module);
+			ideaModuleMap.put(module.getName(), module);
 		}
 
-		for (Module module : moduleMap.values()) {
-			String moduleBasePath = PluginTools.getModuleContentRoot(module);
+
+		for (Module ideaModule : ideaModuleMap.values()) {
+			String moduleBasePath = PluginTools.getModuleContentRoot(ideaModule);
 			if (StringUtils.isNotBlank(moduleBasePath)) {
-				OpenCmsModuleConfigurationComponent configurationComponent = module.getComponent(OpenCmsModuleConfigurationComponent.class);
-				OpenCmsModuleConfigurationData moduleConfig = configurationComponent.getState();
+				OpenCmsModuleConfigurationData moduleConfig = null;
+
+				boolean isModuleConfigReadFromFile = false;
+				String moduleConfigFilePath = moduleBasePath + "/" + OPENCMS_MODULE_CONFIG_FILE;
+				File moduleConfigFile = new File(moduleConfigFilePath);
+				if (moduleConfigFile.exists() && moduleConfigFile.isFile()) {
+					try {
+						String moduleConfigurationJson = FileUtils.readFileToString(moduleConfigFile, StandardCharsets.UTF_8);
+						try {
+							JSONObject moduleJson = (JSONObject)jsonParser.parse(moduleConfigurationJson);
+							moduleConfig = readOpenCmsModuleConfiguration(moduleJson, ideaModule.getName());
+							isModuleConfigReadFromFile = true;
+						}
+						catch (ParseException e) {
+							LOG.error("Can't parse the module configuration file " + moduleConfigFilePath, e);
+						}
+						catch (Exception e) {
+							LOG.error("Unexpected exception parsing the OpenCms module configuration " + moduleConfigFilePath, e);
+						}
+					}
+					catch (IOException e) {
+						// this should never happen, since UTF-8 should exist. Let's log it anyway
+						LOG.warn("Charset UTF-8 not found, can't read " + moduleConfigFilePath);
+					}
+				}
+
+				if (!isModuleConfigReadFromFile) {
+					OpenCmsModuleConfigurationComponent configurationComponent = ideaModule.getComponent(OpenCmsModuleConfigurationComponent.class);
+					moduleConfig = configurationComponent.getState();
+				}
 
 				boolean validModule = false;
 				if (moduleConfig != null && moduleConfig.isOpenCmsModuleEnabled()) {
@@ -322,9 +363,63 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 				}
 			}
 			else {
-				LOG.warn(String.format("Module %s doesn't have a valid content root", module.getName()));
+				LOG.warn(String.format("Module %s doesn't have a valid content root", ideaModule.getName()));
 			}
 		}
+	}
+
+	/**
+	 * converts the json object containing the OpenCms module configuration to an instance of
+	 * OpenCmsModuleConfigurationData
+	 * @param moduleJson the json object containing the OpenCms module configuration
+	 * @return OpenCmsModuleConfigurationData
+	 */
+	private OpenCmsModuleConfigurationData readOpenCmsModuleConfiguration(JSONObject moduleJson, String intelliJModuleName) {
+		OpenCmsModuleConfigurationData moduleConfig;
+		String openCmsModuleName = (String)moduleJson.get("openCmsModuleName");
+		String localVfsRoot = (String)moduleJson.get("localVfsRoot");
+		String exportImportSiteRoot = (String)moduleJson.get("exportImportSiteRoot");
+		String syncMode = (String)moduleJson.get("syncMode");
+		String moduleVersion = (String)moduleJson.get("moduleVersion");
+
+		moduleConfig = new OpenCmsModuleConfigurationData();
+		moduleConfig.setOpenCmsModuleEnabled(true);
+
+		// handle the OpenCms module name (default or specific)
+		moduleConfig.setUseProjectDefaultModuleNameEnabled(StringUtils.isBlank(openCmsModuleName) || "default".equals(openCmsModuleName));
+		if (!moduleConfig.isUseProjectDefaultModuleNameEnabled()) {
+			moduleConfig.setModuleName(openCmsModuleName);
+		}
+
+		// handle the local VFS root (default or specific)
+		moduleConfig.setUseProjectDefaultVfsRootEnabled(StringUtils.isBlank(localVfsRoot) || "default".equals(localVfsRoot));
+		if (!moduleConfig.isUseProjectDefaultVfsRootEnabled()) {
+			moduleConfig.setLocalVfsRoot(localVfsRoot);
+		}
+
+		// handle the export/import site root
+		moduleConfig.setExportImportSiteRoot(StringUtils.isNotEmpty(exportImportSiteRoot) ? exportImportSiteRoot : "/");
+
+		// handle the sync mode (default, PUSH, SYNC or PULL)
+		if (
+				StringUtils.isEmpty(syncMode) ||
+				!(syncMode.equals("default") || syncMode.equals("PUSH") || syncMode.equals("SYNC") || syncMode.equals("PULL"))
+			) {
+			LOG.warn("invalid sync mode in opencms module configuration for module " + intelliJModuleName);
+			syncMode = "default";
+		}
+		moduleConfig.setUseProjectDefaultSyncModeEnabled("default".equals(syncMode));
+		if (!moduleConfig.isUseProjectDefaultSyncModeEnabled()) {
+			moduleConfig.setSyncMode(SyncMode.valueOf(syncMode));
+		}
+
+		// handle the module version
+		moduleConfig.setSetSpecificModuleVersionEnabled(StringUtils.isNotBlank(syncMode));
+		if (moduleConfig.isSetSpecificModuleVersionEnabled()) {
+			moduleConfig.setModuleVersion(moduleVersion);
+		}
+
+		return moduleConfig;
 	}
 
 	/**
@@ -702,7 +797,12 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 	 */
 	public void setToolWindowAvailable(boolean available) {
 		ToolWindow toolWindow = getToolWindow();
-		toolWindow.setAvailable(available, null);
+		try {
+			toolWindow.setAvailable(available, null);
+		}
+		catch (Exception e) {
+			LOG.warn("Exception activating the ToolWindow: " + e.getMessage());
+		}
 	}
 
 	/**
