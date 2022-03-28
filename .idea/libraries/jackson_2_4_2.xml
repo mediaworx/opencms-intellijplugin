@@ -10,7 +10,7 @@
       <root url="jar://$PROJECT_DIR$/lib/jackson-module-mrbean-2.4.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jackson-core-2.9.10.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jackson-annotations-2.9.10.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/jackson-databind-2.9.10.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-databind-2.13.2.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
