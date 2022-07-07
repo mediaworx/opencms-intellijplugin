@@ -89,7 +89,6 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 		this.plugin = plugin;
 		config = plugin.getPluginConfiguration();
 		openCmsModules = plugin.getOpenCmsModules();
-		console = plugin.getConsole();
 
 		vfsFilesToBeDeleted = new ArrayList<VfsFileDeleteInfo>();
 		vfsFilesToBeMoved = new ArrayList<VfsFileMoveInfo>();
@@ -251,6 +250,10 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 		int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Delete Files/Folders?", Messages.getQuestionIcon());
 
 		if (dlgStatus == 0) {
+			if (console == null) {
+				console = plugin.getConsole();
+			}
+
 			console.clear();
 			plugin.showConsole();
 			for (OpenCmsModuleFileChangeHandler.VfsFileDeleteInfo deleteInfo : vfsFilesToBeDeleted) {
@@ -298,6 +301,9 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 		int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move Files/Folders?", Messages.getQuestionIcon());
 
 		if (dlgStatus == 0) {
+			if (console == null) {
+				console = plugin.getConsole();
+			}
 			console.clear();
 			plugin.showConsole();
 			for (OpenCmsModuleFileChangeHandler.VfsFileMoveInfo moveInfo : vfsFilesToBeMoved) {
@@ -345,6 +351,9 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 		int dlgStatus = Messages.showOkCancelDialog(msg.toString(), "Move Files/Folders?", Messages.getQuestionIcon());
 
 		if (dlgStatus == 0) {
+			if (console == null) {
+				console = plugin.getConsole();
+			}
 			console.clear();
 			plugin.showConsole();
 			for (OpenCmsModuleFileChangeHandler.VfsFileRenameInfo renameInfo : vfsFilesToBeRenamed) {
@@ -394,6 +403,9 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 			String exportTargetPath = config.getWebappRoot() + "/" + newPathExportPoint.getTargetPathForVfsResource(newVfsPath);
 			File exportTargetFile = new File(exportTargetPath);
 			try {
+				if (console == null) {
+					console = plugin.getConsole();
+				}
 				console.info("Copying export point from " + newRfsPath + " to " + exportTargetPath);
 				FileUtils.copyFile(newRfsFile, exportTargetFile);
 				refreshFiles.add(exportTargetFile);
@@ -417,6 +429,9 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 		String oldMetaDataFilePath = getMetaDataFilePath(oldOcmsModule, oldVfsPath, isDirectory);
 		String newMetaDataFilePath = getMetaDataFilePath(newOcmsModule, newVfsPath, isDirectory);
 		try {
+			if (console == null) {
+				console = plugin.getConsole();
+			}
 			console.info("Move meta data file from " + oldMetaDataFilePath + " to " + newMetaDataFilePath);
 			File oldMetaDataFile = new File(oldMetaDataFilePath);
 			File newMetaDataFile = new File(newMetaDataFilePath);
@@ -468,6 +483,10 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 
 				SyncJob.deleteExportedResource(vfsPath, exportPath, confirmation, notice);
 
+				if (console == null) {
+					console = plugin.getConsole();
+				}
+
 				if (confirmation.indexOf(SyncJob.ERROR_PREFIX) > -1) {
 					console.error(confirmation.toString());
 				}
@@ -498,6 +517,9 @@ public class OpenCmsModuleFileChangeHandler implements Runnable {
 			affectedResourcePaths.add(renameInfo.newVfsPath);
 		}
 		if (affectedResourcePaths.size() > 0) {
+			if (console == null) {
+				console = plugin.getConsole();
+			}
 			try {
 				plugin.getPluginConnector().publishResources(affectedResourcePaths, false);
 				console.info("PUBLISH: A direct publish session was started successfully");
