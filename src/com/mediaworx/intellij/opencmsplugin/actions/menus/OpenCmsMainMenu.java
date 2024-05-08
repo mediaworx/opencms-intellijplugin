@@ -50,6 +50,7 @@ import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncModuleAction
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncOpenEditorTabsAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncSelectedAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -68,7 +69,6 @@ import java.util.Collection;
  * The actions are context aware, so a different text is displayed or an action is disabled depending on the selection
  * in the project tree.
  */
-@SuppressWarnings("ComponentNotRegistered")
 public class OpenCmsMainMenu extends OpenCmsMenu {
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsMainMenu.class);
@@ -88,12 +88,12 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	public static final String IMPORT_MODULE_ID_PREFIX = "OpenCmsPlugin.ImportModule.";
 	private static final String PUBLISH_SELECTED_ID = "OpenCmsPlugin.PublishAction";
 	private static final String PUBLISH_OPEN_TABS_ID = "OpenCmsPlugin.PublishOpenTabsAction";
-	private static final String PUBLSH_ALL_MODULES_ID = "OpenCmsPlugin.PublishAllModules";
+	private static final String PUBLISH_ALL_MODULES_ID = "OpenCmsPlugin.PublishAllModules";
 	public static final String PUBLISH_MODULE_ID_PREFIX = "OpenCmsPlugin.PublishModule.";
 
 	private static final String DESCRIPTION = "All OpenCms actions";
 
-	private static final Shortcut SYNC_SHORTCUT = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK), null);
+	private static final Shortcut SYNC_SHORTCUT = new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK), null);
 
 	private Keymap keymap;
 	private DefaultActionGroup syncModuleActions;
@@ -188,20 +188,18 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 
 		plugin.addAction(this, PUBLISH_SELECTED_ID, new OpenCmsPublishSelectedAction(), "_Publish selected Modules/Folders/Files");
 		plugin.addAction(this, PUBLISH_OPEN_TABS_ID, new OpenCmsPublishOpenEditorTabsAction(), "Publish all _open Editor Tabs");
-		plugin.addAction(this, PUBLSH_ALL_MODULES_ID, new OpenCmsPublishAllModulesAction(), "Publis_h all Modules");
+		plugin.addAction(this, PUBLISH_ALL_MODULES_ID, new OpenCmsPublishAllModulesAction(), "Publis_h all Modules");
 		add(publishModuleActions);
 	}
 
 	/**
 	 * refreshes the list of module actions on project change (if two instances of IntelliJ are running and a
 	 * switch from one instance to the other occurs). If the active project doesn't use the IntelliJ plugin, the
-	 * OpenCms menu in the main menu is explicitly disabled because the disableIfNoVisibleChildren mechanism doesn't
-	 * work for the main menu (this seems to be a bug in IntelliJ, see
-	 * {@link com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMenu#disableIfNoVisibleChildren()})
+	 * OpenCms menu in the main menu is explicitly disabled
 	 * @param event the event (provided by IntelliJ)
 	 */
 	@Override
-	public void update(AnActionEvent event) {
+	public void update(@NotNull AnActionEvent event) {
 		super.update(event);
 		if (currentProject != null && !DumbService.isDumb(currentProject)) {
 			Presentation presentation = event.getPresentation();
@@ -229,17 +227,7 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	}
 
 	/**
-	 * the disableIfNoVisibleChildren mechanism doesn't work for the main menu (this seems to be a bug in IntelliJ),
-	 * so it is explicitly disabled.
-	 * @return always returns <code>false</code>
-	 */
-	@Override
-	public boolean disableIfNoVisibleChildren() {
-		return false;
-	}
-
-	/**
-	 * Unregisters the current sync and publish module actions. Used to cleanup module actions on project switch before
+	 * Unregisters the current sync and publish module actions. Used to clean up module actions on project switch before
 	 * re-initialization
 	 */
 	public void unregisterModuleActions() {

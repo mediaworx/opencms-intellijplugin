@@ -50,7 +50,7 @@ public class OpenCmsPluginToolWindowFactory implements ToolWindowFactory {
 
 		this.toolWindow = toolWindow;
 
-		ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
+		ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(toolWindowContent, "", false);
         toolWindow.getContentManager().addContent(content);
 

@@ -32,11 +32,13 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.VirtualFileManagerListener;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.util.IconUtil;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.xmlb.XmlSerializerUtil;
@@ -116,7 +118,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 
 	private static final Logger LOG = Logger.getInstance(OpenCmsPlugin.class);
 
-	public static final String TOOLWINDOW_ID = "OpenCms";
+	public static final String TOOLWINDOW_ID = "OpenCmsPluginConsole";
 	public static final String OPENCMS_MODULE_CONFIG_FILE = "opencms-module-config.json";
 
 	private static final String OPENCMS_MENU_ID = "OpenCmsPlugin.ActionMenu";
@@ -765,18 +767,12 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 			return;
 		}
 		ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-		if (toolWindowManager == null) {
-			LOG.info("ToolWindowManager could not be retrieved from the project, it may not be registered yet.");
-			return;
-		}
 		toolWindow = toolWindowManager.getToolWindow(OpenCmsPlugin.TOOLWINDOW_ID);
-		if (toolWindow == null) {
+		if (toolWindow != null) {
+			toolWindow.setIcon(IconLoader.getIcon("/icons/opencms_13.png", this.getClass().getClassLoader()));
+			toolWindow.activate(null); // createToolWindowContent is only called, when the window is activated
 			OpenCmsPluginConfigurationData config = getPluginConfiguration();
-			toolWindow = toolWindowManager.registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
-			toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
 			toolWindow.setAvailable(config != null && config.isOpenCmsPluginEnabled(), null);
-			OpenCmsPluginToolWindowFactory toolWindowFactory = new OpenCmsPluginToolWindowFactory();
-			toolWindowFactory.createToolWindowContent(project, toolWindow);
 		}
 	}
 

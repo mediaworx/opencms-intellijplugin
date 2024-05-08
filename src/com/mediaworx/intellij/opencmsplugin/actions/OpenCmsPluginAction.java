@@ -24,6 +24,7 @@
 
 package com.mediaworx.intellij.opencmsplugin.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -126,5 +127,10 @@ public abstract class OpenCmsPluginAction extends AnAction {
 	protected boolean isPullMetaDataEnabled() {
 		OpenCmsPluginConfigurationData config = plugin.getPluginConfiguration();
 		return config != null && config.isPluginConnectorEnabled() && config.isPullMetadataEnabled();
+	}
+
+	@Override
+	public @NotNull ActionUpdateThread getActionUpdateThread() {
+		return ActionUpdateThread.BGT;
 	}
 }

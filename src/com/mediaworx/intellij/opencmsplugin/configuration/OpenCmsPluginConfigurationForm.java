@@ -25,10 +25,9 @@
 package com.mediaworx.intellij.opencmsplugin.configuration;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
+import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
-import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -86,8 +85,8 @@ public class OpenCmsPluginConfigurationForm implements ActionListener, FocusList
 		pullMetaDataCheckbox.addActionListener(this);
 
 		if (pluginVersion == null) {
-			PluginId pluginId = PluginManager.getPluginByClassName(OpenCmsPlugin.class.getName());
-			IdeaPluginDescriptor pluginDescriptor = PluginManager.getPlugin(pluginId);
+			PluginId pluginId = PluginId.getId("com.mediaworx.intellij.opencmsplugin");
+			IdeaPluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(pluginId);
 			if (pluginDescriptor != null) {
 				pluginVersion = pluginDescriptor.getVersion();
 			}

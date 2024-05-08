@@ -32,6 +32,7 @@ import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.actions.publish.OpenCmsPublishSelectedAction;
 import com.mediaworx.intellij.opencmsplugin.actions.sync.OpenCmsSyncSelectedAction;
 import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModule;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Used to create the OpenCms menu located in the editor popup menu containing the following actions:
@@ -71,7 +72,7 @@ public class OpenCmsEditorPopupMenu extends OpenCmsMenu {
 	 * @param event the action event, provided by IntelliJ
 	 */
 	@Override
-	public void update(AnActionEvent event) {
+	public void update(@NotNull AnActionEvent event) {
 		super.update(event);
 		VirtualFile[] selectedFiles = event.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 		boolean enableMenu;

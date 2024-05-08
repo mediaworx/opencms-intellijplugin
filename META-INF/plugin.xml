@@ -24,6 +24,7 @@
 
 <idea-plugin version="2" url="https://github.com/mediaworx/opencms-intellijplugin">
 	<name>OpenCms</name>
+	<id>com.mediaworx.intellij.opencmsplugin</id>
 	<description>
         <![CDATA[
         The OpenCms Plugin for IntelliJ lets you sync files and folders from your local Filesystem to the OpenCms VFS
@@ -61,7 +62,7 @@
         <p>See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki">GitHub Wiki</a> for details</p>
         ]]>
     </description>
-    <version>1.12.3</version>
+    <version>1.13</version>
     <change-notes>
         <![CDATA[
             Version 1.12 introduces a new way of configuring OpenCms modules. For further details have a look at the <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki/3-Configuration#opencms-module-settings-modern-version-using-configuration-files">plugin's Wiki</a>.<br />
@@ -71,7 +72,7 @@
     <vendor url="http://opencms.mediaworx.com" email="">mediaworx berlin AG</vendor>
 
 	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
-	<idea-version since-build="107.105"/>
+	<idea-version since-build="222.3345.118"/>
 
 	<depends>com.intellij.modules.platform</depends>
 
@@ -102,5 +103,8 @@
 							 displayName="OpenCms Plugin"
 							 groupId="tools"
 							 instance="com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurable" />
+		<toolWindow id="OpenCmsPluginConsole"
+		            anchor="bottom"
+		            factoryClass="com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory"/>
 	</extensions>
 </idea-plugin>
