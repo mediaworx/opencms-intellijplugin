@@ -233,7 +233,10 @@ public class OpenCmsMainMenu extends OpenCmsMenu {
 	 * so it is explicitly disabled.
 	 * @return always returns <code>false</code>
 	 */
+	/*
+	Disable to avoid java: method does not override or implement a method from a supertype
 	@Override
+	 */
 	public boolean disableIfNoVisibleChildren() {
 		return false;
 	}

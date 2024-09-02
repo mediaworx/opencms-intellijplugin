@@ -107,7 +107,10 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	 * see {@link OpenCmsMainMenu#update(AnActionEvent)}.
 	 * @return  always returns <code>true</code>
 	 */
+	/*
+	Disable to avoid java: method does not override or implement a method from a supertype
 	@Override
+	 */
 	public boolean disableIfNoVisibleChildren() {
 		return true;
 	}
