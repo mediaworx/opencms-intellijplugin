@@ -25,12 +25,13 @@
 package com.mediaworx.intellij.opencmsplugin.actions.menus;
 
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Parent for all OpenCms menus in IntelliJ. Right now there are four OpenCms menus implemented. They can be found at
@@ -44,8 +45,6 @@ import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigura
  * All menus are context aware, e.g. there's a difference if you click on a folder, a file or a module.
  */
 public abstract class OpenCmsMenu extends DefaultActionGroup {
-
-	private static final Logger LOG = Logger.getInstance(OpenCmsMenu.class);
 
 	protected OpenCmsPlugin plugin;
 	protected ActionManager actionManager;
@@ -64,6 +63,7 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	protected OpenCmsMenu(OpenCmsPlugin plugin, String description, boolean popup) {
 		super("_OpenCms", popup);
 		getTemplatePresentation().setDescription(description);
+		getTemplatePresentation().setDisableGroupIfEmpty(true);
 		this.plugin = plugin;
 		actionManager = ActionManager.getInstance();
 		registerActions();
@@ -80,7 +80,7 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	 * @param event the action event, provided by IntelliJ
 	 */
 	@Override
-	public void update(AnActionEvent event) {
+	public void update(@NotNull AnActionEvent event) {
 		super.update(event);
 		Project eventProject = event.getProject();
 		if (eventProject == null) {
@@ -121,5 +121,10 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 			actionManager = ActionManager.getInstance();
 			registerActions();
 		}
+	}
+
+	@Override
+	public @NotNull ActionUpdateThread getActionUpdateThread() {
+		return ActionUpdateThread.BGT;
 	}
 }

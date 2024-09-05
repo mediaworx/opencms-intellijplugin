@@ -22,9 +22,9 @@
   ~ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
   -->
 
-<idea-plugin version="2" url="https://github.com/mediaworx/opencms-intellijplugin">
+<idea-plugin url="https://github.com/mediaworx/opencms-intellijplugin">
 	<name>OpenCms</name>
-	<id>com.mediaworx.intellij.opencmsplugin</id>
+	<id>OpenCms</id>
 	<description>
         <![CDATA[
         The OpenCms Plugin for IntelliJ lets you sync files and folders from your local Filesystem to the OpenCms VFS
@@ -62,14 +62,13 @@
         <p>See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki">GitHub Wiki</a> for details</p>
         ]]>
     </description>
-    <version>1.13</version>
+    <version>1.14</version>
     <change-notes>
         <![CDATA[
-            Version 1.12 introduces a new way of configuring OpenCms modules. For further details have a look at the <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki/3-Configuration#opencms-module-settings-modern-version-using-configuration-files">plugin's Wiki</a>.<br />
-            More information can be found in the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki/Version-History">Version History</a> on GitHub.
+            Version 1.14 restores compatibility with more recent IntelliJ versions (after 2023)
         ]]>
     </change-notes>
-    <vendor url="http://opencms.mediaworx.com" email="">mediaworx berlin AG</vendor>
+    <vendor url="https://opencms.mediaworx.com" email="">mediaworx berlin AG</vendor>
 
 	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
 	<idea-version since-build="222.3345.118"/>
@@ -93,7 +92,7 @@
 	</module-components>
 
 	<actions>
-		<group id="OpenCmsPlugin.ActionMenu" class="com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu" text="O_penCms" description="All OpenCms actions" popup="true" icon="/icons/opencms_menu.png">
+		<group id="OpenCmsPlugin.ActionMenu" class="com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu" text="O_penCms" description="All OpenCms actions" popup="true" icon="/icons/opencmsLogo_mono.svg">
 			<add-to-group group-id="ToolsMenu" anchor="last" />
 		</group>
 	</actions>
@@ -105,6 +104,7 @@
 							 instance="com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurable" />
 		<toolWindow id="OpenCmsPluginConsole"
 		            anchor="bottom"
-		            factoryClass="com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory"/>
+		            factoryClass="com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsPluginToolWindowFactory"
+					icon="/icons/opencmsLogo_mono.svg"/>
 	</extensions>
 </idea-plugin>

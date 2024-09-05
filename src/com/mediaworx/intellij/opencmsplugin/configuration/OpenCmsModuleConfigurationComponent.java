@@ -33,7 +33,6 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import org.jetbrains.annotations.Nls;
@@ -123,14 +122,6 @@ public class OpenCmsModuleConfigurationComponent implements ModuleComponent, Con
 	@Nls
 	public String getDisplayName() {
 		return "OpenCms Module";
-	}
-
-	/**
-	 * Method called by IntelliJ to display an icon on the module configuration tab.
-	 * @return  path to the OpenCms icon, "/icons/opencms_13.png"
-	 */
-	public Icon getIcon() {
-        return IconLoader.getIcon("/icons/opencms_13.png");
 	}
 
 	/**

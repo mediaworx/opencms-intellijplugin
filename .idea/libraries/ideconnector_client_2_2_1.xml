@@ -9,9 +9,5 @@
       <root url="file://$PROJECT_DIR$/../opencms-ideconnector/client/src/main/java" />
       <root url="file://$PROJECT_DIR$/../opencms-ideconnector/common/src/main/java" />
     </SOURCES>
-    <excluded>
-      <root url="jar://$PROJECT_DIR$/lib/ideconnector-client-2.2.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/ideconnector-common-2.2.1.jar!/" />
-    </excluded>
   </library>
 </component>
