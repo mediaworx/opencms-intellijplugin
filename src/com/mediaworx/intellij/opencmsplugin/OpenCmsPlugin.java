@@ -773,7 +773,7 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 		if (toolWindow == null) {
 			OpenCmsPluginConfigurationData config = getPluginConfiguration();
 			toolWindow = toolWindowManager.registerToolWindow(OpenCmsPlugin.TOOLWINDOW_ID, false, ToolWindowAnchor.BOTTOM);
-			toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
+//			toolWindow.setIcon(new ImageIcon(this.getClass().getResource("/icons/opencms_13.png")));
 			toolWindow.setAvailable(config != null && config.isOpenCmsPluginEnabled(), null);
 			OpenCmsPluginToolWindowFactory toolWindowFactory = new OpenCmsPluginToolWindowFactory();
 			toolWindowFactory.createToolWindowContent(project, toolWindow);
