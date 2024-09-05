@@ -25,13 +25,12 @@
 package com.mediaworx.intellij.opencmsplugin.actions.menus;
 
 import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Parent for all OpenCms menus in IntelliJ. Right now there are four OpenCms menus implemented. They can be found at
@@ -45,6 +44,8 @@ import org.jetbrains.annotations.NotNull;
  * All menus are context aware, e.g. there's a difference if you click on a folder, a file or a module.
  */
 public abstract class OpenCmsMenu extends DefaultActionGroup {
+
+	private static final Logger LOG = Logger.getInstance(OpenCmsMenu.class);
 
 	protected OpenCmsPlugin plugin;
 	protected ActionManager actionManager;
@@ -63,7 +64,6 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	protected OpenCmsMenu(OpenCmsPlugin plugin, String description, boolean popup) {
 		super("_OpenCms", popup);
 		getTemplatePresentation().setDescription(description);
-		getTemplatePresentation().setDisableGroupIfEmpty(true);
 		this.plugin = plugin;
 		actionManager = ActionManager.getInstance();
 		registerActions();
@@ -80,7 +80,7 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 	 * @param event the action event, provided by IntelliJ
 	 */
 	@Override
-	public void update(@NotNull AnActionEvent event) {
+	public void update(AnActionEvent event) {
 		super.update(event);
 		Project eventProject = event.getProject();
 		if (eventProject == null) {
@@ -98,16 +98,28 @@ public abstract class OpenCmsMenu extends DefaultActionGroup {
 		return config != null && config.isOpenCmsPluginEnabled();
 	}
 
+	/**
+	 * The disableIfNoVisibleChildren mechanism is activated, and since all actions are automatically hidden if the
+	 * IntelliJ plugin is not enabled (see
+	 * {@link com.mediaworx.intellij.opencmsplugin.actions.OpenCmsPluginAction#update(AnActionEvent)}),
+	 * the OpenCms menus containing the actions will be disabled automatically for projects that don't use the
+	 * OpenCmsPlugin. Because of a suspected bug in IntelliJ the OpenCms menu in the main menu ist treated differently,
+	 * see {@link OpenCmsMainMenu#update(AnActionEvent)}.
+	 * @return  always returns <code>true</code>
+	 */
+	/*
+	Disable to avoid java: method does not override or implement a method from a supertype
+	@Override
+	 */
+	public boolean disableIfNoVisibleChildren() {
+		return true;
+	}
+
 	public void setPlugin(OpenCmsPlugin plugin) {
 		if (this.plugin == null) {
 			this.plugin = plugin;
 			actionManager = ActionManager.getInstance();
 			registerActions();
 		}
-	}
-
-	@Override
-	public @NotNull ActionUpdateThread getActionUpdateThread() {
-		return ActionUpdateThread.BGT;
 	}
 }
