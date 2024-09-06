@@ -62,10 +62,11 @@
         <p>See the plugin's <a href="https://github.com/mediaworx/opencms-intellijplugin/wiki">GitHub Wiki</a> for details</p>
         ]]>
     </description>
-    <version>1.14</version>
+    <version>1.15</version>
     <change-notes>
         <![CDATA[
-            Version 1.14 restores compatibility with more recent IntelliJ versions (after 2023)
+            Version 1.15 updates dependencies to the OpenCms 17 level and fixes some deprecation warnings.
+            Java language Level now 11.
         ]]>
     </change-notes>
     <vendor url="https://opencms.mediaworx.com" email="">mediaworx berlin AG</vendor>
@@ -84,12 +85,6 @@
 			<implementation-class>com.mediaworx.intellij.opencmsplugin.OpenCmsPlugin</implementation-class>
 		</component>
 	</project-components>
-
-	<module-components>
-		<component>
-			<implementation-class>com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationComponent</implementation-class>
-		</component>
-	</module-components>
 
 	<actions>
 		<group id="OpenCmsPlugin.ActionMenu" class="com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu" text="O_penCms" description="All OpenCms actions" popup="true" icon="/icons/opencmsLogo_mono.svg">
