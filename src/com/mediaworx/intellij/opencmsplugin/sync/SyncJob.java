@@ -41,7 +41,7 @@ import com.mediaworx.intellij.opencmsplugin.opencms.OpenCmsModuleResource;
 import com.mediaworx.intellij.opencmsplugin.tools.PluginTools;
 import com.mediaworx.intellij.opencmsplugin.toolwindow.OpenCmsToolWindowConsole;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;

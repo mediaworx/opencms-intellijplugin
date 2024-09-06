@@ -44,7 +44,6 @@ import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsEditorPopupMenu
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsEditorTabPopupMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsMainMenu;
 import com.mediaworx.intellij.opencmsplugin.actions.menus.OpenCmsProjectPopupMenu;
-import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationComponent;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsModuleConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.configuration.OpenCmsPluginConfigurationData;
 import com.mediaworx.intellij.opencmsplugin.connector.OpenCmsPluginConnector;
@@ -345,11 +344,6 @@ public class OpenCmsPlugin implements ProjectComponent, PersistentStateComponent
 						// this should never happen, since UTF-8 should exist. Let's log it anyway
 						LOG.warn("Charset UTF-8 not found, can't read " + moduleConfigFilePath);
 					}
-				}
-
-				if (!isModuleConfigReadFromFile) {
-					OpenCmsModuleConfigurationComponent configurationComponent = ideaModule.getComponent(OpenCmsModuleConfigurationComponent.class);
-					moduleConfig = configurationComponent.getState();
 				}
 
 				boolean validModule = false;

@@ -26,7 +26,7 @@ package com.mediaworx.intellij.opencmsplugin.configuration;
 
 import com.mediaworx.intellij.opencmsplugin.connector.AutoPublishMode;
 import com.mediaworx.intellij.opencmsplugin.sync.SyncMode;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Configuration data container for the project level configuration of the OpenCms plugin for IntelliJ.
